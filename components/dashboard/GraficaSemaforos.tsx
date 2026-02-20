@@ -2,7 +2,7 @@
 
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { COLORES_SEMAFORO, LABELS_SEMAFORO } from "@/lib/types"
-import { Semaforo } from "@prisma/client"
+import { Semaforo } from "@/lib/enums"
 
 type Props = {
   data: {

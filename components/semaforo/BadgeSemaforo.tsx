@@ -1,4 +1,4 @@
-import { Semaforo } from "@prisma/client"
+import { Semaforo } from "@/lib/enums"
 
 const config: Record<Semaforo, { label: string; clase: string }> = {
   VERDE:        { label: "Sin riesgo",  clase: "bg-green-100 text-green-800" },

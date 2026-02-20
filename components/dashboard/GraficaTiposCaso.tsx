@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts"
 import { LABELS_TIPO_CASO } from "@/lib/types"
-import { TipoCaso } from "@prisma/client"
+import { TipoCaso } from "@/lib/enums"
 
 type Props = {
   data: {

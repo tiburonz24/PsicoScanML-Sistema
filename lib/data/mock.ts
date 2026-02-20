@@ -5,7 +5,7 @@
  * en este archivo por llamadas a prisma.
  */
 
-import { Semaforo, TipoCaso, Sexo, EstadoCita } from "@prisma/client"
+import { Semaforo, TipoCaso, Sexo, EstadoCita } from "@/lib/enums"
 
 // =============================================
 // TIPOS LOCALES (espejo de los modelos Prisma)

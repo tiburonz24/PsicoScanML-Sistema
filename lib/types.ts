@@ -1,7 +1,6 @@
-import { Rol, Semaforo, TipoCaso, Sexo, EstadoCita } from "@prisma/client"
-
-// Re-exportar enums de Prisma para uso en el cliente
-export { Rol, Semaforo, TipoCaso, Sexo, EstadoCita }
+export { Rol, Semaforo, TipoCaso, Sexo, EstadoCita } from "@/lib/enums"
+import type { Rol, Semaforo, TipoCaso } from "@/lib/enums"
+// lib/auth.ts y lib/db.ts siguen usando @prisma/client en el servidor
 
 // Extiende el tipo de sesion de NextAuth para incluir el rol
 declare module "next-auth" {

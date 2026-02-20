@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { Rol } from "@prisma/client"
+import { Rol } from "@/lib/enums"
 
 type NavItem = {
   label: string

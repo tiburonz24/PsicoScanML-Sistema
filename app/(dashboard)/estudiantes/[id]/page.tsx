@@ -5,7 +5,7 @@ import GraficaRadar from "@/components/dashboard/GraficaRadar"
 import TablaItemsCriticos from "@/components/dashboard/TablaItemsCriticos"
 import TarjetaEscalas from "@/components/dashboard/TarjetaEscalas"
 import Link from "next/link"
-import { Sexo } from "@prisma/client"
+import { Sexo } from "@/lib/enums"
 
 type Props = { params: Promise<{ id: string }> }
 
