@@ -1,0 +1,730 @@
+================================================================================
+PSICOCAN ML — SISTEMA INTELIGENTE DE TAMIZAJE PSICOLOGICO ESTUDIANTIL
+Documento de Conclusiones y Guia Tecnica — Chat 1 + Chat 2
+CECyTEN Plantel Tepic | II Concurso Estatal de Creatividad e Innovacion
+Tecnologica 2026
+Asesor: Lic. Mar Asdrubal Alvarez Orozco
+Fecha: Febrero 2026
+================================================================================
+
+================================================================================
+SECCION 1 — CONTEXTO DEL PROYECTO
+================================================================================
+
+PsicoScan ML es un sistema de tamizaje psicologico basado en Machine Learning
+desarrollado para el CECyTEN Plantel Tepic. Su objetivo principal es detectar
+tempranamente el nivel de riesgo emocional de estudiantes y organizar
+automaticamente la atencion del psicologo institucional.
+
+El proyecto participa en la categoria Proyectos de Investigacion del
+II Concurso Estatal de Creatividad e Innovacion Tecnologica,
+Hackathon y Robotica CECyTEN 2026.
+
+FECHAS CLAVE DEL CONCURSO:
+  - Apertura de inscripciones:  16 de febrero de 2026
+  - Cierre de inscripciones:    15 de marzo de 2026
+  - Plataforma de registro:     forms.gle/u6KWa9VdahCgor8P7
+  - Documentos a entregar:      Anexo 2 y Anexo 3 en PDF
+  - Tiempo de presentacion:     10 minutos + 5 minutos jurado
+
+ESTADISTICAS QUE JUSTIFICAN EL PROYECTO:
+  - Suicidios en Nayarit 2022:       142 casos
+  - Tasa Nayarit:                    11.49 por 100,000 habitantes
+  - Tasa CDMX (referencia):          3.01 por 100,000 habitantes
+  - Nayarit vs CDMX:                 3.82 veces mayor
+  - Grupo etario mas vulnerable:     15 a 24 anos
+
+
+================================================================================
+SECCION 2 — INSTRUMENTO DE TAMIZAJE: SENA
+================================================================================
+
+Cuestionario SENA (Sistema de Evaluacion de Ninos y Adolescentes)
+Version: Autoinforme Secundaria para jovenes de 12 a 18 anos
+Editorial: TEA Ediciones / Hogrefe
+
+ESTRUCTURA:
+  - Total de reactivos:    188 items
+  - Escala de respuesta:   Likert de 5 puntos
+    1 = Nunca o casi nunca
+    2 = Pocas veces
+    3 = Algunas veces
+    4 = Muchas veces
+    5 = Siempre o casi siempre
+  - Paginas de reactivos:  6 paginas (items 1-32, 33-64, 65-96,
+                           97-128, 129-160, 161-188)
+  - Marcadores de esquina: Si — fiducial markers en cada pagina
+
+ESCALAS QUE GENERA EL SOFTWARE TEA:
+  - Control (validan fiabilidad): INC, NEG, POS
+  - Indices Globales:             GLO, EMO, CON, EJE, CTX, REC
+  - Problemas Interiorizados:     DEP, ANS, ASC, SOM, PST, OBS
+  - Problemas Exteriorizados:     ATE, HIP, IRA, AGR, DES, ANT
+  - Otros Problemas:              SUS, ESQ, ALI
+  - Problemas Contextuales:       FAM, ESC, COM
+  - Vulnerabilidades:             REG, BUS
+  - Recursos Personales:          AUT, SOC, CNC
+  - Items Criticos:               Autolesion, Trauma, Peligro, Agresion,
+                                  Antisocial, Percepcion, Control, Acoso,
+                                  Alimentacion, Culpa
+
+
+================================================================================
+SECCION 3 — LOS 5 CASOS TIPO (ETIQUETAS DEL MODELO ML)
+================================================================================
+
+--------------------------------------------------------------------------------
+CASO 1 — INCONSISTENCIA | ID: GFH1P | Varon, 14 anos
+--------------------------------------------------------------------------------
+Escalas de control:
+  INC = 1.2 (PRECAUCION)   NEG = 2 (Normal)   POS = 6 (Normal)
+
+Indices globales:
+  GLO=43  EMO=49  CON=41  EJE=38
+
+Escalas clinicas destacadas:
+  DEP=66 (elevado)   FAM=66 (elevado)
+
+Items criticos activos: 7
+  Incluye: ideacion suicida y perdida de control
+
+Accion del sistema: Solicitar repeticion del cuestionario
+Semaforo ML: AMARILLO
+
+--------------------------------------------------------------------------------
+CASO 2 — BIEN CONTESTADO SIN RIESGO | ID: GRA1E | Mujer, 15 anos
+--------------------------------------------------------------------------------
+Escalas de control:
+  INC = 0.6 (Normal)   NEG = 0 (Normal)   POS = 3 (Normal)
+
+Indices globales:
+  GLO=44  EMO=46  CON=46  EJE=46
+
+Todos los indices dentro de rango normal (T entre 33-59)
+Items criticos activos: 3 (sin elevar escalas globales)
+
+Accion del sistema: Seguimiento periodico normal
+Semaforo ML: VERDE
+
+--------------------------------------------------------------------------------
+CASO 3 — IMPRESION POSITIVA | ID: MGS1E | Varon, 15 anos
+--------------------------------------------------------------------------------
+Escalas de control:
+  INC = 0.5 (Normal)   NEG = 0 (Normal)   POS = 9 (PRECAUCION)
+
+Indices globales:
+  GLO=43  EMO=49  CON=42  EJE=43
+
+Perfil global dentro de rango normal pero con sesgo confirmado
+Items criticos activos: 2 (ambos de Peligro marcados como Siempre)
+
+Accion del sistema: Revision con psicologo, posible reaplicacion
+Semaforo ML: AMARILLO
+
+--------------------------------------------------------------------------------
+CASO 4 — IMPRESION NEGATIVA | ID: RPA1E | Mujer, 15 anos
+--------------------------------------------------------------------------------
+Escalas de control:
+  INC = 1.0 (Normal)   NEG = 5 (PRECAUCION)   POS = 1 (Normal)
+
+Indices globales:
+  GLO=80  EMO=76  CON=68  EJE=84  
+
+Escalas clinicas destacadas:
+  ESQ=105 (fuera de rango grafico)   REG=86   SOM=85   IRA=85
+
+Items criticos activos: 21
+  Incluye: ideacion suicida, sintomas psicoticos, perdida de control
+
+Accion del sistema: Atencion prioritaria e inmediata (independiente del sesgo)
+Semaforo ML: ROJO
+
+--------------------------------------------------------------------------------
+CASO 5 — BIEN CONTESTADO CON RIESGO | ID: RPB1E | Mujer, 15 anos
+Fecha de aplicacion: 16/10/2025
+Baremo: Poblacion general, 14 a 15 anos, varones + mujeres
+--------------------------------------------------------------------------------
+Escalas de control:
+  INC = 0.9 (Normal)   NEG = 1 (Normal)   POS = 0 (Normal)
+  >>> Cuestionario 100% confiable — sin sesgo <<<
+
+Indices globales:
+  GLO=66 (elevado)
+  EMO=71 (elevado)
+  CON=54 (limite alto)
+  EJE=61 (ligeramente elevado)
+  CTX=76 (muy elevado)
+  REC=28 (MUY BAJO — recursos personales criticos)
+
+Escalas clinicas:
+  DEP=86  (MUY ELEVADO — Depresion)
+  ANS=61  PST=69  OBS=61  ASC=56  SOM=64
+  ATE=55  HIP=55  IRA=58  AGR=57  DES=51  ANT=47
+  SUS=45  ESQ=78  ALI=75
+  FAM=76  ESC=58  COM=71
+  REG=67  BUS=58
+  AUT=25  (MUY BAJO — Autoestima)
+  SOC=38  (bajo)
+  CNC=82  (muy elevado — alta conciencia del problema)
+
+Items criticos activos: 19
+  Riesgo de autolesion:
+    - Item 124: Quiero morirme (Muchas veces)
+    - Item 141: Pienso que mi vida no tiene sentido (Muchas veces)
+  Estresores traumaticos:
+    - Item 86: Me han pasado cosas horribles (Muchas veces)
+  Peticion de ayuda:
+    - Item 118: Hay cosas que van mal y necesitaria ayuda (Siempre)
+    - Item 145: Lo estoy pasando mal y necesitaria que me ayudaran (Muchas veces)
+  Alteraciones del pensamiento:
+    - Item 119: Creo que otras personas pueden leer mis pensamientos (Algunas veces)
+  Perdida de control:
+    - Item 76: Siento que voy a perder el control (Muchas veces)
+    - Item 149: Siento que me estoy volviendo loco (Muchas veces)
+  Riesgos familiares:
+    - Item 19: Mis padres me pegan (Pocas veces)
+  Acoso escolar:
+    - Item 96: Me insultan por telefono o internet (Algunas veces)
+    - Item 163: Me amenazan en el instituto (Pocas veces)
+  Falta de apoyo social:
+    - Item 50: Siento que a nadie le importa lo que hago (Muchas veces)
+    - Item 137: Me siento solo (Siempre)
+    - Item 143: Cuando tengo problemas, hay personas que me escuchan (Pocas veces)
+  Imagen corporal:
+    - Item 53: Creo que mi cuerpo es horrible (Siempre)
+  Indicadores inespecificos:
+    - Item 63: Me siento enfermo (Muchas veces)
+    - Item 104: Duermo mal (Muchas veces)
+  Culpa:
+    - Item 75: Me siento culpable (Siempre)
+    - Item 126: Cometo errores imperdonables (Muchas veces)
+
+Accion del sistema: Atencion URGENTE e inmediata
+Semaforo ML: ROJO URGENTE
+
+NOTA ETICA CASO 5: Esta estudiante presenta ideacion suicida activa, posibles
+sintomas disociativos, senales de violencia en el hogar y aislamiento severo,
+todo con un instrumento 100% confiable. Si es un caso real y activo, requiere
+atencion inmediata del area de psicologia.
+
+--------------------------------------------------------------------------------
+TABLA RESUMEN DE LOS 5 CASOS
+--------------------------------------------------------------------------------
+Caso | ID     | Sexo      | Control        | Riesgo Real    | Semaforo
+-----|--------|-----------|----------------|----------------|---------------
+1    | GFH1P  | Varon 14  | INC elevado    | Indeterminado  | AMARILLO
+2    | GRA1E  | Mujer 15  | Normal         | Bajo           | VERDE
+3    | MGS1E  | Varon 15  | POS elevado    | Posible sesgo  | AMARILLO
+4    | RPA1E  | Mujer 15  | NEG elevado    | Indeterminado  | ROJO
+5    | RPB1E  | Mujer 15  | Normal         | ALTO verificado| ROJO URGENTE
+
+
+================================================================================
+SECCION 4 — HALLAZGO TECNICO CLAVE: CAMBIO DE ESTRATEGIA
+================================================================================
+
+El software TEA Ediciones ya genera automaticamente un PDF estructurado
+con todas las escalas, indices y items criticos. NO es necesario hacer OCR
+sobre formularios fisicos para obtener datos de escalas.
+
+ESTRATEGIA OCR (original) vs ESTRATEGIA PDF TEA (nueva):
+  Fuente:    Formulario fisico escaneado  vs  PDF generado por software TEA
+  Precision: 85-95% con buena foto        vs  100% datos exactos
+  Datos:     Solo las 188 respuestas      vs  Respuestas + escalas + items criticos
+  Esfuerzo:  Alto (OCR + limpieza)        vs  Bajo (parse de PDF)
+  Riesgo:    Medio (depende de foto)      vs  Minimo
+
+PIPELINE RECOMENDADO:
+  Paso 1: Recibir PDFs generados por software TEA
+  Paso 2: Extraer datos estructurados — Python + PyMuPDF / pdfplumber
+  Paso 3: Generar CSV con escalas y etiqueta — Python + Pandas
+  Paso 4: Entrenar modelo de clasificacion — Scikit-learn / XGBoost
+  Paso 5: Desplegar API del modelo — FastAPI en Railway
+  Paso 6: Interfaz del sistema — Next.js en Vercel
+  Paso 7: Base de datos — Supabase (PostgreSQL)
+
+
+================================================================================
+SECCION 5 — STACK TECNOLOGICO DEFINITIVO
+================================================================================
+
+  Extraccion de datos:  Python + pdfplumber
+  Procesamiento:        Python + Pandas
+  Machine Learning:     Scikit-learn + XGBoost
+  API del modelo:       FastAPI
+  Frontend:             Next.js + TypeScript
+  Despliegue frontend:  Vercel
+  Despliegue ML API:    Railway o Render
+  Base de datos:        Supabase (PostgreSQL)
+  Graficas:             Recharts
+
+
+================================================================================
+SECCION 6 — ESTRUCTURA DEL CSV PROPUESTO
+================================================================================
+
+Cada fila = un estudiante. Columnas:
+
+  Identificacion:        ID, Nombre, Edad, Sexo, Fecha, Grado, Grupo, Escuela
+  Escalas de control:    INC, NEG, POS (PD y clasificacion)
+  Indices globales:      GLO_T, EMO_T, CON_T, EJE_T, CTX_T, REC_T
+  Prob. interiorizados:  DEP_PD, DEP_T, ANS_PD, ANS_T, ASC_PD, ASC_T,
+                         SOM_PD, SOM_T, PST_PD, PST_T, OBS_PD, OBS_T
+  Prob. exteriorizados:  ATE_PD, ATE_T, HIP_PD, HIP_T, IRA_PD, IRA_T,
+                         AGR_PD, AGR_T, DES_PD, DES_T, ANT_PD, ANT_T
+  Otros problemas:       SUS_PD, SUS_T, ESQ_PD, ESQ_T, ALI_PD, ALI_T
+  Prob. contextuales:    FAM_PD, FAM_T, ESC_PD, ESC_T, COM_PD, COM_T
+  Vulnerabilidades:      REG_PD, REG_T, BUS_PD, BUS_T
+  Recursos personales:   AUT_PD, AUT_T, SOC_PD, SOC_T, CNC_PD, CNC_T
+  Items criticos:        Lista de items criticos con categoria y respuesta
+  Etiquetas ML:          Tipo_Caso, Semaforo, Observaciones_Psicologa
+
+
+================================================================================
+SECCION 7 — MODULOS DEL SISTEMA PSICOCAN ML
+================================================================================
+
+  1. Tamizaje Digital   — Cuestionario en linea 188 reactivos         [Disenado]
+  2. Motor ML           — Clasificacion en 5 tipos con semaforo       [En desarrollo]
+  3. Control de Citas   — Agenda por nivel de urgencia (ALTO/MEDIO/BAJO) [Planificado]
+  4. Expediente Clinico — Historial con seguimiento longitudinal      [Planificado]
+  5. Dashboard          — Graficas de salud mental del plantel        [Planificado]
+  6. Gestion Usuarios   — Roles: estudiante, psicologo, orientador,
+                          director, admin                             [Planificado]
+  7. Alertas            — Notificaciones automaticas alto riesgo      [Planificado]
+
+
+================================================================================
+SECCION 8 — ARQUITECTURA DE PROGRAMACION (CHAT 2)
+================================================================================
+
+STACK: Next.js + TypeScript + PostgreSQL (Supabase) + Prisma
+
+ESTRUCTURA DE CARPETAS:
+  psicoScan/
+  ├── app/
+  │   ├── (auth)/login/page.tsx
+  │   ├── (dashboard)/
+  │   │   ├── layout.tsx            <- layout con sidebar por rol
+  │   │   ├── dashboard/page.tsx    <- graficas generales
+  │   │   ├── estudiantes/page.tsx  <- tabla con semaforos
+  │   │   └── cuestionario/page.tsx <- formulario SENA
+  ├── components/
+  │   ├── ui/                       <- botones, cards, badges
+  │   ├── dashboard/                <- graficas con Recharts
+  │   └── semaforo/                 <- badge rojo/amarillo/verde
+  ├── lib/
+  │   ├── db.ts                     <- conexion PostgreSQL
+  │   ├── auth.ts                   <- logica de sesion
+  │   └── types.ts                  <- tipos TypeScript globales
+  └── prisma/
+      └── schema.prisma             <- esquema de base de datos
+
+--------------------------------------------------------------------------------
+PASO 1 — INSTALACION DE PRISMA
+--------------------------------------------------------------------------------
+
+Comandos:
+  npm install prisma @prisma/client
+  npx prisma init
+
+Archivo: prisma/schema.prisma
+
+  generator client {
+    provider = "prisma-client-js"
+  }
+
+  datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+  }
+
+  // USUARIOS Y ROLES
+  model Usuario {
+    id           String     @id @default(cuid())
+    email        String     @unique
+    password     String
+    nombre       String
+    rol          Rol
+    creadoEn     DateTime   @default(now())
+    estudianteId String?    @unique
+    estudiante   Estudiante? @relation(fields: [estudianteId], references: [id])
+  }
+
+  enum Rol {
+    ESTUDIANTE
+    PSICOLOGO
+    ORIENTADOR
+    DIRECTOR
+    ADMIN
+  }
+
+  // ESTUDIANTES
+  model Estudiante {
+    id       String   @id @default(cuid())
+    nombre   String
+    edad     Int
+    sexo     Sexo
+    grado    String
+    grupo    String
+    escuela  String
+    usuario  Usuario?
+    tamizajes Tamizaje[]
+    citas    Cita[]
+  }
+
+  enum Sexo {
+    MASCULINO
+    FEMENINO
+    OTRO
+  }
+
+  // TAMIZAJES
+  model Tamizaje {
+    id           String   @id @default(cuid())
+    fecha        DateTime @default(now())
+    estudianteId String
+
+    // Escalas de control
+    inc Float
+    neg Float
+    pos Float
+
+    // Indices globales (T)
+    glo_t Int
+    emo_t Int
+    con_t Int
+    eje_t Int
+    ctx_t Int
+    rec_t Int
+
+    // Problemas interiorizados (T)
+    dep_t Int
+    ans_t Int
+    asc_t Int
+    som_t Int
+    pst_t Int
+    obs_t Int
+
+    // Problemas exteriorizados (T)
+    ate_t Int
+    hip_t Int
+    ira_t Int
+    agr_t Int
+    des_t Int
+    ant_t Int
+
+    // Otros problemas (T)
+    sus_t Int
+    esq_t Int
+    ali_t Int
+
+    // Contextuales (T)
+    fam_t Int
+    esc_t Int
+    com_t Int
+
+    // Vulnerabilidades (T)
+    reg_t Int
+    bus_t Int
+
+    // Recursos personales (T)
+    aut_t Int
+    soc_t Int
+    cnc_t Int
+
+    // Resultado ML
+    tipoCaso      TipoCaso
+    semaforo      Semaforo
+    observaciones String?
+    itemsCriticos Json
+
+    estudiante Estudiante @relation(fields: [estudianteId], references: [id])
+  }
+
+  enum TipoCaso {
+    INCONSISTENCIA
+    SIN_RIESGO
+    IMPRESION_POSITIVA
+    IMPRESION_NEGATIVA
+    CON_RIESGO
+  }
+
+  enum Semaforo {
+    VERDE
+    AMARILLO
+    ROJO
+    ROJO_URGENTE
+  }
+
+  // CITAS
+  model Cita {
+    id           String     @id @default(cuid())
+    fecha        DateTime
+    estado       EstadoCita @default(PENDIENTE)
+    notas        String?
+    estudianteId String
+    estudiante   Estudiante @relation(fields: [estudianteId], references: [id])
+  }
+
+  enum EstadoCita {
+    PENDIENTE
+    CONFIRMADA
+    COMPLETADA
+    CANCELADA
+  }
+
+--------------------------------------------------------------------------------
+PASO 2 — LOGIN CON NEXTAUTH Y ROLES
+--------------------------------------------------------------------------------
+
+Instalacion:
+  npm install next-auth @auth/prisma-adapter bcryptjs
+  npm install -D @types/bcryptjs
+
+Archivo: lib/auth.ts
+
+  import NextAuth from "next-auth"
+  import CredentialsProvider from "next-auth/providers/credentials"
+  import { PrismaAdapter } from "@auth/prisma-adapter"
+  import { prisma } from "./db"
+  import bcrypt from "bcryptjs"
+  import { Rol } from "@prisma/client"
+
+  export const { handlers, signIn, signOut, auth } = NextAuth({
+    adapter: PrismaAdapter(prisma),
+    providers: [
+      CredentialsProvider({
+        name: "credentials",
+        credentials: {
+          email: { label: "Email", type: "email" },
+          password: { label: "Contrasena", type: "password" },
+        },
+        async authorize(credentials) {
+          const user = await prisma.usuario.findUnique({
+            where: { email: credentials.email as string },
+          })
+          if (!user) return null
+
+          const passwordOk = await bcrypt.compare(
+            credentials.password as string,
+            user.password
+          )
+          if (!passwordOk) return null
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.nombre,
+            rol: user.rol
+          }
+        },
+      }),
+    ],
+    callbacks: {
+      jwt({ token, user }) {
+        if (user) token.rol = (user as any).rol
+        return token
+      },
+      session({ session, token }) {
+        session.user.rol = token.rol as Rol
+        return session
+      },
+    },
+  })
+
+Archivo: app/(dashboard)/layout.tsx
+
+  import { auth } from "@/lib/auth"
+  import { redirect } from "next/navigation"
+  import Sidebar from "@/components/ui/Sidebar"
+
+  export default async function DashboardLayout({
+    children,
+  }: {
+    children: React.ReactNode
+  }) {
+    const session = await auth()
+    if (!session) redirect("/login")
+
+    return (
+      <div className="flex h-screen">
+        <Sidebar rol={session.user.rol} />
+        <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
+          {children}
+        </main>
+      </div>
+    )
+  }
+
+--------------------------------------------------------------------------------
+PASO 3 — DASHBOARD CON GRAFICAS (RECHARTS)
+--------------------------------------------------------------------------------
+
+Archivo: app/(dashboard)/dashboard/page.tsx
+
+  import { prisma } from "@/lib/db"
+  import GraficaSemaforos from "@/components/dashboard/GraficaSemaforos"
+  import GraficaTiposCaso from "@/components/dashboard/GraficaTiposCaso"
+
+  export default async function DashboardPage() {
+    const semaforos = await prisma.tamizaje.groupBy({
+      by: ["semaforo"],
+      _count: { semaforo: true },
+    })
+
+    const tiposCaso = await prisma.tamizaje.groupBy({
+      by: ["tipoCaso"],
+      _count: { tipoCaso: true },
+    })
+
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-gray-800">
+          Salud Mental del Plantel
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <GraficaSemaforos data={semaforos} />
+          <GraficaTiposCaso data={tiposCaso} />
+        </div>
+      </div>
+    )
+  }
+
+Archivo: components/dashboard/GraficaSemaforos.tsx
+
+  "use client"
+  import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts"
+
+  const COLORES = {
+    VERDE: "#22c55e",
+    AMARILLO: "#eab308",
+    ROJO: "#ef4444",
+    ROJO_URGENTE: "#7f1d1d",
+  }
+
+  export default function GraficaSemaforos({ data }: { data: any[] }) {
+    const formatted = data.map((d) => ({
+      name: d.semaforo,
+      value: d._count.semaforo,
+      color: COLORES[d.semaforo as keyof typeof COLORES],
+    }))
+
+    return (
+      <div className="bg-white rounded-xl shadow p-4">
+        <h2 className="text-lg font-semibold mb-4">
+          Distribucion por Semaforo
+        </h2>
+        <PieChart width={350} height={250}>
+          <Pie
+            data={formatted}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            outerRadius={90}
+          >
+            {formatted.map((entry, i) => (
+              <Cell key={i} fill={entry.color} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </div>
+    )
+  }
+
+--------------------------------------------------------------------------------
+PASO 4 — TABLA DE ESTUDIANTES CON SEMAFOROS
+--------------------------------------------------------------------------------
+
+Archivo: components/semaforo/BadgeSemaforo.tsx
+
+  type Semaforo = "VERDE" | "AMARILLO" | "ROJO" | "ROJO_URGENTE"
+
+  const config = {
+    VERDE:        { label: "Sin riesgo",  clase: "bg-green-100 text-green-800" },
+    AMARILLO:     { label: "Revision",    clase: "bg-yellow-100 text-yellow-800" },
+    ROJO:         { label: "Prioritario", clase: "bg-red-100 text-red-800" },
+    ROJO_URGENTE: { label: "URGENTE",     clase: "bg-red-900 text-white animate-pulse" },
+  }
+
+  export default function BadgeSemaforo({ semaforo }: { semaforo: Semaforo }) {
+    const { label, clase } = config[semaforo]
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-bold ${clase}`}>
+        {label}
+      </span>
+    )
+  }
+
+
+================================================================================
+SECCION 9 — HOJA DE RUTA DE DESARROLLO
+================================================================================
+
+  Semana 1 — Configurar Prisma + PostgreSQL (Supabase), correr migraciones,
+             seed con los 5 casos tipo.
+
+  Semana 2 — Login con NextAuth, middleware de roles, layout con sidebar
+             diferenciado por rol.
+
+  Semana 3 — Tabla de estudiantes con semaforos y pagina de detalle
+             de cada tamizaje.
+
+  Semana 4 — Dashboard con graficas Recharts alimentadas desde la base
+             de datos real.
+
+  Semana 5 — Integracion con API FastAPI del modelo ML para clasificacion
+             automatica.
+
+
+================================================================================
+SECCION 10 — PENDIENTES GENERALES
+================================================================================
+
+PENDIENTES DEL AREA DE PSICOLOGIA:
+  [x] Caso 5 — Bien contestado con riesgo (RPB1E) — COMPLETADO
+  [ ] Confirmar si los 2,000 tamizajes existentes tienen PDF de software TEA
+  [ ] Aclaracion sobre las escalas R1-R10 mencionadas inicialmente
+  [ ] 5 formularios fisicos escaneados a 300 DPI para prueba de OCR (respaldo)
+  [ ] Hoja de registro de semaforos por ID para casos ya procesados
+
+PENDIENTES TECNICOS:
+  [ ] Script Python para extraccion automatica de PDFs TEA a CSV
+  [ ] Exploracion y limpieza del dataset de 2,000 tamizajes
+  [ ] Primer entrenamiento del modelo ML con datos disponibles
+  [ ] Diseno del esquema de base de datos en Supabase
+  [ ] Configurar Prisma con Supabase (DATABASE_URL en .env)
+  [ ] Correr migraciones: npx prisma migrate dev --name init
+  [ ] Seed de base de datos con los 5 casos tipo
+  [ ] Implementar login con NextAuth y roles
+  [ ] Construir tabla de estudiantes con BadgeSemaforo
+  [ ] Construir dashboard con GraficaSemaforos y GraficaTiposCaso
+
+PENDIENTES DEL CONCURSO:
+  [ ] Nombres reales de los 3 estudiantes del equipo
+  [ ] Registro en plataforma oficial antes del 15 de marzo de 2026
+  [ ] Subir Anexo 2 y Anexo 3 en PDF al formulario de inscripcion
+  [ ] Fotografia 10x15 cm en JPG para Anexo 3
+
+
+================================================================================
+NOTA ETICA IMPORTANTE
+================================================================================
+
+AVISO: Los casos RPA1E (Impresion Negativa) y RPB1E (Bien contestado con
+riesgo) presentan items criticos de alto riesgo activos incluyendo ideacion
+suicida. Si estos estudiantes son casos reales y activos, es prioritario que
+el area de psicologia del plantel tenga conocimiento inmediato de su situacion.
+
+Adicionalmente, el SENA es un instrumento con derechos de autor de TEA
+Ediciones / Hogrefe. Para la reproduccion digital del cuestionario en el
+sistema de produccion real se requerira licencia comercial. Para el prototipo
+del concurso es suficiente trabajar con los datos ya recolectados.
+
+================================================================================
+PsicoScan ML — Tecnologia al servicio del bienestar estudiantil
+CECyTEN Plantel Tepic | Febrero 2026
+================================================================================

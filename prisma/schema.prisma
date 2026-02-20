@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =============================================
+// USUARIOS Y ROLES
+// =============================================
+
+model Usuario {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  password     String
+  nombre       String
+  rol          Rol
+  creadoEn     DateTime    @default(now())
+  estudianteId String?     @unique
+  estudiante   Estudiante? @relation(fields: [estudianteId], references: [id])
+}
+
+enum Rol {
+  ESTUDIANTE
+  PSICOLOGO
+  ORIENTADOR
+  DIRECTOR
+  ADMIN
+}
+
+// =============================================
+// ESTUDIANTES
+// =============================================
+
+model Estudiante {
+  id        String     @id @default(cuid())
+  nombre    String
+  edad      Int
+  sexo      Sexo
+  grado     String
+  grupo     String
+  escuela   String
+  usuario   Usuario?
+  tamizajes Tamizaje[]
+  citas     Cita[]
+}
+
+enum Sexo {
+  MASCULINO
+  FEMENINO
+  OTRO
+}
+
+// =============================================
+// TAMIZAJES (resultado del SENA + clasificacion ML)
+// =============================================
+
+model Tamizaje {
+  id           String   @id @default(cuid())
+  fecha        DateTime @default(now())
+  estudianteId String
+
+  // Escalas de control
+  inc Float
+  neg Float
+  pos Float
+
+  // Indices globales (puntuacion T)
+  glo_t Int
+  emo_t Int
+  con_t Int
+  eje_t Int
+  ctx_t Int
+  rec_t Int
+
+  // Problemas interiorizados (T)
+  dep_t Int
+  ans_t Int
+  asc_t Int
+  som_t Int
+  pst_t Int
+  obs_t Int
+
+  // Problemas exteriorizados (T)
+  ate_t Int
+  hip_t Int
+  ira_t Int
+  agr_t Int
+  des_t Int
+  ant_t Int
+
+  // Otros problemas (T)
+  sus_t Int
+  esq_t Int
+  ali_t Int
+
+  // Problemas contextuales (T)
+  fam_t Int
+  esc_t Int
+  com_t Int
+
+  // Vulnerabilidades (T)
+  reg_t Int
+  bus_t Int
+
+  // Recursos personales (T)
+  aut_t Int
+  soc_t Int
+  cnc_t Int
+
+  // Resultado del modelo ML
+  tipoCaso      TipoCaso
+  semaforo      Semaforo
+  observaciones String?
+  itemsCriticos Json
+
+  estudiante Estudiante @relation(fields: [estudianteId], references: [id])
+}
+
+enum TipoCaso {
+  INCONSISTENCIA
+  SIN_RIESGO
+  IMPRESION_POSITIVA
+  IMPRESION_NEGATIVA
+  CON_RIESGO
+}
+
+enum Semaforo {
+  VERDE
+  AMARILLO
+  ROJO
+  ROJO_URGENTE
+}
+
+// =============================================
+// CITAS
+// =============================================
+
+model Cita {
+  id           String     @id @default(cuid())
+  fecha        DateTime
+  estado       EstadoCita @default(PENDIENTE)
+  notas        String?
+  estudianteId String
+  estudiante   Estudiante @relation(fields: [estudianteId], references: [id])
+}
+
+enum EstadoCita {
+  PENDIENTE
+  CONFIRMADA
+  COMPLETADA
+  CANCELADA
+}
