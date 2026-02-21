@@ -2,8 +2,8 @@ import BadgeSemaforo from "@/components/semaforo/BadgeSemaforo"
 import Link from "next/link"
 import { getEstudiantes } from "@/lib/data/mock"
 
-export default function EstudiantesPage() {
-  const estudiantes = getEstudiantes()
+export default async function EstudiantesPage() {
+  const estudiantes = await getEstudiantes()
 
   return (
     <div className="space-y-4">

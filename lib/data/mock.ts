@@ -1,8 +1,6 @@
 /**
  * Datos mockeados — PsicoScan ML
- * Basados en los 5 casos tipo del documento Aranque.txt
- * Para cambiar a base de datos real: reemplazar las funciones de queries
- * en este archivo por llamadas a prisma.
+ * Basados en los 5 casos tipo del documento Arranque.txt
  */
 
 import { Semaforo, TipoCaso, Sexo, EstadoCita } from "@/lib/enums"
@@ -23,47 +21,38 @@ export type MockTamizaje = {
   id: string
   fecha: Date
   estudianteId: string
-  // Escalas de control
   inc: number
   neg: number
   pos: number
-  // Indices globales
   glo_t: number
   emo_t: number
   con_t: number
   eje_t: number
   ctx_t: number
   rec_t: number
-  // Problemas interiorizados
   dep_t: number
   ans_t: number
   asc_t: number
   som_t: number
   pst_t: number
   obs_t: number
-  // Problemas exteriorizados
   ate_t: number
   hip_t: number
   ira_t: number
   agr_t: number
   des_t: number
   ant_t: number
-  // Otros problemas
   sus_t: number
   esq_t: number
   ali_t: number
-  // Contextuales
   fam_t: number
   esc_t: number
   com_t: number
-  // Vulnerabilidades
   reg_t: number
   bus_t: number
-  // Recursos personales
   aut_t: number
   soc_t: number
   cnc_t: number
-  // Resultado ML
   tipoCaso: TipoCaso
   semaforo: Semaforo
   observaciones: string | null
@@ -95,9 +84,7 @@ export type MockCita = {
 // =============================================
 
 const TAMIZAJES: MockTamizaje[] = [
-  // -------------------------------------------------------
   // CASO 1 — Inconsistencia | GFH1P | Varon, 14 años
-  // -------------------------------------------------------
   {
     id: "tam-1",
     fecha: new Date("2025-10-10"),
@@ -119,9 +106,7 @@ const TAMIZAJES: MockTamizaje[] = [
     ],
   },
 
-  // -------------------------------------------------------
   // CASO 2 — Sin riesgo | GRA1E | Mujer, 15 años
-  // -------------------------------------------------------
   {
     id: "tam-2",
     fecha: new Date("2025-10-12"),
@@ -140,9 +125,7 @@ const TAMIZAJES: MockTamizaje[] = [
     itemsCriticos: [],
   },
 
-  // -------------------------------------------------------
   // CASO 3 — Impresion positiva | MGS1E | Varon, 15 años
-  // -------------------------------------------------------
   {
     id: "tam-3",
     fecha: new Date("2025-10-14"),
@@ -164,9 +147,7 @@ const TAMIZAJES: MockTamizaje[] = [
     ],
   },
 
-  // -------------------------------------------------------
   // CASO 4 — Impresion negativa | RPA1E | Mujer, 15 años
-  // -------------------------------------------------------
   {
     id: "tam-4",
     fecha: new Date("2025-10-15"),
@@ -189,9 +170,7 @@ const TAMIZAJES: MockTamizaje[] = [
     ],
   },
 
-  // -------------------------------------------------------
   // CASO 5 — Con riesgo | RPB1E | Mujer, 15 años
-  // -------------------------------------------------------
   {
     id: "tam-5",
     fecha: new Date("2025-10-16"),
@@ -306,22 +285,22 @@ const ESTUDIANTES: MockEstudiante[] = [
 ]
 
 // =============================================
-// QUERIES — misma interfaz que usaria Prisma
+// QUERIES — async para compatibilidad con páginas
 // =============================================
 
-export function getEstudiantes(): MockEstudiante[] {
+export async function getEstudiantes(): Promise<MockEstudiante[]> {
   return ESTUDIANTES
 }
 
-export function getEstudianteById(id: string): MockEstudiante | undefined {
+export async function getEstudianteById(id: string): Promise<MockEstudiante | undefined> {
   return ESTUDIANTES.find((e) => e.id === id)
 }
 
-export function getTamizajeById(id: string): MockTamizaje | undefined {
+export async function getTamizajeById(id: string): Promise<MockTamizaje | undefined> {
   return TAMIZAJES.find((t) => t.id === id)
 }
 
-export function getResumenSemaforos() {
+export async function getResumenSemaforos(): Promise<{ semaforo: Semaforo; total: number }[]> {
   const conteo: Partial<Record<Semaforo, number>> = {}
   for (const t of TAMIZAJES) {
     conteo[t.semaforo] = (conteo[t.semaforo] ?? 0) + 1
@@ -331,7 +310,7 @@ export function getResumenSemaforos() {
   )
 }
 
-export function getResumenTiposCaso() {
+export async function getResumenTiposCaso(): Promise<{ tipoCaso: TipoCaso; total: number }[]> {
   const conteo: Partial<Record<TipoCaso, number>> = {}
   for (const t of TAMIZAJES) {
     conteo[t.tipoCaso] = (conteo[t.tipoCaso] ?? 0) + 1
@@ -341,10 +320,10 @@ export function getResumenTiposCaso() {
   )
 }
 
-export function getTotalEstudiantes(): number {
+export async function getTotalEstudiantes(): Promise<number> {
   return ESTUDIANTES.length
 }
 
-export function getTotalUrgentes(): number {
+export async function getTotalUrgentes(): Promise<number> {
   return TAMIZAJES.filter((t) => t.semaforo === Semaforo.ROJO_URGENTE).length
 }

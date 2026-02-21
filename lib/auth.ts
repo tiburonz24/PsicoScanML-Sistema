@@ -1,16 +1,14 @@
-import NextAuth from "next-auth"
+import { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { Rol } from "@prisma/client"
+import { Rol } from "@/lib/enums"
 
-// Usuarios mock para la etapa de prototipo
-// Reemplazar por consulta a prisma cuando se conecte Supabase
 const USUARIOS_MOCK = [
   { id: "u-1", email: "psicologo@cecyten.edu.mx", password: "psico123", nombre: "Psicologa Demo", rol: Rol.PSICOLOGO },
-  { id: "u-2", email: "admin@cecyten.edu.mx",    password: "admin123", nombre: "Admin Demo",     rol: Rol.ADMIN },
-  { id: "u-3", email: "director@cecyten.edu.mx", password: "dir123",   nombre: "Director Demo",  rol: Rol.DIRECTOR },
+  { id: "u-2", email: "admin@cecyten.edu.mx",     password: "admin123", nombre: "Admin Demo",     rol: Rol.ADMIN },
+  { id: "u-3", email: "director@cecyten.edu.mx",  password: "dir123",   nombre: "Director Demo",  rol: Rol.DIRECTOR },
 ]
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: AuthOptions = {
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
@@ -19,16 +17,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email:    { label: "Email",     type: "email"    },
+        email:    { label: "Email",      type: "email"    },
         password: { label: "Contrasena", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
         const user = USUARIOS_MOCK.find(
-          (u) =>
-            u.email === credentials.email &&
-            u.password === credentials.password
+          (u) => u.email === credentials.email && u.password === credentials.password
         )
 
         if (!user) return null
@@ -47,4 +43,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session
     },
   },
-})
+}

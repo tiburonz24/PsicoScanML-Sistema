@@ -7,11 +7,13 @@ import {
   getTotalUrgentes,
 } from "@/lib/data/mock"
 
-export default function DashboardPage() {
-  const semaforos = getResumenSemaforos()
-  const tiposCaso = getResumenTiposCaso()
-  const totalEstudiantes = getTotalEstudiantes()
-  const urgentes = getTotalUrgentes()
+export default async function DashboardPage() {
+  const [semaforos, tiposCaso, totalEstudiantes, urgentes] = await Promise.all([
+    getResumenSemaforos(),
+    getResumenTiposCaso(),
+    getTotalEstudiantes(),
+    getTotalUrgentes(),
+  ])
   const totalTamizajes = semaforos.reduce((acc, s) => acc + s.total, 0)
 
   return (

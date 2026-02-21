@@ -11,7 +11,7 @@ type Props = { params: Promise<{ id: string }> }
 
 export default async function ExpedientePage({ params }: Props) {
   const { id } = await params
-  const estudiante = getEstudianteById(id)
+  const estudiante = await getEstudianteById(id)
   if (!estudiante) notFound()
 
   const tamizaje = estudiante.tamizajes[0]
