@@ -1,22 +1,30 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Paleta psicología — indigo profundo */
+  --color-psico-50:  #eef2ff;
+  --color-psico-100: #e0e7ff;
+  --color-psico-200: #c7d2fe;
+  --color-psico-400: #818cf8;
+  --color-psico-500: #6366f1;
+  --color-psico-600: #4f46e5;
+  --color-psico-700: #4338ca;
+  --color-psico-800: #3730a3;
+  --color-psico-900: #312e81;
+  --color-psico-950: #1e1b4b;
+
+  /* Teal — bienestar */
+  --color-bienestar-400: #2dd4bf;
+  --color-bienestar-500: #14b8a6;
+  --color-bienestar-600: #0d9488;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #f5f3ff;
+  --foreground: #1e1b4b;
 }
 
 body {

@@ -10,17 +10,20 @@ declare module "next-auth" {
       email: string
       name: string
       rol: Rol
+      estudianteId?: string | null
     }
   }
 
   interface User {
     rol: Rol
+    estudianteId?: string | null
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
     rol: Rol
+    estudianteId?: string | null
   }
 }
 

@@ -6,8 +6,14 @@ import {
   getTotalEstudiantes,
   getTotalUrgentes,
 } from "@/lib/data/mock"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
+import { Rol } from "@/lib/enums"
 
 export default async function DashboardPage() {
+  const session = await getServerSession(authOptions)
+  if (session?.user?.rol === Rol.ESTUDIANTE) redirect("/cuestionario/mi-sena")
   const [semaforos, tiposCaso, totalEstudiantes, urgentes] = await Promise.all([
     getResumenSemaforos(),
     getResumenTiposCaso(),
