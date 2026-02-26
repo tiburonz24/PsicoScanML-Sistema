@@ -9,9 +9,12 @@ import {
 } from "@/lib/data/reactivos"
 
 type Props = {
-  estudianteId: string
   nombreEstudiante: string
+  // Modo dashboard (psicólogo aplica directamente)
+  estudianteId?: string
   esEstudiante?: boolean
+  // Modo público (alumno con enlace único)
+  onGuardar?: (respuestas: number[]) => Promise<{ error: string } | undefined>
 }
 
 const ESCALA = [
@@ -22,7 +25,12 @@ const ESCALA = [
   { valor: 5, corto: "Siempre",  largo: "Siempre o casi siempre" },
 ]
 
-export default function FormularioCuestionario({ estudianteId, nombreEstudiante, esEstudiante = false }: Props) {
+export default function FormularioCuestionario({
+  estudianteId,
+  nombreEstudiante,
+  esEstudiante = false,
+  onGuardar,
+}: Props) {
   const [respuestas, setRespuestas] = useState<Record<number, number>>({})
   const [pagina, setPagina] = useState(0)
   const [erroresPagina, setErroresPagina] = useState<number[]>([])
@@ -64,7 +72,12 @@ export default function FormularioCuestionario({ estudianteId, nombreEstudiante,
     if (!validarPaginaActual()) return
     const arr = Array.from({ length: TOTAL_REACTIVOS }, (_, i) => respuestas[i + 1] ?? 0)
     startTransition(async () => {
-      const result = await guardarTamizaje(estudianteId, arr, esEstudiante)
+      let result: { error: string } | undefined
+      if (onGuardar) {
+        result = await onGuardar(arr)
+      } else {
+        result = await guardarTamizaje(estudianteId!, arr, esEstudiante)
+      }
       if (result?.error) setErrorGlobal(result.error)
     })
   }

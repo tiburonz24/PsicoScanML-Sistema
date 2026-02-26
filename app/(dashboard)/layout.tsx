@@ -14,13 +14,13 @@ export default async function DashboardLayout({
   if (!session) redirect("/login")
 
   return (
-    <div className="flex h-screen bg-[#f5f3ff]">
+    <div className="min-h-screen bg-[#f1f5f9]">
       <NavShell
         rol={session.user.rol}
         nombre={session.user.name ?? undefined}
       />
-      {/* pt-14 en mobile para compensar la barra superior fija */}
-      <main className="flex-1 overflow-y-auto p-4 pt-18 lg:p-6 lg:pt-6">
+      {/* pt-14 para compensar la barra superior fija */}
+      <main className="pt-14 p-4 lg:p-8 max-w-6xl mx-auto">
         {children}
       </main>
     </div>

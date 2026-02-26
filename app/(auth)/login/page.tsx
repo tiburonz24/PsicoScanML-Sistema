@@ -5,11 +5,12 @@ import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
-  const router   = useRouter()
+  const router = useRouter()
   const [email, setEmail]       = useState("")
   const [password, setPassword] = useState("")
   const [error, setError]       = useState("")
   const [loading, setLoading]   = useState(false)
+  const [showPass, setShowPass] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -17,7 +18,7 @@ export default function LoginPage() {
     setError("")
     const result = await signIn("credentials", { email, password, redirect: false })
     if (result?.error) {
-      setError("Correo o contraseña incorrectos")
+      setError("Correo o contraseña incorrectos.")
       setLoading(false)
     } else {
       router.push("/dashboard")
@@ -25,139 +26,261 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: "#1e1b4b" }}>
+    <div style={{ display: "flex", minHeight: "100vh", fontFamily: "system-ui, sans-serif" }}>
 
-      {/* Panel izquierdo — solo desktop */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center px-12 relative overflow-hidden">
-        {/* Círculos decorativos */}
-        <div className="absolute top-[-80px] left-[-80px] w-96 h-96 rounded-full opacity-30"
-             style={{ backgroundColor: "#4f46e5" }} />
-        <div className="absolute bottom-[-60px] right-[-60px] w-72 h-72 rounded-full opacity-20"
-             style={{ backgroundColor: "#0d9488" }} />
-
-        <div className="relative z-10 text-center space-y-6 w-full max-w-sm">
-          {/* Ícono */}
-          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto shadow-xl"
-               style={{ backgroundColor: "#3730a3" }}>
-            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="#2dd4bf" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      {/* ── Panel izquierdo — Identidad institucional ── */}
+      <div
+        style={{
+          flex: "0 0 42%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "48px 40px",
+          background: "linear-gradient(160deg, #1e1b4b 0%, #312e81 60%, #1e40af 100%)",
+        }}
+        className="hidden md:flex"
+      >
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 10,
+            background: "rgba(255,255,255,0.15)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+                 stroke="#2dd4bf" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
-
           <div>
-            <h1 className="text-4xl font-bold text-white">PsicoScan ML</h1>
-            <p className="mt-2 text-lg" style={{ color: "#a5b4fc" }}>
+            <p style={{ color: "white", fontWeight: 700, fontSize: 15, lineHeight: 1 }}>PsicoScan ML</p>
+            <p style={{ color: "#a5b4fc", fontSize: 11, marginTop: 2 }}>CECyTEN · Plantel Tepic</p>
+          </div>
+        </div>
+
+        {/* Centro — mensaje principal */}
+        <div>
+          <div style={{
+            display: "inline-block",
+            background: "rgba(99,102,241,0.3)",
+            border: "1px solid rgba(165,180,252,0.3)",
+            borderRadius: 6,
+            padding: "4px 10px",
+            marginBottom: 20,
+          }}>
+            <span style={{ color: "#a5b4fc", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
               Sistema de Bienestar Estudiantil
-            </p>
+            </span>
           </div>
 
-          <div className="rounded-2xl p-6 text-left space-y-3"
-               style={{ backgroundColor: "rgba(49,46,129,0.6)" }}>
+          <h1 style={{ color: "white", fontSize: 30, fontWeight: 800, lineHeight: 1.2, margin: "0 0 16px" }}>
+            Acompañando el bienestar emocional del plantel
+          </h1>
+
+          <p style={{ color: "#c7d2fe", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+            Plataforma de tamizaje SENA con clasificación por inteligencia artificial
+            para la detección temprana de riesgos en estudiantes de bachillerato.
+          </p>
+
+          {/* Separador */}
+          <div style={{ height: 1, background: "rgba(255,255,255,0.12)", margin: "32px 0" }} />
+
+          {/* Stats / indicadores */}
+          <div style={{ display: "flex", gap: 32 }}>
             {[
-              "Tamizaje SENA automatizado",
-              "Clasificación con inteligencia artificial",
-              "Seguimiento de casos prioritarios",
-            ].map((item) => (
-              <div key={item} className="flex items-center gap-3">
-                <div className="w-1.5 h-1.5 rounded-full shrink-0"
-                     style={{ backgroundColor: "#2dd4bf" }} />
-                <p className="text-sm" style={{ color: "#c7d2fe" }}>{item}</p>
+              { valor: "188", label: "Reactivos SENA" },
+              { valor: "4",   label: "Niveles de riesgo" },
+              { valor: "ML",  label: "Clasificación IA" },
+            ].map(({ valor, label }) => (
+              <div key={label}>
+                <p style={{ color: "white", fontSize: 22, fontWeight: 800, margin: 0 }}>{valor}</p>
+                <p style={{ color: "#818cf8", fontSize: 11, margin: "2px 0 0" }}>{label}</p>
               </div>
             ))}
           </div>
-
-          <p className="text-sm" style={{ color: "#6366f1" }}>CECyTEN · Plantel Tepic</p>
         </div>
+
+        {/* Pie del panel */}
+        <p style={{ color: "#6366f1", fontSize: 11 }}>
+          © {new Date().getFullYear()} CECyTEN — Uso exclusivo del personal autorizado
+        </p>
       </div>
 
-      {/* Panel derecho — formulario */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12"
-           style={{ backgroundColor: "#f5f3ff" }}>
-        <div className="w-full max-w-sm">
+      {/* ── Panel derecho — Formulario ── */}
+      <div style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#f8fafc",
+        padding: "40px 24px",
+      }}>
 
-          {/* Header mobile */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
-                 style={{ backgroundColor: "#3730a3" }}>
-              <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#2dd4bf" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-bold" style={{ color: "#1e1b4b" }}>PsicoScan ML</h1>
-            <p className="text-sm mt-1" style={{ color: "#4f46e5" }}>CECyTEN Plantel Tepic</p>
+        {/* Logo visible solo en móvil */}
+        <div className="md:hidden" style={{ marginBottom: 32, textAlign: "center" }}>
+          <div style={{
+            width: 48, height: 48, borderRadius: 12, margin: "0 auto 10px",
+            background: "linear-gradient(135deg, #4f46e5, #3730a3)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+                 stroke="#2dd4bf" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <p style={{ fontWeight: 700, color: "#1e1b4b", fontSize: 18 }}>PsicoScan ML</p>
+          <p style={{ color: "#6366f1", fontSize: 12 }}>CECyTEN · Plantel Tepic</p>
+        </div>
+
+        {/* Tarjeta del formulario */}
+        <div style={{
+          width: "100%",
+          maxWidth: 380,
+          background: "white",
+          borderRadius: 16,
+          boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08)",
+          padding: "36px 32px",
+          border: "1px solid #e2e8f0",
+        }}>
+
+          <div style={{ marginBottom: 28 }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: "#0f172a", margin: "0 0 6px" }}>
+              Iniciar sesión
+            </h2>
+            <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+              Ingresa tus credenciales de acceso al sistema
+            </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6">
-            <div className="hidden lg:block">
-              <h2 className="text-xl font-bold" style={{ color: "#1e1b4b" }}>Iniciar sesión</h2>
-              <p className="text-sm text-gray-500 mt-1">Ingresa tus credenciales institucionales</p>
+          <form onSubmit={handleSubmit}>
+
+            {/* Campo correo */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder="usuario@cecyten.edu.mx"
+                style={{
+                  width: "100%", boxSizing: "border-box",
+                  padding: "10px 14px", fontSize: 14,
+                  border: "1.5px solid #e2e8f0", borderRadius: 8,
+                  outline: "none", background: "#f8fafc",
+                  color: "#0f172a", transition: "border-color 0.15s",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
+              />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Correo electrónico
-                </label>
+            {/* Campo contraseña */}
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>
+                Contraseña
+              </label>
+              <div style={{ position: "relative" }}>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  placeholder="usuario@cecyten.edu.mx"
-                  className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm
-                             focus:outline-none transition placeholder:text-gray-300"
-                  style={{ outline: "none" }}
-                  onFocus={(e) => (e.currentTarget.style.boxShadow = "0 0 0 2px #4f46e5")}
-                  onBlur={(e)  => (e.currentTarget.style.boxShadow = "none")}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Contraseña
-                </label>
-                <input
-                  type="password"
+                  type={showPass ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
-                  className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm
-                             focus:outline-none transition"
-                  onFocus={(e) => (e.currentTarget.style.boxShadow = "0 0 0 2px #4f46e5")}
-                  onBlur={(e)  => (e.currentTarget.style.boxShadow = "none")}
+                  style={{
+                    width: "100%", boxSizing: "border-box",
+                    padding: "10px 40px 10px 14px", fontSize: 14,
+                    border: "1.5px solid #e2e8f0", borderRadius: 8,
+                    outline: "none", background: "#f8fafc",
+                    color: "#0f172a", transition: "border-color 0.15s",
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                  onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPass(!showPass)}
+                  tabIndex={-1}
+                  style={{
+                    position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                    background: "none", border: "none", cursor: "pointer", padding: 0,
+                    color: "#94a3b8",
+                  }}
+                >
+                  {showPass ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" />
+                      <line x1="1" y1="1" x2="23" y2="23" />
+                    </svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  )}
+                </button>
               </div>
+            </div>
 
-              {error && (
-                <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-3.5 py-2.5">
-                  <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            {/* Error */}
+            {error && (
+              <div style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "10px 14px", borderRadius: 8, marginBottom: 16,
+                background: "#fef2f2", border: "1px solid #fecaca",
+                fontSize: 13, color: "#dc2626",
+              }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+                {error}
+              </div>
+            )}
+
+            {/* Botón submit */}
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: "100%", padding: "11px 0", borderRadius: 8,
+                border: "none", cursor: loading ? "not-allowed" : "pointer",
+                background: loading ? "#a5b4fc" : "linear-gradient(90deg, #4f46e5, #4338ca)",
+                color: "white", fontSize: 14, fontWeight: 600,
+                transition: "opacity 0.15s, transform 0.1s",
+                opacity: loading ? 0.7 : 1,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              }}
+            >
+              {loading ? (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"
+                       style={{ animation: "spin 1s linear infinite" }}>
+                    <path d="M21 12a9 9 0 11-6.219-8.56" />
                   </svg>
-                  <p className="text-sm text-red-600">{error}</p>
-                </div>
-              )}
+                  Verificando…
+                </>
+              ) : "Entrar al sistema"}
+            </button>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full text-white rounded-xl py-2.5 text-sm font-semibold
-                           disabled:opacity-50 transition"
-                style={{ backgroundColor: "#4f46e5" }}
-                onMouseEnter={(e) => !loading && (e.currentTarget.style.backgroundColor = "#4338ca")}
-                onMouseLeave={(e) => !loading && (e.currentTarget.style.backgroundColor = "#4f46e5")}
-              >
-                {loading ? "Verificando…" : "Entrar al sistema"}
-              </button>
-            </form>
-
-            <p className="text-center text-xs text-gray-400">
-              Sistema exclusivo para personal autorizado de CECyTEN
-            </p>
-          </div>
+          </form>
         </div>
+
+        <p style={{ marginTop: 20, fontSize: 11, color: "#94a3b8", textAlign: "center" }}>
+          Acceso exclusivo para personal autorizado · CECyTEN
+        </p>
       </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 767px) { .hidden { display: none !important; } }
+      `}</style>
     </div>
   )
 }

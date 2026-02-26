@@ -1,0 +1,14 @@
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
+import HistoricoContent from "./HistoricoContent"
+
+export default async function HistoricoPage() {
+  const session = await getServerSession(authOptions)
+
+  if (!session || session.user.rol !== "ADMIN") {
+    redirect("/dashboard")
+  }
+
+  return <HistoricoContent />
+}

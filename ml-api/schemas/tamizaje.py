@@ -59,6 +59,9 @@ class TamizajeInput(BaseModel):
     # Items criticos (numero de items activos)
     items_criticos_count: int = 0
 
+    # Cadena de 188 respuestas brutas (requerida cuando el modelo ML esta activo)
+    respuestas: Optional[str] = Field(None, description="Cadena de 188 digitos (1-5)")
+
 
 class TamizajeOutput(BaseModel):
     """Resultado de la clasificacion ML."""

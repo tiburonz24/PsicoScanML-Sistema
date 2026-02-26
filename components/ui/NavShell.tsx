@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Rol } from "@/lib/enums"
 import Sidebar from "./Sidebar"
 
@@ -12,47 +12,91 @@ type Props = {
 export default function NavShell({ rol, nombre }: Props) {
   const [open, setOpen] = useState(false)
 
+  // Cerrar con Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [])
+
+  // Bloquear scroll del body cuando el drawer está abierto
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : ""
+    return () => { document.body.style.overflow = "" }
+  }, [open])
+
   return (
     <>
-      {/* Barra superior — solo en mobile */}
-      <div
-        className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 flex items-center px-4 gap-3 shadow-md"
-        style={{ backgroundColor: "#1e1b4b" }}
+      {/* Barra superior fija — todas las pantallas */}
+      <header
+        className="fixed top-0 left-0 right-0 z-30 h-12 flex items-center px-4 gap-3 shadow-lg"
+        style={{ backgroundColor: "#0f172a", borderBottom: "1px solid #1e293b" }}
       >
+        {/* Botón hamburguesa */}
         <button
-          onClick={() => setOpen(true)}
-          className="text-white p-1.5 rounded-lg transition"
-          style={{ backgroundColor: "transparent" }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#312e81")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-          aria-label="Abrir menú"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? "Cerrar menú" : "Abrir menú"}
+          style={{
+            background: "rgba(255,255,255,0.06)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "6px",
+            padding: "4px 6px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+          }}
         >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          {open ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="#e2e8f0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          )}
         </button>
+
+        {/* Logo + nombre del sistema */}
         <div className="flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#2dd4bf" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
-          <span className="text-white font-semibold text-sm">PsicoScan ML</span>
+          <span className="font-bold text-xs tracking-tight" style={{ color: "#f8fafc" }}>PsicoScan ML</span>
+          <span className="hidden sm:inline text-xs" style={{ color: "#475569" }}>· CECyTEN Tepic</span>
         </div>
-      </div>
 
-      {/* Sidebar en desktop */}
-      <div className="hidden lg:flex h-full">
-        <Sidebar rol={rol} nombre={nombre} />
-      </div>
+        {/* Usuario en la derecha */}
+        {nombre && (
+          <div className="ml-auto flex items-center gap-2">
+            <div
+              className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+              style={{ backgroundColor: "#0ea5e9", color: "#fff" }}
+            >
+              {nombre.charAt(0).toUpperCase()}
+            </div>
+            <span className="hidden sm:inline text-xs max-w-[140px] truncate" style={{ color: "#94a3b8" }}>
+              {nombre}
+            </span>
+          </div>
+        )}
+      </header>
 
-      {/* Drawer en mobile */}
+      {/* Overlay + Drawer */}
       {open && (
-        <div className="lg:hidden fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-50 flex">
+          {/* Fondo oscuro */}
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 transition-opacity"
             style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
             onClick={() => setOpen(false)}
           />
-          <div className="relative h-full">
+          {/* Drawer lateral */}
+          <div className="relative h-full shadow-2xl">
             <Sidebar rol={rol} nombre={nombre} onClose={() => setOpen(false)} />
           </div>
         </div>

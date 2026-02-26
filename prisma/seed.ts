@@ -5,14 +5,20 @@
  */
 
 import { PrismaClient } from "@prisma/client"
+import { PrismaPg } from "@prisma/adapter-pg"
 import bcrypt from "bcryptjs"
+import "dotenv/config"
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({
+  connectionString: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
+})
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log("Limpiando datos existentes...")
   await prisma.cita.deleteMany()
   await prisma.tamizaje.deleteMany()
+  await prisma.respuestasCuestionario.deleteMany()
   await prisma.usuario.deleteMany()
   await prisma.estudiante.deleteMany()
 
@@ -57,6 +63,7 @@ async function main() {
   await prisma.estudiante.create({
     data: {
       id: "est-1",
+      curp: "GOFH110313HNTRRM01",
       nombre: "G. F. H.",
       edad: 14,
       sexo: "MASCULINO",
@@ -93,6 +100,7 @@ async function main() {
   await prisma.estudiante.create({
     data: {
       id: "est-2",
+      curp: "GOAA100925MNTRRM02",
       nombre: "G. R. A.",
       edad: 15,
       sexo: "FEMENINO",
@@ -126,6 +134,7 @@ async function main() {
   await prisma.estudiante.create({
     data: {
       id: "est-3",
+      curp: "MOGS100206HNTRNS03",
       nombre: "M. G. S.",
       edad: 15,
       sexo: "MASCULINO",
@@ -162,6 +171,7 @@ async function main() {
   await prisma.estudiante.create({
     data: {
       id: "est-4",
+      curp: "ROAA100614MNTRRR04",
       nombre: "R. P. A.",
       edad: 15,
       sexo: "FEMENINO",
@@ -207,6 +217,7 @@ async function main() {
   await prisma.estudiante.create({
     data: {
       id: "est-5",
+      curp: "ROBB100831MNTRRR05",
       nombre: "R. P. B.",
       edad: 15,
       sexo: "FEMENINO",

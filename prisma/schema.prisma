@@ -34,16 +34,32 @@ enum Rol {
 // =============================================
 
 model Estudiante {
-  id        String     @id @default(cuid())
-  nombre    String
-  edad      Int
-  sexo      Sexo
-  grado     String
-  grupo     String
-  escuela   String
-  usuario   Usuario?
-  tamizajes Tamizaje[]
-  citas     Cita[]
+  id            String     @id @default(cuid())
+  curp          String     @unique
+  nombre        String
+  edad          Int
+  sexo          Sexo
+  grado         String
+  grupo         String
+  escuela       String
+  tokenEncuesta String     @unique @default(cuid())
+  usuario       Usuario?
+  tamizajes     Tamizaje[]
+  citas         Cita[]
+  respuestasRaw RespuestasCuestionario[]
+}
+
+// =============================================
+// RESPUESTAS CRUDAS DEL CUESTIONARIO
+// =============================================
+
+model RespuestasCuestionario {
+  id           String     @id @default(cuid())
+  fecha        DateTime   @default(now())
+  estudianteId String
+  respuestas   Json
+  procesado    Boolean    @default(false)
+  estudiante   Estudiante @relation(fields: [estudianteId], references: [id])
 }
 
 enum Sexo {
@@ -151,4 +167,89 @@ enum EstadoCita {
   CONFIRMADA
   COMPLETADA
   CANCELADA
+}
+
+// =============================================
+// HISTÓRICO SENA — corpus de entrenamiento ML
+// =============================================
+
+model HistoricoSENA {
+  id         String   @id @default(cuid())
+  origen     String   @default("importacion")
+  fecha      DateTime
+  edad       Int
+  sexo       String
+  baremo     String?
+  respuestas String?  // cadena de 188 dígitos
+  semaforo   Semaforo // derivado con calcularResultado()
+
+  // Escalas de control (puntuación directa + T)
+  pdInc Float @default(0)
+  ptInc Int   @default(50)
+  pdNeg Float @default(0)
+  ptNeg Int   @default(50)
+  pdPos Float @default(0)
+  ptPos Int   @default(50)
+
+  // Índices globales (puntuación T)
+  gloT Int @default(50)
+  emoT Int @default(50)
+  conT Int @default(50)
+  ejeT Int @default(50)
+  ctxT Int @default(50)
+  recT Int @default(50)
+
+  // Problemas interiorizados (T)
+  depT Int @default(50)
+  ansT Int @default(50)
+  ascT Int @default(50)
+  somT Int @default(50)
+  pstT Int @default(50)
+  obsT Int @default(50)
+
+  // Problemas exteriorizados (T)
+  ateT Int @default(50)
+  hipT Int @default(50)
+  iraT Int @default(50)
+  agrT Int @default(50)
+  desT Int @default(50)
+  antT Int @default(50)
+
+  // Otros problemas (T)
+  susT Int @default(50)
+  esqT Int @default(50)
+  aliT Int @default(50)
+
+  // Problemas contextuales (T)
+  famT Int @default(50)
+  escT Int @default(50)
+  comT Int @default(50)
+
+  // Vulnerabilidades (T)
+  regT Int @default(50)
+  busT Int @default(50)
+
+  // Recursos personales (T)
+  autT Int @default(50)
+  socT Int @default(50)
+  cncT Int @default(50)
+
+  creadoEn DateTime @default(now())
+}
+
+// =============================================
+// HISTÓRICO DE ENTRENAMIENTOS ML
+// =============================================
+
+model EntrenamientoML {
+  id          String   @id @default(cuid())
+  fecha       DateTime @default(now())
+  nRegistros  Int
+  trainSize   Float
+  accuracy    Float
+  cvMean      Float
+  cvStd       Float
+  nEstimators Int
+  report      Json     // classification_report por clase
+  importance  Json     // [{ feature, importance }, ...]
 }

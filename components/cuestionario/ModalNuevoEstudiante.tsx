@@ -26,7 +26,7 @@ export default function ModalNuevoEstudiante() {
           />
 
           {/* Modal */}
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 space-y-5">
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 space-y-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-900">Registrar estudiante</h2>
               <button
@@ -38,19 +38,37 @@ export default function ModalNuevoEstudiante() {
             </div>
 
             <form action={action} className="space-y-4">
-              {/* Nombre */}
+              {/* Nombre / ID */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nombre (iniciales)
+                  Nombre / ID del estudiante
                 </label>
                 <input
                   name="nombre"
                   type="text"
-                  placeholder="Ej. A. B. C."
+                  placeholder="Ej. A. B. C. o nombre completo"
                   required
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
                              focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+              </div>
+
+              {/* CURP */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  CURP
+                </label>
+                <input
+                  name="curp"
+                  type="text"
+                  maxLength={18}
+                  placeholder="BADD110313HCMLNS09"
+                  required
+                  style={{ textTransform: "uppercase" }}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
+                             font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-400 mt-1">18 caracteres, se convierte a mayúsculas automáticamente.</p>
               </div>
 
               {/* Edad y Sexo */}

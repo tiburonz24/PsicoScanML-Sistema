@@ -1,63 +1,351 @@
-import BadgeSemaforo from "@/components/semaforo/BadgeSemaforo"
 import Link from "next/link"
 import { getEstudiantes } from "@/lib/data/mock"
+import { Semaforo } from "@/lib/enums"
+import FiltrosEstudiantes from "@/components/estudiantes/FiltrosEstudiantes"
+import ImportarEstudiantes from "@/components/estudiantes/ImportarEstudiantes"
+import ImportarRespuestas from "@/components/estudiantes/ImportarRespuestas"
 
-export default async function EstudiantesPage() {
-  const estudiantes = await getEstudiantes()
+type SearchParams = Promise<{
+  semaforo?: string
+  grupo?: string
+  grado?: string
+  q?: string
+  desde?: string
+  hasta?: string
+}>
+
+type Props = { searchParams: SearchParams }
+
+const SEMAFORO_STYLE: Record<Semaforo, { label: string; color: string; bg: string; dot: string; borde: string }> = {
+  VERDE:        { label: "Sin riesgo",  color: "#15803d", bg: "#f0fdf4", dot: "#22c55e", borde: "#86efac" },
+  AMARILLO:     { label: "Revisión",    color: "#92400e", bg: "#fffbeb", dot: "#f59e0b", borde: "#fde68a" },
+  ROJO:         { label: "Prioritario", color: "#991b1b", bg: "#fef2f2", dot: "#ef4444", borde: "#fca5a5" },
+  ROJO_URGENTE: { label: "URGENTE",     color: "#7f1d1d", bg: "#fee2e2", dot: "#dc2626", borde: "#f87171" },
+}
+
+const SEXO_LABEL: Record<string, string> = {
+  MASCULINO: "M", FEMENINO: "F", OTRO: "Otro",
+}
+
+const AVATAR_COLORS = ["#4f46e5", "#0891b2", "#7c3aed", "#0f766e", "#b45309"]
+
+function iniciales(nombre: string) {
+  return nombre.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase()
+}
+
+export default async function EstudiantesPage({ searchParams }: Props) {
+  const params      = await searchParams
+  const todos       = await getEstudiantes()
+
+  // ── Derivar opciones únicas de grupo y grado ─────────────────────────────
+  const grupos = [...new Set(todos.map(e => e.grupo))].sort()
+  const grados = [...new Set(todos.map(e => e.grado))].sort()
+
+  // ── Conteos globales (siempre sobre el total, no el filtro) ───────────────
+  const sinRiesgo   = todos.filter(e => e.tamizajes[0]?.semaforo === "VERDE").length
+  const revision    = todos.filter(e => e.tamizajes[0]?.semaforo === "AMARILLO").length
+  const prioritario = todos.filter(e => e.tamizajes[0]?.semaforo === "ROJO").length
+  const urgente     = todos.filter(e => e.tamizajes[0]?.semaforo === "ROJO_URGENTE").length
+
+  // ── Aplicar filtros ───────────────────────────────────────────────────────
+  let filtrados = todos
+
+  if (params.semaforo) {
+    filtrados = filtrados.filter(e => e.tamizajes[0]?.semaforo === params.semaforo)
+  }
+  if (params.grupo) {
+    filtrados = filtrados.filter(e => e.grupo === params.grupo)
+  }
+  if (params.grado) {
+    filtrados = filtrados.filter(e => e.grado === params.grado)
+  }
+  if (params.q) {
+    const q = params.q.toLowerCase()
+    filtrados = filtrados.filter(e => e.nombre.toLowerCase().includes(q))
+  }
+  if (params.desde) {
+    const desde = new Date(params.desde)
+    filtrados = filtrados.filter(e => {
+      const f = e.tamizajes[0]?.fecha
+      return f ? new Date(f) >= desde : false
+    })
+  }
+  if (params.hasta) {
+    const hasta = new Date(params.hasta)
+    hasta.setHours(23, 59, 59)
+    filtrados = filtrados.filter(e => {
+      const f = e.tamizajes[0]?.fecha
+      return f ? new Date(f) <= hasta : false
+    })
+  }
+
+  const hayFiltros = !!(params.semaforo || params.grupo || params.grado || params.q || params.desde || params.hasta)
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">Estudiantes</h1>
-        <span className="text-sm text-gray-500">{estudiantes.length} registrados</span>
+    <div style={{ paddingTop: 8 }}>
+
+      {/* ── Cabecera ── */}
+      <div style={{
+        display: "flex", alignItems: "flex-start",
+        justifyContent: "space-between", flexWrap: "wrap",
+        gap: 16, marginBottom: 24,
+      }}>
+        <div>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", margin: "0 0 4px" }}>
+            Estudiantes
+          </h1>
+          <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+            {todos.length} estudiantes registrados · CECyTEN Plantel Tepic
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <a href="/api/export/excel" style={{
+            background: "white", color: "#15803d",
+            border: "1.5px solid #86efac",
+            borderRadius: 8, padding: "9px 18px",
+            fontSize: 13, fontWeight: 600, textDecoration: "none",
+            display: "flex", alignItems: "center", gap: 6,
+          }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+            </svg>
+            Exportar Excel
+          </a>
+          <Link href="/cuestionario" style={{
+            background: "linear-gradient(90deg, #4f46e5, #4338ca)",
+            color: "white", borderRadius: 8, padding: "9px 18px",
+            fontSize: 13, fontWeight: 600, textDecoration: "none",
+            display: "flex", alignItems: "center", gap: 6,
+            boxShadow: "0 2px 8px rgba(79,70,229,0.35)",
+          }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                 stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Nuevo estudiante
+          </Link>
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Nombre</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Grado / Grupo</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Ultimo tamizaje</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Semaforo</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Detalle</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {estudiantes.map((est) => {
-              const ultimo = est.tamizajes[0]
-              return (
-                <tr key={est.id} className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 font-medium text-gray-900">{est.nombre}</td>
-                  <td className="px-4 py-3 text-gray-600">
-                    {est.grado} &quot;{est.grupo}&quot;
-                  </td>
-                  <td className="px-4 py-3 text-gray-500">
-                    {ultimo
-                      ? new Date(ultimo.fecha).toLocaleDateString("es-MX")
-                      : "Sin tamizaje"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {ultimo ? (
-                      <BadgeSemaforo semaforo={ultimo.semaforo} />
-                    ) : (
-                      <span className="text-gray-400 text-xs">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/estudiantes/${est.id}`}
-                      className="text-blue-600 hover:underline text-xs"
-                    >
-                      Ver expediente
-                    </Link>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+      {/* ── Importación masiva ── */}
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+        <ImportarEstudiantes />
+        <ImportarRespuestas />
       </div>
+
+      {/* ── Cards de resumen (clickeables como filtro rápido) ── */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+        gap: 12, marginBottom: 20,
+      }}>
+        {([
+          { sem: "VERDE",        label: "Sin riesgo",  valor: sinRiesgo,   color: "#15803d", bg: "#f0fdf4", borde: "#bbf7d0" },
+          { sem: "AMARILLO",     label: "Revisión",    valor: revision,    color: "#92400e", bg: "#fffbeb", borde: "#fde68a" },
+          { sem: "ROJO",         label: "Prioritario", valor: prioritario, color: "#991b1b", bg: "#fef2f2", borde: "#fecaca" },
+          { sem: "ROJO_URGENTE", label: "Urgente",     valor: urgente,     color: "#7f1d1d", bg: "#fee2e2", borde: "#fca5a5" },
+        ] as const).map(({ sem, label, valor, color, bg, borde }) => {
+          const activo = params.semaforo === sem
+          return (
+            <Link
+              key={sem}
+              href={activo ? "/estudiantes" : `/estudiantes?semaforo=${sem}`}
+              style={{
+                background: bg,
+                border: `${activo ? 2 : 1}px solid ${activo ? color : borde}`,
+                borderRadius: 10, padding: "12px 16px",
+                textAlign: "center", textDecoration: "none",
+                display: "block",
+                boxShadow: activo ? `0 0 0 3px ${borde}` : "none",
+                transition: "box-shadow 0.15s",
+              }}
+            >
+              <p style={{ fontSize: 26, fontWeight: 800, color, margin: 0 }}>{valor}</p>
+              <p style={{ fontSize: 11, color, margin: "2px 0 0", fontWeight: activo ? 700 : 500 }}>
+                {activo ? `▸ ${label}` : label}
+              </p>
+            </Link>
+          )
+        })}
+      </div>
+
+      {/* ── Barra de filtros (cliente) ── */}
+      <FiltrosEstudiantes
+        grupos={grupos}
+        grados={grados}
+        activos={filtrados.length}
+        total={todos.length}
+      />
+
+      {/* ── Tabla de estudiantes ── */}
+      <div style={{
+        background: "white",
+        borderRadius: 14,
+        boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06)",
+        border: "1px solid #f1f5f9",
+        overflow: "hidden",
+      }}>
+        {/* Encabezado tabla */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1fr 1fr 1fr 80px",
+          padding: "10px 20px",
+          background: "#f8fafc",
+          borderBottom: "1px solid #e2e8f0",
+        }}>
+          {["Estudiante", "Grado / Grupo", "Último tamizaje", "Estado", ""].map(h => (
+            <span key={h} style={{
+              fontSize: 11, fontWeight: 700, color: "#94a3b8",
+              textTransform: "uppercase", letterSpacing: "0.06em",
+            }}>
+              {h}
+            </span>
+          ))}
+        </div>
+
+        {/* Estado vacío */}
+        {filtrados.length === 0 && (
+          <div style={{
+            padding: "48px 24px", textAlign: "center",
+          }}>
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none"
+                 stroke="#cbd5e1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+                 style={{ margin: "0 auto 12px", display: "block" }}>
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <p style={{ fontWeight: 700, color: "#0f172a", fontSize: 14, margin: "0 0 4px" }}>
+              Sin resultados
+            </p>
+            <p style={{ fontSize: 13, color: "#94a3b8", margin: "0 0 16px" }}>
+              Ningún estudiante coincide con los filtros seleccionados.
+            </p>
+            <Link href="/estudiantes" style={{
+              fontSize: 13, fontWeight: 600, color: "#6366f1", textDecoration: "none",
+            }}>
+              Limpiar filtros →
+            </Link>
+          </div>
+        )}
+
+        {/* Filas */}
+        {filtrados.map((est, i) => {
+          const ultimo      = est.tamizajes[0]
+          const sem         = ultimo ? SEMAFORO_STYLE[ultimo.semaforo] : null
+          const avatarColor = AVATAR_COLORS[i % AVATAR_COLORS.length]
+          const esUrgente   = ultimo?.semaforo === "ROJO_URGENTE"
+
+          return (
+            <div
+              key={est.id}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "2fr 1fr 1fr 1fr 80px",
+                padding: "14px 20px",
+                borderBottom: i < filtrados.length - 1 ? "1px solid #f1f5f9" : "none",
+                alignItems: "center",
+                background: esUrgente ? "#fff5f5" : "white",
+                borderLeft: esUrgente ? "3px solid #dc2626" : "3px solid transparent",
+              }}
+            >
+              {/* Nombre + avatar */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: avatarColor,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 13, fontWeight: 700, color: "white", flexShrink: 0,
+                }}>
+                  {iniciales(est.nombre)}
+                </div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", margin: 0 }}>
+                    {est.nombre}
+                  </p>
+                  <p style={{ fontSize: 12, color: "#94a3b8", margin: "1px 0 0" }}>
+                    {est.edad} años · {SEXO_LABEL[est.sexo]}
+                  </p>
+                </div>
+              </div>
+
+              {/* Grado / Grupo */}
+              <span style={{ fontSize: 13, color: "#475569" }}>
+                {est.grado} &quot;{est.grupo}&quot;
+              </span>
+
+              {/* Fecha */}
+              <span style={{ fontSize: 13, color: "#94a3b8" }}>
+                {ultimo
+                  ? new Date(ultimo.fecha).toLocaleDateString("es-MX", {
+                      day: "numeric", month: "short", year: "numeric",
+                    })
+                  : <em style={{ color: "#cbd5e1" }}>Sin tamizaje</em>
+                }
+              </span>
+
+              {/* Semáforo */}
+              <div>
+                {sem ? (
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    background: sem.bg, color: sem.color,
+                    border: `1px solid ${sem.borde}`,
+                    borderRadius: 20, padding: "3px 10px",
+                    fontSize: 11, fontWeight: 700,
+                  }}>
+                    <span style={{
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: sem.dot, flexShrink: 0,
+                    }} />
+                    {sem.label}
+                  </span>
+                ) : (
+                  <span style={{ color: "#cbd5e1", fontSize: 12 }}>—</span>
+                )}
+              </div>
+
+              {/* Acción */}
+              <Link href={`/estudiantes/${est.id}`} style={{
+                fontSize: 12, fontWeight: 600, color: "#4f46e5",
+                textDecoration: "none", display: "flex", alignItems: "center", gap: 4,
+              }}>
+                Expediente
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </Link>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* ── Footer de tabla ── */}
+      {filtrados.length > 0 && (
+        <div style={{
+          marginTop: 12, padding: "0 4px",
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+        }}>
+          <span style={{ fontSize: 12, color: "#94a3b8" }}>
+            {hayFiltros
+              ? `${filtrados.length} de ${todos.length} estudiantes`
+              : `${todos.length} estudiantes en total`
+            }
+          </span>
+          {hayFiltros && (
+            <Link href="/estudiantes" style={{
+              fontSize: 12, color: "#6366f1", textDecoration: "none", fontWeight: 500,
+            }}>
+              Ver todos →
+            </Link>
+          )}
+        </div>
+      )}
+
     </div>
   )
 }

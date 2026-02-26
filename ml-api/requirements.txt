@@ -7,3 +7,5 @@ pandas==2.2.3
 numpy==2.2.0
 pdfplumber==0.11.4
 python-dotenv==1.0.1
+psycopg2-binary==2.9.10
+joblib==1.4.2

@@ -12,24 +12,40 @@ type NavItem = {
   icon: React.ReactNode
 }
 
+const SVG_PROPS = { width: 16, height: 16, fill: "none", viewBox: "0 0 24 24", stroke: "currentColor", strokeWidth: 1.8, style: { flexShrink: 0 } } as const
+
 function IconDashboard() {
   return (
-    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <svg {...SVG_PROPS}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
     </svg>
   )
 }
 function IconEstudiantes() {
   return (
-    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <svg {...SVG_PROPS}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
     </svg>
   )
 }
 function IconCuestionario() {
   return (
-    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <svg {...SVG_PROPS}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    </svg>
+  )
+}
+function IconRespuestas() {
+  return (
+    <svg {...SVG_PROPS}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+    </svg>
+  )
+}
+function IconHistorico() {
+  return (
+    <svg {...SVG_PROPS}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7c0-2 1-3 3-3h10c2 0 3 1 3 3M4 7h16M10 12h4M10 16h4" />
     </svg>
   )
 }
@@ -38,6 +54,8 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard",       href: "/dashboard",            roles: [Rol.ADMIN, Rol.DIRECTOR, Rol.PSICOLOGO, Rol.ORIENTADOR], icon: <IconDashboard /> },
   { label: "Estudiantes",     href: "/estudiantes",          roles: [Rol.ADMIN, Rol.DIRECTOR, Rol.PSICOLOGO, Rol.ORIENTADOR], icon: <IconEstudiantes /> },
   { label: "Cuestionario",    href: "/cuestionario",         roles: [Rol.PSICOLOGO, Rol.ADMIN],                                icon: <IconCuestionario /> },
+  { label: "Respuestas",      href: "/respuestas",           roles: [Rol.PSICOLOGO, Rol.ADMIN, Rol.ORIENTADOR],               icon: <IconRespuestas /> },
+  { label: "Histórico ML",   href: "/historico",            roles: [Rol.ADMIN],                                              icon: <IconHistorico /> },
   { label: "Mi Cuestionario", href: "/cuestionario/mi-sena", roles: [Rol.ESTUDIANTE],                                         icon: <IconCuestionario /> },
 ]
 
@@ -57,41 +75,35 @@ type Props = {
 
 export default function Sidebar({ rol, nombre, onClose }: Props) {
   const pathname = usePathname()
-  const itemsVisibles = NAV_ITEMS.filter((item) => item.roles.includes(rol))
+  const itemsVisibles = NAV_ITEMS.filter((item) => item.roles.includes(rol as Rol))
 
   return (
-    <aside className="w-64 flex flex-col h-full" style={{ backgroundColor: "#1e1b4b" }}>
+    <aside style={{ width: 224, display: "flex", flexDirection: "column", height: "100%", backgroundColor: "#0f172a" }}>
 
       {/* Logo */}
-      <div className="px-5 py-5 flex items-center justify-between"
-           style={{ borderBottom: "1px solid #312e81" }}>
-        <div>
-          <div className="flex items-center gap-2">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#2dd4bf" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-            <h2 className="font-bold text-white text-sm">PsicoScan ML</h2>
-          </div>
-          <p className="text-xs mt-0.5 pl-8" style={{ color: "#818cf8" }}>CECyTEN Tepic</p>
+      <div style={{ padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #1e293b" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: "#94a3b8" }}>PsicoScan</span>
+          <span style={{ fontSize: 12, color: "#334155" }}>· CECyTEN</span>
         </div>
         {onClose && (
-          <button onClick={onClose} className="text-white opacity-60 hover:opacity-100 transition p-1">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, borderRadius: 4, color: "#475569", display: "flex" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#f8fafc")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#475569")}>
+            <svg width={12} height={12} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         )}
       </div>
 
-      {/* Etiqueta de sección */}
-      <div className="px-4 pt-5 pb-2">
-        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#6366f1" }}>
-          Menú
-        </p>
-      </div>
-
       {/* Navegación */}
-      <nav className="flex-1 px-3 space-y-1">
+      <nav style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "4px 8px", display: "flex", flexDirection: "column", gap: 2 }}>
+        {itemsVisibles.length === 0 && (
+          <p style={{ padding: "4px 8px", fontSize: 12, color: "#64748b" }}>
+            Sin ítems (rol: {rol})
+          </p>
+        )}
         {itemsVisibles.map((item) => {
           const activo = pathname === item.href || pathname.startsWith(item.href + "/")
           return (
@@ -99,22 +111,24 @@ export default function Sidebar({ rol, nombre, onClose }: Props) {
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all"
-              style={
-                activo
-                  ? { backgroundColor: "#4f46e5", color: "#ffffff", fontWeight: 600 }
-                  : { color: "#c7d2fe" }
-              }
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "6px 10px", borderRadius: 6,
+                fontSize: 12, fontWeight: 500, textDecoration: "none",
+                backgroundColor: activo ? "#0ea5e9" : "#1e293b",
+                color: activo ? "#ffffff" : "#e2e8f0",
+                transition: "background-color 0.12s",
+              }}
               onMouseEnter={(e) => {
                 if (!activo) {
-                  e.currentTarget.style.backgroundColor = "#312e81"
+                  e.currentTarget.style.backgroundColor = "#334155"
                   e.currentTarget.style.color = "#ffffff"
                 }
               }}
               onMouseLeave={(e) => {
                 if (!activo) {
-                  e.currentTarget.style.backgroundColor = "transparent"
-                  e.currentTarget.style.color = "#c7d2fe"
+                  e.currentTarget.style.backgroundColor = "#1e293b"
+                  e.currentTarget.style.color = "#e2e8f0"
                 }
               }}
             >
@@ -126,29 +140,23 @@ export default function Sidebar({ rol, nombre, onClose }: Props) {
       </nav>
 
       {/* Usuario + cerrar sesión */}
-      <div className="px-4 py-4" style={{ borderTop: "1px solid #312e81" }}>
-        <div className="mb-3">
+      <div style={{ padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid #1e293b" }}>
+        <div style={{ minWidth: 0 }}>
           {nombre && (
-            <p className="text-sm font-medium text-white truncate">{nombre}</p>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nombre}</p>
           )}
-          <span
-            className="inline-block text-xs rounded-md px-2 py-0.5 mt-1"
-            style={{ backgroundColor: "#312e81", color: "#a5b4fc" }}
-          >
-            {LABELS_ROL[rol]}
-          </span>
+          <span style={{ fontSize: 11, color: "#38bdf8" }}>{LABELS_ROL[rol]}</span>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex items-center gap-1.5 text-xs transition"
-          style={{ color: "#818cf8" }}
+          title="Cerrar sesión"
+          style={{ marginLeft: 8, flexShrink: 0, background: "none", border: "none", cursor: "pointer", padding: 4, borderRadius: 4, color: "#475569", display: "flex" }}
           onMouseEnter={(e) => (e.currentTarget.style.color = "#f87171")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "#818cf8")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#475569")}
         >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          Cerrar sesión
         </button>
       </div>
     </aside>

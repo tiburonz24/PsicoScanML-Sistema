@@ -285,45 +285,78 @@ const ESTUDIANTES: MockEstudiante[] = [
 ]
 
 // =============================================
-// QUERIES — async para compatibilidad con páginas
+// QUERIES — leen de la base de datos real (Prisma)
 // =============================================
 
+import { prisma } from "@/lib/db"
+
+const URGENCIA: Record<string, number> = {
+  ROJO_URGENTE: 0,
+  ROJO:         1,
+  AMARILLO:     2,
+  VERDE:        3,
+}
+
 export async function getEstudiantes(): Promise<MockEstudiante[]> {
-  return ESTUDIANTES
+  const rows = await prisma.estudiante.findMany({
+    include: {
+      tamizajes: { orderBy: { fecha: "desc" }, take: 1 },
+      citas:     { orderBy: { fecha: "desc" } },
+    },
+  })
+
+  // Ordenar: ROJO_URGENTE → ROJO → AMARILLO → VERDE,
+  // dentro de cada nivel por fecha de tamizaje más reciente
+  rows.sort((a, b) => {
+    const semA = (a.tamizajes[0] as { semaforo?: string } | undefined)?.semaforo ?? "VERDE"
+    const semB = (b.tamizajes[0] as { semaforo?: string } | undefined)?.semaforo ?? "VERDE"
+    const ua = URGENCIA[semA] ?? 4
+    const ub = URGENCIA[semB] ?? 4
+    if (ua !== ub) return ua - ub
+    const fa = (a.tamizajes[0] as { fecha?: Date } | undefined)?.fecha?.getTime() ?? 0
+    const fb = (b.tamizajes[0] as { fecha?: Date } | undefined)?.fecha?.getTime() ?? 0
+    return fb - fa  // más reciente primero
+  })
+
+  return rows as unknown as MockEstudiante[]
 }
 
 export async function getEstudianteById(id: string): Promise<MockEstudiante | undefined> {
-  return ESTUDIANTES.find((e) => e.id === id)
+  const row = await prisma.estudiante.findUnique({
+    where: { id },
+    include: {
+      tamizajes: { orderBy: { fecha: "desc" } },
+      citas:     { orderBy: { fecha: "desc" } },
+    },
+  })
+  return (row ?? undefined) as unknown as MockEstudiante | undefined
 }
 
 export async function getTamizajeById(id: string): Promise<MockTamizaje | undefined> {
-  return TAMIZAJES.find((t) => t.id === id)
+  const row = await prisma.tamizaje.findUnique({ where: { id } })
+  return (row ?? undefined) as unknown as MockTamizaje | undefined
 }
 
 export async function getResumenSemaforos(): Promise<{ semaforo: Semaforo; total: number }[]> {
-  const conteo: Partial<Record<Semaforo, number>> = {}
-  for (const t of TAMIZAJES) {
-    conteo[t.semaforo] = (conteo[t.semaforo] ?? 0) + 1
-  }
-  return (Object.entries(conteo) as [Semaforo, number][]).map(
-    ([semaforo, total]) => ({ semaforo, total })
-  )
+  const grupos = await prisma.tamizaje.groupBy({
+    by: ["semaforo"],
+    _count: { semaforo: true },
+  })
+  return grupos.map((g) => ({ semaforo: g.semaforo as Semaforo, total: g._count.semaforo }))
 }
 
 export async function getResumenTiposCaso(): Promise<{ tipoCaso: TipoCaso; total: number }[]> {
-  const conteo: Partial<Record<TipoCaso, number>> = {}
-  for (const t of TAMIZAJES) {
-    conteo[t.tipoCaso] = (conteo[t.tipoCaso] ?? 0) + 1
-  }
-  return (Object.entries(conteo) as [TipoCaso, number][]).map(
-    ([tipoCaso, total]) => ({ tipoCaso, total })
-  )
+  const grupos = await prisma.tamizaje.groupBy({
+    by: ["tipoCaso"],
+    _count: { tipoCaso: true },
+  })
+  return grupos.map((g) => ({ tipoCaso: g.tipoCaso as TipoCaso, total: g._count.tipoCaso }))
 }
 
 export async function getTotalEstudiantes(): Promise<number> {
-  return ESTUDIANTES.length
+  return prisma.estudiante.count()
 }
 
 export async function getTotalUrgentes(): Promise<number> {
-  return TAMIZAJES.filter((t) => t.semaforo === Semaforo.ROJO_URGENTE).length
+  return prisma.tamizaje.count({ where: { semaforo: "ROJO_URGENTE" } })
 }
