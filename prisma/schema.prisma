@@ -47,6 +47,8 @@ model Estudiante {
   tamizajes     Tamizaje[]
   citas         Cita[]
   respuestasRaw RespuestasCuestionario[]
+  expediente    ExpedienteClinico?
+  sesiones      Sesion[]
 }
 
 // =============================================
@@ -160,6 +162,7 @@ model Cita {
   notas        String?
   estudianteId String
   estudiante   Estudiante @relation(fields: [estudianteId], references: [id])
+  sesion       Sesion?
 }
 
 enum EstadoCita {
@@ -167,6 +170,53 @@ enum EstadoCita {
   CONFIRMADA
   COMPLETADA
   CANCELADA
+}
+
+// =============================================
+// EXPEDIENTE CLÍNICO Y SESIONES
+// =============================================
+
+model ExpedienteClinico {
+  id                    String           @id @default(cuid())
+  estudianteId          String           @unique
+  motivoConsulta        String?
+  antecedentes          String?
+  diagnosticoPreliminar String?
+  planIntervencion      String?
+  estado                EstadoExpediente @default(ACTIVO)
+  abiertaEn             DateTime         @default(now())
+  actualizadaEn         DateTime         @updatedAt
+  estudiante            Estudiante       @relation(fields: [estudianteId], references: [id])
+}
+
+model Sesion {
+  id              String     @id @default(cuid())
+  fecha           DateTime   @default(now())
+  tipo            TipoSesion @default(SEGUIMIENTO)
+  motivo          String?
+  notas           String
+  acuerdos        String?
+  planActualizado String?
+  citaId          String?    @unique
+  estudianteId    String
+  estudiante      Estudiante @relation(fields: [estudianteId], references: [id])
+  cita            Cita?      @relation(fields: [citaId], references: [id])
+}
+
+enum EstadoExpediente {
+  ACTIVO
+  CERRADO
+  DERIVADO
+  EN_ESPERA
+}
+
+enum TipoSesion {
+  EVALUACION_INICIAL
+  SEGUIMIENTO
+  INTERVENCION
+  CRISIS
+  CIERRE
+  DEVOLUCION
 }
 
 // =============================================

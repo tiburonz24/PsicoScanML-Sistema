@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation"
 import { getEstudianteById } from "@/lib/data/mock"
+import { prisma } from "@/lib/db"
 import GraficaRadar from "@/components/dashboard/GraficaRadar"
 import Link from "next/link"
 import { Sexo, Semaforo } from "@/lib/enums"
 import type { MockItemCritico, MockTamizaje } from "@/lib/data/mock"
+import AgendarCitaBtn from "@/components/citas/AgendarCitaBtn"
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -141,9 +143,12 @@ function SeccionLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default async function ExpedientePage({ params }: Props) {
+export default async function EstudianteDetallePage({ params }: Props) {
   const { id } = await params
-  const estudiante = await getEstudianteById(id)
+  const [estudiante, todosEstudiantes] = await Promise.all([
+    getEstudianteById(id),
+    prisma.estudiante.findMany({ select: { id: true, nombre: true }, orderBy: { nombre: "asc" } }),
+  ])
   if (!estudiante) notFound()
 
   const tamizaje = estudiante.tamizajes[0] as MockTamizaje | undefined
@@ -162,7 +167,7 @@ export default async function ExpedientePage({ params }: Props) {
     <div style={{ paddingTop: 8, maxWidth: 900 }}>
 
       {/* ── Breadcrumb ── */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <Link href="/estudiantes" style={{ fontSize: 13, color: "#6366f1", textDecoration: "none", fontWeight: 500 }}>
             Estudiantes
@@ -173,24 +178,52 @@ export default async function ExpedientePage({ params }: Props) {
           </svg>
           <span style={{ fontSize: 13, color: "#0f172a", fontWeight: 600 }}>{estudiante.nombre}</span>
         </div>
-        {tamizaje && (
-          <a href={`/api/export/excel?id=${estudiante.id}`} style={{
-            background: "white", color: "#15803d",
-            border: "1.5px solid #86efac",
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {/* Expediente clínico */}
+          <Link href={`/expediente/${estudiante.id}`} style={{
+            background: "white", color: "#0f766e",
+            border: "1.5px solid #99f6e4",
             borderRadius: 8, padding: "7px 14px",
             fontSize: 12, fontWeight: 600, textDecoration: "none",
             display: "flex", alignItems: "center", gap: 5,
           }}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="12" y1="18" x2="12" y2="12"/>
-              <line x1="9" y1="15" x2="15" y2="15"/>
+              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+              <line x1="9" y1="12" x2="15" y2="12"/>
+              <line x1="9" y1="16" x2="13" y2="16"/>
             </svg>
-            Exportar expediente
-          </a>
-        )}
+            Expediente clínico
+          </Link>
+
+          {/* Agendar cita — botón cliente */}
+          <AgendarCitaBtn
+            estudianteId={estudiante.id}
+            nombreEstudiante={estudiante.nombre}
+            estudiantes={todosEstudiantes}
+          />
+
+          {/* Exportar */}
+          {tamizaje && (
+            <a href={`/api/export/excel?id=${estudiante.id}`} style={{
+              background: "white", color: "#15803d",
+              border: "1.5px solid #86efac",
+              borderRadius: 8, padding: "7px 14px",
+              fontSize: 12, fontWeight: 600, textDecoration: "none",
+              display: "flex", alignItems: "center", gap: 5,
+            }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <line x1="9" y1="15" x2="15" y2="15"/>
+              </svg>
+              Exportar
+            </a>
+          )}
+        </div>
       </div>
 
       {/* ── Perfil ── */}

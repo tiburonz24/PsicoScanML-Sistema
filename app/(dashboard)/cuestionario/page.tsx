@@ -1,8 +1,8 @@
 import { getEstudiantes } from "@/lib/data/mock"
-import BadgeSemaforo from "@/components/semaforo/BadgeSemaforo"
 import ModalNuevoEstudiante from "@/components/cuestionario/ModalNuevoEstudiante"
 import BannerEnlace from "@/components/cuestionario/BannerEnlace"
-import Link from "next/link"
+import TablaEstudiantes from "@/components/cuestionario/TablaEstudiantes"
+import type { FilaEstudiante } from "@/components/cuestionario/TablaEstudiantes"
 import { headers } from "next/headers"
 
 type Props = { searchParams: Promise<{ registrado?: string; token?: string; nombre?: string }> }
@@ -18,6 +18,20 @@ export default async function CuestionarioPage({ searchParams }: Props) {
   const baseUrl = `${protocol}://${host}`
 
   const enlace = token ? `${baseUrl}/tamizaje/${token}` : null
+
+  // Serializar datos para el componente cliente (sin Date objects)
+  const filas: FilaEstudiante[] = estudiantes.map((est) => {
+    const ultimo = est.tamizajes[0]
+    return {
+      id:             est.id,
+      nombre:         est.nombre,
+      gradoGrupo:     `${est.grado} "${est.grupo}"`,
+      semaforo:       ultimo?.semaforo ?? null,
+      fechaFormateada: ultimo
+        ? new Date(ultimo.fecha).toLocaleDateString("es-MX")
+        : null,
+    }
+  })
 
   return (
     <div className="space-y-4">
@@ -43,52 +57,7 @@ export default async function CuestionarioPage({ searchParams }: Props) {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Estudiante</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Grado / Grupo</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Último tamizaje</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Acción</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {estudiantes.map((est) => {
-              const ultimo = est.tamizajes[0]
-              return (
-                <tr key={est.id} className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 font-medium text-gray-900">{est.nombre}</td>
-                  <td className="px-4 py-3 text-gray-600">
-                    {est.grado} &quot;{est.grupo}&quot;
-                  </td>
-                  <td className="px-4 py-3">
-                    {ultimo ? (
-                      <div className="flex items-center gap-2">
-                        <BadgeSemaforo semaforo={ultimo.semaforo} />
-                        <span className="text-xs text-gray-400">
-                          {new Date(ultimo.fecha).toLocaleDateString("es-MX")}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-gray-400">Sin tamizaje</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/cuestionario/${est.id}`}
-                      className="inline-block px-3 py-1.5 bg-blue-600 text-white text-xs
-                                 font-medium rounded-lg hover:bg-blue-700 transition"
-                    >
-                      Aplicar SENA
-                    </Link>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+      <TablaEstudiantes filas={filas} />
     </div>
   )
 }

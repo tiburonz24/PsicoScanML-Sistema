@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 /app/generated/prisma
+
+# Claude Code (configuración local)
+.claude/
+
+# Modelos ML binarios (regenerar con entrenar_sena.py)
+ml-api/models/*.pkl

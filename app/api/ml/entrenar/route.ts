@@ -58,7 +58,7 @@ export async function POST() {
         cvStd:       (metrics.cv_std as number) ?? 0,
         nEstimators: (metrics.n_estimators as number) ?? 300,
         report:      metrics.report as object,
-        importance:  importance,
+        importance:  JSON.parse(JSON.stringify(importance)),
       },
     })
 

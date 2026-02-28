@@ -49,10 +49,21 @@ function IconHistorico() {
     </svg>
   )
 }
+function IconCitas() {
+  return (
+    <svg {...SVG_PROPS}>
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="16" y1="2" x2="16" y2="6" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="8" y1="2" x2="8" y2="6" strokeLinecap="round" strokeLinejoin="round"/>
+      <line x1="3" y1="10" x2="21" y2="10" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  )
+}
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard",       href: "/dashboard",            roles: [Rol.ADMIN, Rol.DIRECTOR, Rol.PSICOLOGO, Rol.ORIENTADOR], icon: <IconDashboard /> },
   { label: "Estudiantes",     href: "/estudiantes",          roles: [Rol.ADMIN, Rol.DIRECTOR, Rol.PSICOLOGO, Rol.ORIENTADOR], icon: <IconEstudiantes /> },
+  { label: "Citas",           href: "/citas",                roles: [Rol.ADMIN, Rol.PSICOLOGO, Rol.ORIENTADOR],               icon: <IconCitas /> },
   { label: "Cuestionario",    href: "/cuestionario",         roles: [Rol.PSICOLOGO, Rol.ADMIN],                                icon: <IconCuestionario /> },
   { label: "Respuestas",      href: "/respuestas",           roles: [Rol.PSICOLOGO, Rol.ADMIN, Rol.ORIENTADOR],               icon: <IconRespuestas /> },
   { label: "Histórico ML",   href: "/historico",            roles: [Rol.ADMIN],                                              icon: <IconHistorico /> },

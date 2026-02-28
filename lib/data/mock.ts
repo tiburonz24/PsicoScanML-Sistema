@@ -4,6 +4,7 @@
  */
 
 import { Semaforo, TipoCaso, Sexo, EstadoCita } from "@/lib/enums"
+import { prisma } from "@/lib/db"
 
 // =============================================
 // TIPOS LOCALES (espejo de los modelos Prisma)
@@ -287,8 +288,6 @@ const ESTUDIANTES: MockEstudiante[] = [
 // =============================================
 // QUERIES — leen de la base de datos real (Prisma)
 // =============================================
-
-import { prisma } from "@/lib/db"
 
 const URGENCIA: Record<string, number> = {
   ROJO_URGENTE: 0,

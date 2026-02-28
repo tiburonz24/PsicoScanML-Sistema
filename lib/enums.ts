@@ -40,3 +40,21 @@ export const EstadoCita = {
   CANCELADA: "CANCELADA",
 } as const
 export type EstadoCita = (typeof EstadoCita)[keyof typeof EstadoCita]
+
+export const EstadoExpediente = {
+  ACTIVO:    "ACTIVO",
+  CERRADO:   "CERRADO",
+  DERIVADO:  "DERIVADO",
+  EN_ESPERA: "EN_ESPERA",
+} as const
+export type EstadoExpediente = (typeof EstadoExpediente)[keyof typeof EstadoExpediente]
+
+export const TipoSesion = {
+  EVALUACION_INICIAL: "EVALUACION_INICIAL",
+  SEGUIMIENTO:        "SEGUIMIENTO",
+  INTERVENCION:       "INTERVENCION",
+  CRISIS:             "CRISIS",
+  CIERRE:             "CIERRE",
+  DEVOLUCION:         "DEVOLUCION",
+} as const
+export type TipoSesion = (typeof TipoSesion)[keyof typeof TipoSesion]

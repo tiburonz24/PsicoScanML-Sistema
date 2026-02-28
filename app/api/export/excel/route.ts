@@ -171,7 +171,7 @@ function addSheet(
 ) {
   const ws = wb.addWorksheet(sheetName, {
     views: [{ state: "frozen", ySplit: 4 }],
-    tabColor: { argb: headerColor },
+    properties: { tabColor: { argb: headerColor } },
   })
 
   // Fila 1: título

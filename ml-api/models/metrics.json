@@ -1,0 +1,72 @@
+{
+  "accuracy": 1.0,
+  "cv_mean": 1.0,
+  "cv_std": 0.0,
+  "train_size": 0.75,
+  "n_registros": 21516,
+  "report": {
+    "AMARILLO": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 2032.0
+    },
+    "ROJO": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 1801.0
+    },
+    "ROJO_URGENTE": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 1414.0
+    },
+    "VERDE": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 132.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 5379.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 5379.0
+    }
+  },
+  "features": [
+    "dep",
+    "ans",
+    "asc",
+    "som",
+    "pst",
+    "obs",
+    "ate",
+    "hip",
+    "ira",
+    "agr",
+    "des",
+    "ant",
+    "sus",
+    "esq",
+    "ali",
+    "fam",
+    "esc",
+    "com",
+    "aut",
+    "soc",
+    "cnc",
+    "total_altos",
+    "criticos_count"
+  ],
+  "n_estimators": 300
+}

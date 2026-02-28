@@ -41,7 +41,7 @@ function normKey(v: unknown): string {
 
 async function parsearXlsx(buffer: Buffer): Promise<Record<string, string>[]> {
   const wb = new ExcelJS.Workbook()
-  await wb.xlsx.load(buffer)
+  await wb.xlsx.load(buffer as never)
 
   const ws = wb.worksheets[0]
   if (!ws) throw new Error("El archivo no contiene hojas de cálculo.")

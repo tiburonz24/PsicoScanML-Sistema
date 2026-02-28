@@ -34,7 +34,7 @@ const CURP_REGEX = /^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z][0-9]$/
 // ── Leer Excel y extraer filas ──────────────────────────────────────────────
 async function parsearExcel(buffer: Buffer): Promise<Record<string, string>[]> {
   const wb = new ExcelJS.Workbook()
-  await wb.xlsx.load(buffer)
+  await wb.xlsx.load(buffer as never)
 
   const ws = wb.worksheets[0]
   if (!ws) throw new Error("El archivo no contiene hojas de cálculo.")
