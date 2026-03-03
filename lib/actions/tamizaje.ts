@@ -35,6 +35,10 @@ export async function procesarYGuardarTamizaje(
   let observaciones: string = scoring.observaciones
 
   // ── 2. Intentar clasificación ML (con fallback transparente) ──────────────
+  const estudiante = await prisma.estudiante.findUnique({
+    where: { id: estudianteId },
+    select: { edad: true, sexo: true },
+  })
   const cadenaRespuestas = respuestas.join("")
   if (!skipML) try {
     const mlUrl = process.env.ML_API_URL ?? "http://localhost:8000"
@@ -65,6 +69,8 @@ export async function procesarYGuardarTamizaje(
         aut_t: pb.aut ?? 50, soc_t: pb.soc ?? 50, cnc_t: pb.cnc ?? 50,
         items_criticos_count: scoring.itemsCriticos.length,
         respuestas: cadenaRespuestas,
+        edad: estudiante?.edad ?? 15,
+        sexo: estudiante?.sexo ?? "MASCULINO",
       }),
       signal: AbortSignal.timeout(5000),
     })
