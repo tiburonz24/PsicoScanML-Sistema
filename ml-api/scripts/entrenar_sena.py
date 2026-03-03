@@ -3,7 +3,7 @@ entrenar_sena.py
 Entrena un Random Forest sobre el histórico SENA almacenado en PostgreSQL.
 
 Features : 21 puntuaciones brutas de escala (suma de ítems) + 2 indicadores globales
-           Calculados desde la cadena de 188 respuestas brutas.
+           + edad + sexo_n. Calculados desde la cadena de 188 respuestas brutas.
 Target   : semáforo (VERDE / AMARILLO / ROJO / ROJO_URGENTE)
 
 Salida:
@@ -67,7 +67,8 @@ ESCALAS: dict[str, list[int]] = {
 CRITICOS = {124, 141, 149, 76, 92, 118, 145, 19, 80, 125,
             37, 96, 115, 147, 163, 71, 21, 86, 97, 119, 164, 167, 90, 88, 130}
 
-FEATURE_NAMES = list(ESCALAS.keys()) + ["total_altos", "criticos_count"]
+FEATURE_NAMES = list(ESCALAS.keys()) + ["total_altos", "criticos_count", "edad", "sexo_n"]
+SEXO_MAP = {"MASCULINO": 0, "FEMENINO": 1, "OTRO": 2}
 
 
 # ── Calcular features desde cadena de respuestas ────────────────────────────
@@ -110,7 +111,7 @@ def cargar_datos() -> pd.DataFrame:
     conn = psycopg2.connect(db_url)
     cur  = conn.cursor()
 
-    cur.execute('SELECT "respuestas", "semaforo" FROM "HistoricoSENA" WHERE "respuestas" IS NOT NULL')
+    cur.execute('SELECT "respuestas", "edad", "sexo", "semaforo" FROM "HistoricoSENA" WHERE "respuestas" IS NOT NULL')
     rows = cur.fetchall()
     cur.close()
     conn.close()
@@ -118,7 +119,9 @@ def cargar_datos() -> pd.DataFrame:
     if not rows:
         sys.exit("ERROR: No hay registros con respuestas en HistoricoSENA. Importa el histórico primero.")
 
-    df = pd.DataFrame(rows, columns=["respuestas", TARGET])
+    df = pd.DataFrame(rows, columns=["respuestas", "edad", "sexo", TARGET])
+    df["edad"] = pd.to_numeric(df["edad"], errors="coerce").fillna(15)
+    df["sexo"] = df["sexo"].map(SEXO_MAP).fillna(0)
     print(f"Registros con respuestas: {len(df)}")
     print(f"Distribución de clases:\n{df[TARGET].value_counts().to_string()}")
     return df
@@ -127,7 +130,10 @@ def cargar_datos() -> pd.DataFrame:
 # ── 2. Preparar X, y ─────────────────────────────────────────────────────────
 def preparar_datos(df: pd.DataFrame):
     print("\nCalculando features desde respuestas brutas…")
-    X = np.array([calcular_features(r) for r in df["respuestas"]], dtype=float)
+    X_base = np.array([calcular_features(r) for r in df["respuestas"]], dtype=float)
+    edad   = df["edad"].values.reshape(-1, 1).astype(float)
+    sexo_n = df["sexo"].values.reshape(-1, 1).astype(float)
+    X = np.hstack([X_base, edad, sexo_n])
     y = df[TARGET].values
     print(f"Matriz de features: {X.shape[0]} muestras × {X.shape[1]} features")
     return X, y

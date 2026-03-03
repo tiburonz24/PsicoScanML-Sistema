@@ -62,6 +62,10 @@ class TamizajeInput(BaseModel):
     # Cadena de 188 respuestas brutas (requerida cuando el modelo ML esta activo)
     respuestas: Optional[str] = Field(None, description="Cadena de 188 digitos (1-5)")
 
+    # Datos demográficos (opcionales, mejoran la predicción del modelo)
+    edad: Optional[int] = Field(None, description="Edad del estudiante en años")
+    sexo: Optional[str] = Field(None, description="MASCULINO | FEMENINO | OTRO")
+
 
 class TamizajeOutput(BaseModel):
     """Resultado de la clasificacion ML."""

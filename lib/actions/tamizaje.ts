@@ -43,8 +43,18 @@ export async function procesarYGuardarTamizaje(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         estudiante_id: estudianteId,
-        inc: 0, neg: 0, pos: 0,
-        glo_t: 50, emo_t: 50, con_t: 50, eje_t: 50, ctx_t: 50, rec_t: 50,
+        // Escalas de control — valores reales del scoring
+        inc: pb.inc ?? 0,
+        neg: pb.neg ?? 0,
+        pos: pb.pos ?? 0,
+        // Índices globales — puntuaciones brutas como proxy (sin baremos T)
+        glo_t: pb.dep ?? 50,
+        emo_t: pb.ans ?? 50,
+        con_t: pb.ate ?? 50,
+        eje_t: pb.hip ?? 50,
+        ctx_t: pb.fam ?? 50,
+        rec_t: pb.aut ?? 50,
+        // Escalas clínicas
         dep_t: pb.dep ?? 50, ans_t: pb.ans ?? 50, asc_t: pb.asc ?? 50,
         som_t: pb.som ?? 50, pst_t: pb.pst ?? 50, obs_t: pb.obs ?? 50,
         ate_t: pb.ate ?? 50, hip_t: pb.hip ?? 50, ira_t: pb.ira ?? 50,
@@ -73,7 +83,7 @@ export async function procesarYGuardarTamizaje(
   await prisma.tamizaje.create({
     data: {
       estudianteId,
-      inc: 0, neg: 0, pos: 0,
+      inc: pb.inc ?? 0, neg: pb.neg ?? 0, pos: pb.pos ?? 0,
       glo_t: 50, emo_t: 50, con_t: 50, eje_t: 50, ctx_t: 50, rec_t: 50,
       dep_t: pb.dep ?? 0, ans_t: pb.ans ?? 0, asc_t: pb.asc ?? 0,
       som_t: pb.som ?? 0, pst_t: pb.pst ?? 0, obs_t: pb.obs ?? 0,

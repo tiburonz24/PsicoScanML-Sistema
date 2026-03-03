@@ -2,8 +2,8 @@
 Servicio de clasificacion ML para PsicoScan.
 
 Cuando existe ml-api/models/modelo.pkl se usa el Random Forest entrenado
-sobre el historico SENA (features = 21 escalas + 2 indicadores globales,
-calculados desde la cadena de 188 respuestas brutas).
+sobre el historico SENA (features = 21 escalas + 2 indicadores globales
++ edad + sexo_n, calculados desde la cadena de 188 respuestas brutas).
 
 Si el modelo no existe se usa la logica de reglas como fallback.
 """
@@ -41,8 +41,11 @@ _CRITICOS = {124, 141, 149, 76, 92, 118, 145, 19, 80, 125,
              37, 96, 115, 147, 163, 71, 21, 86, 97, 119, 164, 167, 90, 88, 130}
 
 
-def _features_desde_respuestas(cadena: str) -> list[float]:
-    """Convierte cadena de 188 dígitos en el vector de 23 features."""
+_SEXO_MAP = {"MASCULINO": 0, "FEMENINO": 1, "OTRO": 2}
+
+
+def _features_desde_respuestas(cadena: str, edad: int | None = None, sexo: str | None = None) -> list[float]:
+    """Convierte cadena de 188 dígitos en el vector de 25 features (23 + edad + sexo_n)."""
     digitos = [int(c) for c in cadena if c.isdigit()][:188]
     if len(digitos) < 188:
         digitos += [0] * (188 - len(digitos))
@@ -50,6 +53,8 @@ def _features_desde_respuestas(cadena: str) -> list[float]:
              for items in _ESCALAS.values()]
     feats.append(float(sum(1 for v in digitos if v >= 4)))
     feats.append(float(sum(1 for i in _CRITICOS if 1 <= i <= 188 and digitos[i - 1] >= 3)))
+    feats.append(float(edad) if edad is not None else 15.0)
+    feats.append(float(_SEXO_MAP.get(sexo or "", 0)))
     return feats
 
 
@@ -151,7 +156,7 @@ class ClasificadorML:
         if not datos.respuestas:
             # Sin cadena de respuestas no se pueden calcular los features reales
             return self._predecir_reglas(datos)
-        features  = _features_desde_respuestas(datos.respuestas)
+        features  = _features_desde_respuestas(datos.respuestas, datos.edad, datos.sexo)
         semaforo  = self.modelo.predict([features])[0]
         proba     = self.modelo.predict_proba([features])[0].max()
         tipo_caso = self._semaforo_a_tipo(semaforo)

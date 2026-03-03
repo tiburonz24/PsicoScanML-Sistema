@@ -208,8 +208,8 @@ export function calcularResultado(
     observaciones = "Se detectaron indicadores de riesgo. Programar atención con psicólogo."
   } else if (itemsCriticos.length >= 2 || totalItemsAltos >= 12) {
     semaforo = "AMARILLO"
-    tipoCaso = "SEGUIMIENTO"
-    observaciones = "Algunos indicadores requieren seguimiento preventivo."
+    tipoCaso = "SIN_RIESGO"
+    observaciones = "Seguimiento preventivo recomendado. Algunos indicadores requieren monitoreo."
   } else {
     semaforo = "VERDE"
     tipoCaso = "SIN_RIESGO"

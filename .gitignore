@@ -46,4 +46,6 @@ next-env.d.ts
 .claude/
 
 # Modelos ML binarios (regenerar con entrenar_sena.py)
+# modelo.pkl incluido intencionalmente para despliegue en Railway
 ml-api/models/*.pkl
+!ml-api/models/modelo.pkl

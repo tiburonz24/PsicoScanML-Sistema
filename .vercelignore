@@ -1,0 +1,5 @@
+# La API FastAPI va a Railway, no a Vercel
+ml-api/
+
+# Archivos de desarrollo local
+*.log

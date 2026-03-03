@@ -16,6 +16,8 @@ const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log("Limpiando datos existentes...")
+  await prisma.sesion.deleteMany()
+  await prisma.expedienteClinico.deleteMany()
   await prisma.cita.deleteMany()
   await prisma.tamizaje.deleteMany()
   await prisma.respuestasCuestionario.deleteMany()
