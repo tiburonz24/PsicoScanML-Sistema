@@ -49,3 +49,7 @@ next-env.d.ts
 # modelo.pkl incluido intencionalmente para despliegue en Railway
 ml-api/models/*.pkl
 !ml-api/models/modelo.pkl
+
+# Python cache
+ml-api/**/__pycache__/
+ml-api/**/*.pyc
