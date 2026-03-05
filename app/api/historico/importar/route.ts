@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { calcularResultado } from "@/lib/sena/scoring"
 import { REACTIVOS } from "@/lib/data/reactivos"
+import { requireSession } from "@/lib/api-auth"
+import { Rol } from "@/lib/enums"
 
 const TEXTOS = REACTIVOS.map((r) => r.texto)
 
@@ -71,6 +73,9 @@ function toFloat(v: string, fallback = 0): number {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireSession([Rol.ADMIN, Rol.PSICOLOGO])
+  if (!auth.ok) return auth.response
+
   try {
     const form = await req.formData()
     const file = form.get("file") as File | null

@@ -1,11 +1,15 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { getServerSession } from "next-auth"
 import { getEstudianteById } from "@/lib/data/mock"
 import { prisma } from "@/lib/db"
 import GraficaRadar from "@/components/dashboard/GraficaRadar"
 import Link from "next/link"
-import { Sexo, Semaforo } from "@/lib/enums"
+import { Sexo, Semaforo, Rol } from "@/lib/enums"
+import { authOptions } from "@/lib/auth"
 import type { MockItemCritico, MockTamizaje } from "@/lib/data/mock"
 import AgendarCitaBtn from "@/components/citas/AgendarCitaBtn"
+
+const ROLES_ESTUDIANTE_DETALLE: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN, Rol.DIRECTOR]
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -144,6 +148,9 @@ function SeccionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default async function EstudianteDetallePage({ params }: Props) {
+  const session = await getServerSession(authOptions)
+  if (!session || !ROLES_ESTUDIANTE_DETALLE.includes(session.user.rol as Rol)) redirect("/dashboard")
+
   const { id } = await params
   const [estudiante, todosEstudiantes] = await Promise.all([
     getEstudianteById(id),

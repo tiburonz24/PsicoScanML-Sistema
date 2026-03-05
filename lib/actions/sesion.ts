@@ -1,7 +1,19 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
+import { getServerSession } from "next-auth"
 import { prisma } from "@/lib/db"
+import { authOptions } from "@/lib/auth"
+import { Rol } from "@/lib/enums"
+
+const ROLES_PERMITIDOS: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN]
+
+async function verificarRol() {
+  const session = await getServerSession(authOptions)
+  if (!session || !ROLES_PERMITIDOS.includes(session.user.rol as Rol)) {
+    throw new Error("Acceso denegado")
+  }
+}
 
 export type SesionResult = { error?: string; ok?: boolean }
 
@@ -9,6 +21,8 @@ export async function crearSesion(
   _prev: SesionResult,
   formData: FormData
 ): Promise<SesionResult> {
+  try { await verificarRol() } catch { return { error: "No tienes permiso para esta acción." } }
+
   const estudianteId    = (formData.get("estudianteId") as string)?.trim()
   const tipo            = (formData.get("tipo") as string) || "SEGUIMIENTO"
   const motivo          = (formData.get("motivo") as string)?.trim() || null
@@ -49,6 +63,8 @@ export async function actualizarExpediente(
   _prev: SesionResult,
   formData: FormData
 ): Promise<SesionResult> {
+  try { await verificarRol() } catch { return { error: "No tienes permiso para esta acción." } }
+
   const estudianteId          = (formData.get("estudianteId") as string)?.trim()
   const motivoConsulta        = (formData.get("motivoConsulta") as string)?.trim() || null
   const antecedentes          = (formData.get("antecedentes") as string)?.trim() || null

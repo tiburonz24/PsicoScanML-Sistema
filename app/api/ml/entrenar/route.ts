@@ -4,10 +4,15 @@ import { promisify } from "util"
 import path from "path"
 import fs from "fs"
 import { prisma } from "@/lib/db"
+import { requireSession } from "@/lib/api-auth"
+import { Rol } from "@/lib/enums"
 
 const execFileAsync = promisify(execFile)
 
 export async function POST() {
+  const auth = await requireSession([Rol.ADMIN])
+  if (!auth.ok) return auth.response
+
   try {
     const scriptDir = path.join(process.cwd(), "ml-api", "scripts")
     const scriptPath = path.join(scriptDir, "entrenar_sena.py")

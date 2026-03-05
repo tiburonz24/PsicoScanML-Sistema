@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import ExcelJS from "exceljs"
 import { prisma } from "@/lib/db"
+import { requireSession } from "@/lib/api-auth"
+import { Rol } from "@/lib/enums"
 
 // ── Normalización de headers ────────────────────────────────────────────────
 function normKey(v: unknown): string {
@@ -74,6 +76,9 @@ async function parsearExcel(buffer: Buffer): Promise<Record<string, string>[]> {
 
 // ── Handler POST ────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
+  const auth = await requireSession([Rol.ADMIN])
+  if (!auth.ok) return auth.response
+
   try {
     const form = await req.formData()
     const file = form.get("file") as File | null

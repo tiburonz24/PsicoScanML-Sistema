@@ -1,7 +1,12 @@
 import { NextResponse } from "next/server"
 import ExcelJS from "exceljs"
+import { requireSession } from "@/lib/api-auth"
+import { Rol } from "@/lib/enums"
 
 export async function GET() {
+  const auth = await requireSession([Rol.ADMIN, Rol.PSICOLOGO])
+  if (!auth.ok) return auth.response
+
   const wb = new ExcelJS.Workbook()
   wb.creator = "PsicoScan ML"
 

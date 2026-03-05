@@ -1,46 +1,46 @@
 {
-  "accuracy": 1.0,
-  "cv_mean": 1.0,
-  "cv_std": 0.0,
+  "accuracy": 0.8384,
+  "cv_mean": 0.8234,
+  "cv_std": 0.0147,
   "train_size": 0.75,
-  "n_registros": 21516,
+  "n_registros": 1956,
   "report": {
     "AMARILLO": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 2032.0
+      "precision": 0.8104265402843602,
+      "recall": 0.9243243243243243,
+      "f1-score": 0.8636363636363636,
+      "support": 185.0
     },
     "ROJO": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 1801.0
+      "precision": 0.7884615384615384,
+      "recall": 0.75,
+      "f1-score": 0.76875,
+      "support": 164.0
     },
     "ROJO_URGENTE": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 1414.0
+      "precision": 0.9464285714285714,
+      "recall": 0.828125,
+      "f1-score": 0.8833333333333333,
+      "support": 128.0
     },
     "VERDE": {
       "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 132.0
+      "recall": 0.8333333333333334,
+      "f1-score": 0.9090909090909091,
+      "support": 12.0
     },
-    "accuracy": 1.0,
+    "accuracy": 0.8384458077709611,
     "macro avg": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 5379.0
+      "precision": 0.8863291625436176,
+      "recall": 0.8339456644144144,
+      "f1-score": 0.8562026515151515,
+      "support": 489.0
     },
     "weighted avg": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 5379.0
+      "precision": 0.8433117779205644,
+      "recall": 0.8384458077709611,
+      "f1-score": 0.8380848360909712,
+      "support": 489.0
     }
   },
   "features": [

@@ -1,9 +1,13 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
+import { getServerSession } from "next-auth"
 import { prisma } from "@/lib/db"
-import { Semaforo } from "@/lib/enums"
+import { Semaforo, Rol } from "@/lib/enums"
+import { authOptions } from "@/lib/auth"
 import FormExpediente from "@/components/expediente/FormExpediente"
 import ExpedienteAcciones from "./ExpedienteAcciones"
+
+const ROLES_EXPEDIENTE: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN]
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -35,6 +39,9 @@ function SeccionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default async function ExpedienteClinicoPage({ params }: Props) {
+  const session = await getServerSession(authOptions)
+  if (!session || !ROLES_EXPEDIENTE.includes(session.user.rol as Rol)) redirect("/dashboard")
+
   const { id: estudianteId } = await params
 
   // Fetch estudiante con tamizaje y expediente

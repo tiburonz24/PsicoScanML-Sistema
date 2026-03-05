@@ -2,7 +2,19 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { getServerSession } from "next-auth"
 import { prisma } from "@/lib/db"
+import { authOptions } from "@/lib/auth"
+import { Rol } from "@/lib/enums"
+
+const ROLES_PERMITIDOS: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN]
+
+async function verificarRol() {
+  const session = await getServerSession(authOptions)
+  if (!session || !ROLES_PERMITIDOS.includes(session.user.rol as Rol)) {
+    throw new Error("Acceso denegado")
+  }
+}
 
 export type CitaResult = { error: string } | undefined
 
@@ -10,6 +22,8 @@ export async function agendarCita(
   _prev: CitaResult,
   formData: FormData
 ): Promise<CitaResult> {
+  try { await verificarRol() } catch { return { error: "No tienes permiso para esta acción." } }
+
   const estudianteId  = (formData.get("estudianteId") as string)?.trim()
   const fechaStr      = (formData.get("fecha") as string)?.trim()
   const notas         = (formData.get("notas") as string)?.trim() || null
@@ -41,6 +55,9 @@ export async function actualizarEstadoCita(
   citaId: string,
   estado: "PENDIENTE" | "CONFIRMADA" | "COMPLETADA" | "CANCELADA"
 ): Promise<void> {
+  const session = await getServerSession(authOptions)
+  if (!session || !ROLES_PERMITIDOS.includes(session.user.rol as Rol)) return
+
   await prisma.cita.update({ where: { id: citaId }, data: { estado } })
   revalidatePath("/citas")
 }
@@ -51,6 +68,8 @@ export async function completarCitaConSesion(
   _prev: CompletarCitaResult,
   formData: FormData
 ): Promise<CompletarCitaResult> {
+  try { await verificarRol() } catch { return { error: "No tienes permiso para esta acción." } }
+
   const citaId          = (formData.get("citaId") as string)?.trim()
   const estudianteId    = (formData.get("estudianteId") as string)?.trim()
   const tipo            = (formData.get("tipo") as string) || "SEGUIMIENTO"

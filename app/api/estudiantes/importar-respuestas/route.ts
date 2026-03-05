@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import ExcelJS from "exceljs"
 import { prisma } from "@/lib/db"
 import { procesarYGuardarTamizaje } from "@/lib/actions/tamizaje"
+import { requireSession } from "@/lib/api-auth"
+import { Rol } from "@/lib/enums"
 
 // ── Parser 1: XLS-HTML (archivos .xls guardados como "Página web") ───────────
 
@@ -114,6 +116,9 @@ function normalizarSexo(raw: string): "MASCULINO" | "FEMENINO" | "OTRO" {
 // ── Handler ───────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const auth = await requireSession([Rol.ADMIN])
+  if (!auth.ok) return auth.response
+
   try {
     const form = await req.formData()
     const file = form.get("file") as File | null

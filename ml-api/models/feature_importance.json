@@ -1,102 +1,102 @@
 [
   {
     "feature": "criticos_count",
-    "importance": 0.214142
+    "importance": 0.203641
   },
   {
     "feature": "total_altos",
-    "importance": 0.193426
+    "importance": 0.185886
   },
   {
     "feature": "pst",
-    "importance": 0.076029
-  },
-  {
-    "feature": "esq",
-    "importance": 0.063692
+    "importance": 0.073384
   },
   {
     "feature": "dep",
-    "importance": 0.05576
+    "importance": 0.061818
+  },
+  {
+    "feature": "esq",
+    "importance": 0.060572
   },
   {
     "feature": "aut",
-    "importance": 0.045853
+    "importance": 0.04617
   },
   {
     "feature": "ans",
-    "importance": 0.040102
+    "importance": 0.040522
   },
   {
     "feature": "soc",
-    "importance": 0.033679
-  },
-  {
-    "feature": "obs",
-    "importance": 0.026643
+    "importance": 0.036401
   },
   {
     "feature": "som",
-    "importance": 0.025435
+    "importance": 0.027617
   },
   {
     "feature": "ali",
-    "importance": 0.025301
+    "importance": 0.02713
+  },
+  {
+    "feature": "obs",
+    "importance": 0.02695
   },
   {
     "feature": "ira",
-    "importance": 0.021034
-  },
-  {
-    "feature": "com",
-    "importance": 0.02097
+    "importance": 0.023369
   },
   {
     "feature": "fam",
-    "importance": 0.020486
+    "importance": 0.022345
+  },
+  {
+    "feature": "com",
+    "importance": 0.021493
   },
   {
     "feature": "cnc",
-    "importance": 0.019915
+    "importance": 0.020198
   },
   {
     "feature": "hip",
-    "importance": 0.018268
+    "importance": 0.01937
   },
   {
     "feature": "ate",
-    "importance": 0.017652
+    "importance": 0.018662
   },
   {
     "feature": "asc",
-    "importance": 0.017056
+    "importance": 0.017604
   },
   {
     "feature": "esc",
-    "importance": 0.016241
+    "importance": 0.015863
   },
   {
     "feature": "des",
-    "importance": 0.013933
+    "importance": 0.014918
   },
   {
     "feature": "agr",
-    "importance": 0.013447
+    "importance": 0.014373
   },
   {
     "feature": "ant",
-    "importance": 0.008975
+    "importance": 0.009489
   },
   {
     "feature": "sus",
-    "importance": 0.005542
+    "importance": 0.005605
   },
   {
     "feature": "edad",
-    "importance": 0.003544
+    "importance": 0.003974
   },
   {
     "feature": "sexo_n",
-    "importance": 0.002874
+    "importance": 0.002643
   }
 ]

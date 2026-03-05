@@ -10,20 +10,27 @@ import {
 
 type Props = {
   nombreEstudiante: string
-  // Modo dashboard (psicólogo aplica directamente)
   estudianteId?: string
   esEstudiante?: boolean
-  // Modo público (alumno con enlace único)
   onGuardar?: (respuestas: number[]) => Promise<{ error: string } | undefined>
 }
 
 const ESCALA = [
-  { valor: 1, corto: "Nunca",    largo: "Nunca o casi nunca" },
-  { valor: 2, corto: "Pocas",    largo: "Pocas veces" },
-  { valor: 3, corto: "Algunas",  largo: "Algunas veces" },
-  { valor: 4, corto: "Muchas",   largo: "Muchas veces" },
-  { valor: 5, corto: "Siempre",  largo: "Siempre o casi siempre" },
+  { valor: 1, corto: "Nunca",   largo: "Nunca o casi nunca" },
+  { valor: 2, corto: "Pocas",   largo: "Pocas veces" },
+  { valor: 3, corto: "Algunas", largo: "Algunas veces" },
+  { valor: 4, corto: "Muchas",  largo: "Muchas veces" },
+  { valor: 5, corto: "Siempre", largo: "Siempre o casi siempre" },
 ]
+
+// Color por valor seleccionado — paleta Azul cielo + teal
+const COLOR_SELECCIONADO: Record<number, { bg: string; border: string; text: string; shadow: string }> = {
+  1: { bg: "#059669", border: "#047857", text: "white", shadow: "0 3px 10px rgba(5,150,105,0.35)" },
+  2: { bg: "#0ea5e9", border: "#0284c7", text: "white", shadow: "0 3px 10px rgba(14,165,233,0.35)" },
+  3: { bg: "#6366f1", border: "#4f46e5", text: "white", shadow: "0 3px 10px rgba(99,102,241,0.35)" },
+  4: { bg: "#f97316", border: "#ea580c", text: "white", shadow: "0 3px 10px rgba(249,115,22,0.35)" },
+  5: { bg: "#e11d48", border: "#be123c", text: "white", shadow: "0 3px 10px rgba(225,29,72,0.35)" },
+}
 
 export default function FormularioCuestionario({
   estudianteId,
@@ -32,10 +39,10 @@ export default function FormularioCuestionario({
   onGuardar,
 }: Props) {
   const [respuestas, setRespuestas] = useState<Record<number, number>>({})
-  const [pagina, setPagina] = useState(0)
+  const [pagina, setPagina]         = useState(0)
   const [erroresPagina, setErroresPagina] = useState<number[]>([])
-  const [errorGlobal, setErrorGlobal] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [errorGlobal, setErrorGlobal]     = useState<string | null>(null)
+  const [isPending, startTransition]      = useTransition()
 
   const reactivosPagina = PAGINAS_REACTIVOS[pagina]
   const totalRespondidos = Object.keys(respuestas).length
@@ -83,136 +90,346 @@ export default function FormularioCuestionario({
   }
 
   return (
-    <div className="space-y-4">
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
 
-      {/* Encabezado con progreso */}
-      <div className="bg-white rounded-xl shadow p-5">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-sm font-medium text-gray-700">{nombreEstudiante}</p>
-            <p className="text-xs text-gray-400">Cuestionario SENA — Autoinforme Secundaria</p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm font-semibold text-gray-700">
-              Página {pagina + 1} de {TOTAL_PAGINAS}
+      {/* ── Tarjeta de progreso ── */}
+      <div style={{
+        background: "white", borderRadius: 16,
+        boxShadow: "0 1px 3px rgba(14,165,233,0.08), 0 4px 16px rgba(14,165,233,0.08)",
+        padding: "20px 24px",
+        border: "1px solid #bae6fd",
+      }}>
+        <div className="progreso-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: "#0f172a", margin: 0,
+                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {nombreEstudiante}
             </p>
-            <p className="text-xs text-gray-400">{totalRespondidos} / {TOTAL_REACTIVOS} respondidos</p>
+            <p style={{ fontSize: 12, color: "#94a3b8", margin: "3px 0 0" }}>
+              Cuestionario SENA — Autoinforme Secundaria
+            </p>
+          </div>
+          <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#1e1b4b", margin: 0 }}>
+              Pág. {pagina + 1} <span style={{ fontWeight: 400, color: "#94a3b8" }}>/ {TOTAL_PAGINAS}</span>
+            </p>
+            <p style={{ fontSize: 12, color: "#94a3b8", margin: "3px 0 0" }}>
+              {totalRespondidos}/{TOTAL_REACTIVOS} resp.
+            </p>
           </div>
         </div>
 
         {/* Barra de progreso */}
-        <div className="w-full bg-gray-100 rounded-full h-2">
-          <div
-            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progreso}%` }}
-          />
+        <div style={{ height: 8, background: "#f1f5f9", borderRadius: 99, overflow: "hidden" }}>
+          <div style={{
+            height: "100%", borderRadius: 99,
+            width: `${progreso}%`,
+            background: "linear-gradient(90deg, #0ea5e9, #0284c7)",
+            transition: "width 0.4s ease",
+          }} />
         </div>
-        <p className="text-xs text-gray-400 mt-1 text-right">{progreso}% completado</p>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+          <p style={{ fontSize: 11, color: "#cbd5e1", margin: 0 }}>Progreso general</p>
+          <p style={{ fontSize: 11, fontWeight: 600, color: "#0284c7", margin: 0 }}>{progreso}% completado</p>
+        </div>
       </div>
 
-      {/* Instrucción */}
-      <p className="text-sm text-gray-500 px-1">
-        Lee cada frase y marca la opción que mejor describa con qué frecuencia te ocurre.
-      </p>
-
-      {/* Tabla de reactivos */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-gray-50">
-              <th className="text-left px-4 py-3 font-medium text-gray-600 w-full">
-                Reactivo
-              </th>
-              {ESCALA.map((e) => (
-                <th
-                  key={e.valor}
-                  className="px-3 py-3 text-center font-medium text-gray-500 min-w-[72px] text-xs"
-                >
-                  {e.corto}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {reactivosPagina.map((reactivo) => {
-              const sinResponder = erroresPagina.includes(reactivo.id)
-              return (
-                <tr
-                  key={reactivo.id}
-                  className={sinResponder ? "bg-red-50" : "hover:bg-gray-50"}
-                >
-                  <td className="px-4 py-3 text-gray-800">
-                    <span className="text-gray-400 text-xs mr-2">{reactivo.id}.</span>
-                    {reactivo.texto}
-                    {sinResponder && (
-                      <span className="ml-2 text-xs text-red-500">← obligatorio</span>
-                    )}
-                  </td>
-                  {ESCALA.map((e) => (
-                    <td key={e.valor} className="px-3 py-3 text-center">
-                      <label className="cursor-pointer" title={e.largo}>
-                        <input
-                          type="radio"
-                          name={`reactivo-${reactivo.id}`}
-                          value={e.valor}
-                          checked={respuestas[reactivo.id] === e.valor}
-                          onChange={() => handleRespuesta(reactivo.id, e.valor)}
-                          className="w-4 h-4 accent-blue-600"
-                        />
-                      </label>
-                    </td>
-                  ))}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+      {/* ── Instrucción ── */}
+      <div style={{
+        display: "flex", alignItems: "flex-start", gap: 10,
+        background: "#eff6ff", border: "1px solid #bfdbfe",
+        borderRadius: 12, padding: "12px 16px",
+      }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+             style={{ flexShrink: 0, marginTop: 1 }}>
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <p style={{ fontSize: 14, color: "#1d4ed8", margin: 0, lineHeight: 1.5 }}>
+          Lee cada frase y selecciona la opción que mejor describa <strong>con qué frecuencia te ocurre</strong>.
+          No hay respuestas correctas ni incorrectas.
+        </p>
       </div>
 
-      {/* Error de validación */}
+      {/* ── Tarjetas de reactivos ── */}
+      {reactivosPagina.map((reactivo) => {
+        const sinResponder = erroresPagina.includes(reactivo.id)
+        const valorActual  = respuestas[reactivo.id]
+
+        return (
+          <div
+            key={reactivo.id}
+            style={{
+              background: "white",
+              borderRadius: 10,
+              boxShadow: sinResponder
+                ? "0 0 0 1.5px #fca5a5"
+                : "0 1px 3px rgba(0,0,0,0.06)",
+              border: sinResponder ? "1.5px solid #fca5a5" : "1px solid #bae6fd",
+              padding: "10px 14px",
+              transition: "box-shadow 0.2s, border-color 0.2s",
+            }}
+          >
+            {/* Número + texto */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 9 }}>
+              <div style={{
+                minWidth: 24, height: 24, borderRadius: 6,
+                background: sinResponder
+                  ? "linear-gradient(135deg, #fca5a5, #f87171)"
+                  : "linear-gradient(135deg, #0284c7, #0ea5e9)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 11, fontWeight: 700, color: "white",
+                flexShrink: 0,
+              }}>
+                {reactivo.id}
+              </div>
+              <p style={{
+                fontSize: 14, color: "#1e293b", margin: 0,
+                lineHeight: 1.45, fontWeight: 700,
+              }}>
+                {reactivo.texto}
+                {sinResponder && (
+                  <span style={{ marginLeft: 6, fontSize: 11, color: "#ef4444", fontWeight: 500 }}>
+                    ⚠ obligatoria
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* Opciones */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 5 }}
+                 className="opciones-grid">
+              {ESCALA.map((e) => {
+                const seleccionado = valorActual === e.valor
+                const col = seleccionado ? COLOR_SELECCIONADO[e.valor] : null
+
+                return (
+                  <button
+                    key={e.valor}
+                    type="button"
+                    onClick={() => handleRespuesta(reactivo.id, e.valor)}
+                    title={e.largo}
+                    style={{
+                      padding: "6px 4px",
+                      borderRadius: 8,
+                      border: seleccionado ? `1.5px solid ${col!.border}` : "1.5px solid #e2e8f0",
+                      background: seleccionado ? col!.bg : "#f8fafc",
+                      color: seleccionado ? col!.text : "#64748b",
+                      fontWeight: 700,
+                      fontSize: 11,
+                      cursor: "pointer",
+                      textAlign: "center",
+                      lineHeight: 1.3,
+                      boxShadow: seleccionado ? col!.shadow : "none",
+                      transition: "all 0.15s ease",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
+                  >
+                    <div style={{
+                      width: 14, height: 14, borderRadius: "50%",
+                      border: seleccionado ? "2px solid rgba(255,255,255,0.6)" : "2px solid #cbd5e1",
+                      background: seleccionado ? "rgba(255,255,255,0.25)" : "white",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      flexShrink: 0,
+                    }}>
+                      {seleccionado && (
+                        <svg width="8" height="8" viewBox="0 0 24 24" fill="none"
+                             stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
+                    <span>{e.corto}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })}
+
+      {/* ── Error de validación ── */}
       {erroresPagina.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
-          Faltan {erroresPagina.length} reactivo(s) por responder en esta página.
+        <div style={{
+          display: "flex", alignItems: "center", gap: 10,
+          background: "#fef2f2", border: "1px solid #fecaca",
+          borderRadius: 12, padding: "12px 16px",
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+               stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+               style={{ flexShrink: 0 }}>
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          <p style={{ fontSize: 14, color: "#b91c1c", margin: 0, fontWeight: 500 }}>
+            Faltan <strong>{erroresPagina.length}</strong> pregunta{erroresPagina.length > 1 ? "s" : ""} por responder en esta página.
+          </p>
         </div>
       )}
 
-      {/* Error global */}
+      {/* ── Error global ── */}
       {errorGlobal && (
-        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+        <div style={{
+          background: "#fef2f2", border: "1px solid #fecaca",
+          borderRadius: 12, padding: "12px 16px",
+          fontSize: 14, color: "#b91c1c",
+        }}>
           {errorGlobal}
         </div>
       )}
 
-      {/* Navegación */}
-      <div className="flex items-center justify-between pt-2">
+      {/* ── Navegación ── */}
+      <div className="nav-botones" style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "8px 0 24px",
+      }}>
         <button
           onClick={handleAnterior}
           disabled={pagina === 0}
-          className="px-5 py-2 rounded-lg border border-gray-200 text-sm text-gray-600
-                     hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+          style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "11px 20px", borderRadius: 10,
+            border: "1.5px solid #e2e8f0", background: "white",
+            fontSize: 14, fontWeight: 500, color: "#475569",
+            cursor: pagina === 0 ? "not-allowed" : "pointer",
+            opacity: pagina === 0 ? 0.35 : 1,
+            transition: "opacity 0.15s",
+          }}
         >
-          ← Anterior
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 5l-7 7 7 7" />
+          </svg>
+          Anterior
         </button>
+
+        {/* Indicador de página */}
+        <div className="nav-dots" style={{ display: "flex", gap: 5 }}>
+          {Array.from({ length: TOTAL_PAGINAS }).map((_, i) => (
+            <div key={i} style={{
+              width: i === pagina ? 20 : 6,
+              height: 6, borderRadius: 99,
+              background: i === pagina ? "#0284c7" : i < pagina ? "#7dd3fc" : "#e2e8f0",
+              transition: "all 0.25s ease",
+            }} />
+          ))}
+        </div>
 
         {esPaginaFinal ? (
           <button
             onClick={handleEnviar}
             disabled={isPending}
-            className="px-6 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium
-                       hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "11px 22px", borderRadius: 10, border: "none",
+              background: isPending ? "#7dd3fc" : "linear-gradient(90deg, #0ea5e9, #0284c7)",
+              color: "white", fontSize: 14, fontWeight: 600,
+              cursor: isPending ? "not-allowed" : "pointer",
+              boxShadow: isPending ? "none" : "0 4px 12px rgba(14,165,233,0.35)",
+              transition: "all 0.15s",
+            }}
           >
-            {isPending ? "Guardando…" : "Enviar cuestionario"}
+            {isPending ? (
+              <>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="white" strokeWidth="2"
+                     style={{ animation: "spin 1s linear infinite" }}>
+                  <path d="M21 12a9 9 0 11-6.219-8.56" />
+                </svg>
+                Guardando…
+              </>
+            ) : (
+              <>
+                Enviar cuestionario
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </>
+            )}
           </button>
         ) : (
           <button
             onClick={handleSiguiente}
-            className="px-5 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium
-                       hover:bg-blue-700"
+            style={{
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "11px 22px", borderRadius: 10, border: "none",
+              background: "linear-gradient(90deg, #0ea5e9, #0284c7)",
+              color: "white", fontSize: 14, fontWeight: 600,
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(14,165,233,0.35)",
+              transition: "opacity 0.15s",
+            }}
           >
-            Siguiente →
+            Siguiente
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </button>
         )}
       </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Tablet (≤ 768px) ── */
+        @media (max-width: 768px) {
+          .nav-botones button {
+            padding: 10px 16px !important;
+            font-size: 13px !important;
+          }
+        }
+
+        /* ── Móvil grande (≤ 480px) ── */
+        @media (max-width: 480px) {
+          .progreso-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+          }
+          .progreso-header > div:last-child {
+            text-align: left !important;
+            margin-left: 0 !important;
+          }
+          .opciones-grid {
+            gap: 4px !important;
+          }
+          .opciones-grid button {
+            padding: 5px 2px !important;
+            font-size: 10px !important;
+            border-radius: 6px !important;
+          }
+          .nav-botones {
+            gap: 8px !important;
+          }
+          .nav-botones button {
+            padding: 9px 12px !important;
+            font-size: 12px !important;
+          }
+          .nav-dots {
+            display: none !important;
+          }
+        }
+
+        /* ── Móvil pequeño (≤ 360px) ── */
+        @media (max-width: 360px) {
+          .opciones-grid button {
+            padding: 4px 1px !important;
+            font-size: 9px !important;
+          }
+          .opciones-grid button > div {
+            width: 10px !important;
+            height: 10px !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

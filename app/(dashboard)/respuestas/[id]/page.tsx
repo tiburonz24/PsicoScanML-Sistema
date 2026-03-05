@@ -1,9 +1,13 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { getServerSession } from "next-auth"
 import { prisma } from "@/lib/db"
 import { calcularResultado, ESCALAS } from "@/lib/sena/scoring"
 import { REACTIVOS } from "@/lib/data/reactivos"
-import { Semaforo } from "@/lib/enums"
+import { Semaforo, Rol } from "@/lib/enums"
+import { authOptions } from "@/lib/auth"
 import Link from "next/link"
+
+const ROLES_RESPUESTAS: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN, Rol.DIRECTOR]
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -37,6 +41,9 @@ function iniciales(nombre: string) {
 }
 
 export default async function DetalleRespuestaPage({ params }: Props) {
+  const session = await getServerSession(authOptions)
+  if (!session || !ROLES_RESPUESTAS.includes(session.user.rol as Rol)) redirect("/dashboard")
+
   const { id } = await params
 
   const reg = await prisma.respuestasCuestionario.findUnique({

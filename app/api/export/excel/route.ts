@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import ExcelJS from "exceljs"
 import { prisma } from "@/lib/db"
+import { requireSession } from "@/lib/api-auth"
+import { Rol } from "@/lib/enums"
 
 // ─── Helpers de formato ─────────────────────────────────────────────────────
 
@@ -321,6 +323,9 @@ function buildWorkbook(estudiantes: EstudianteRow[], individual: boolean): Excel
 // ─── Handler GET ─────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
+  const auth = await requireSession([Rol.ADMIN, Rol.PSICOLOGO, Rol.DIRECTOR])
+  if (!auth.ok) return auth.response
+
   const { searchParams } = new URL(request.url)
   const id = searchParams.get("id") ?? undefined
 
