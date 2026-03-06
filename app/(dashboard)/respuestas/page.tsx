@@ -8,11 +8,11 @@ export const dynamic = "force-dynamic"
 
 const textos = REACTIVOS.map((r) => r.texto)
 
-const SEM: Record<Semaforo, { label: string; color: string; bg: string; dot: string }> = {
-  VERDE:        { label: "Sin riesgo",  color: "#15803d", bg: "#f0fdf4", dot: "#22c55e" },
-  AMARILLO:     { label: "Revisión",    color: "#92400e", bg: "#fffbeb", dot: "#f59e0b" },
-  ROJO:         { label: "Prioritario", color: "#991b1b", bg: "#fef2f2", dot: "#ef4444" },
-  ROJO_URGENTE: { label: "URGENTE",     color: "#7f1d1d", bg: "#fee2e2", dot: "#dc2626" },
+const SEM: Record<Semaforo, { label: string; color: string; bg: string; dot: string; borde: string }> = {
+  VERDE:        { label: "Sin riesgo",  color: "#15803d", bg: "#f0fdf4", dot: "#22c55e", borde: "#86efac" },
+  AMARILLO:     { label: "Revisión",    color: "#92400e", bg: "#fffbeb", dot: "#f59e0b", borde: "#fde68a" },
+  ROJO:         { label: "Prioritario", color: "#991b1b", bg: "#fef2f2", dot: "#ef4444", borde: "#fca5a5" },
+  ROJO_URGENTE: { label: "URGENTE",     color: "#7f1d1d", bg: "#fee2e2", dot: "#dc2626", borde: "#f87171" },
 }
 
 function iniciales(nombre: string) {
@@ -21,21 +21,34 @@ function iniciales(nombre: string) {
 
 const AVATAR_COLORS = ["#4f46e5","#0891b2","#7c3aed","#0f766e","#b45309","#be185d"]
 
-export default async function RespuestasPage() {
+type SearchParams = Promise<{ semaforo?: string }>
+type Props = { searchParams: SearchParams }
+
+export default async function RespuestasPage({ searchParams }: Props) {
+  const params = await searchParams
+
   const registros = await prisma.respuestasCuestionario.findMany({
     orderBy: { fecha: "desc" },
     include: { estudiante: { select: { nombre: true, grado: true, grupo: true } } },
   })
 
-  // Calcular resultados para los contadores del resumen
-  const resultados = registros.map((reg) => {
+  // Calcular resultado de cada registro
+  const conResultado = registros.map((reg) => {
     const arr = Array.isArray(reg.respuestas) ? (reg.respuestas as number[]) : []
-    return calcularResultado(arr, textos)
+    const resultado = calcularResultado(arr, textos)
+    return { reg, resultado }
   })
 
-  const cntUrgente  = resultados.filter(r => r.semaforo === "ROJO_URGENTE").length
-  const cntRojo     = resultados.filter(r => r.semaforo === "ROJO").length
-  const cntCriticos = resultados.filter(r => r.itemsCriticos.length > 0).length
+  // Conteos globales (siempre sobre el total)
+  const cntVerde    = conResultado.filter(r => r.resultado.semaforo === "VERDE").length
+  const cntAmarillo = conResultado.filter(r => r.resultado.semaforo === "AMARILLO").length
+  const cntRojo     = conResultado.filter(r => r.resultado.semaforo === "ROJO").length
+  const cntUrgente  = conResultado.filter(r => r.resultado.semaforo === "ROJO_URGENTE").length
+
+  // Filtrar por semáforo si hay parámetro
+  const filtrados = params.semaforo
+    ? conResultado.filter(r => r.resultado.semaforo === params.semaforo)
+    : conResultado
 
   return (
     <div style={{ paddingTop: 8 }}>
@@ -71,29 +84,43 @@ export default async function RespuestasPage() {
         </Link>
       </div>
 
-      {/* ── Resumen ── */}
+      {/* ── Tarjetas semáforo (filtros clickeables) ── */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
-        gap: 12, marginBottom: 24,
+        gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+        gap: 12, marginBottom: 20,
       }}>
-        {[
-          { label: "Total recibidos",   valor: registros.length, color: "#4f46e5", bg: "#eef2ff", borde: "#c7d2fe" },
-          { label: "Con ítems críticos",valor: cntCriticos,      color: "#c2410c", bg: "#fff7ed", borde: "#fed7aa" },
-          { label: "Prioritarios",      valor: cntRojo,          color: "#991b1b", bg: "#fef2f2", borde: "#fecaca" },
-          { label: "URGENTES",          valor: cntUrgente,       color: "#7f1d1d", bg: "#fee2e2", borde: "#fca5a5" },
-        ].map(({ label, valor, color, bg, borde }) => (
-          <div key={label} style={{
-            background: bg, border: `1px solid ${borde}`,
-            borderRadius: 10, padding: "14px 18px", textAlign: "center",
-          }}>
-            <p style={{ fontSize: 28, fontWeight: 800, color, margin: 0 }}>{valor}</p>
-            <p style={{ fontSize: 11, color, margin: "3px 0 0", fontWeight: 500 }}>{label}</p>
-          </div>
-        ))}
+        {([
+          { sem: "VERDE",        label: "Sin riesgo",  valor: cntVerde,    color: "#15803d", bg: "#f0fdf4", borde: "#bbf7d0" },
+          { sem: "AMARILLO",     label: "Revisión",    valor: cntAmarillo, color: "#92400e", bg: "#fffbeb", borde: "#fde68a" },
+          { sem: "ROJO",         label: "Prioritario", valor: cntRojo,     color: "#991b1b", bg: "#fef2f2", borde: "#fecaca" },
+          { sem: "ROJO_URGENTE", label: "Urgente",     valor: cntUrgente,  color: "#7f1d1d", bg: "#fee2e2", borde: "#fca5a5" },
+        ] as const).map(({ sem, label, valor, color, bg, borde }) => {
+          const activo = params.semaforo === sem
+          return (
+            <Link
+              key={sem}
+              href={activo ? "/respuestas" : `/respuestas?semaforo=${sem}`}
+              style={{
+                background: bg,
+                border: `${activo ? 2 : 1}px solid ${activo ? color : borde}`,
+                borderRadius: 10, padding: "12px 16px",
+                textAlign: "center", textDecoration: "none",
+                display: "block",
+                boxShadow: activo ? `0 0 0 3px ${borde}` : "none",
+                transition: "box-shadow 0.15s",
+              }}
+            >
+              <p style={{ fontSize: 26, fontWeight: 800, color, margin: 0 }}>{valor}</p>
+              <p style={{ fontSize: 11, color, margin: "2px 0 0", fontWeight: activo ? 700 : 500 }}>
+                {activo ? `▸ ${label}` : label}
+              </p>
+            </Link>
+          )
+        })}
       </div>
 
-      {/* ── Estado vacío ── */}
+      {/* ── Estado vacío (sin registros en DB) ── */}
       {registros.length === 0 && (
         <div style={{
           background: "white", borderRadius: 14, padding: "56px 32px",
@@ -150,11 +177,26 @@ export default async function RespuestasPage() {
             ))}
           </div>
 
+          {/* Sin resultados por filtro */}
+          {filtrados.length === 0 && (
+            <div style={{ padding: "48px 24px", textAlign: "center" }}>
+              <p style={{ fontWeight: 700, color: "#0f172a", fontSize: 14, margin: "0 0 4px" }}>
+                Sin resultados
+              </p>
+              <p style={{ fontSize: 13, color: "#94a3b8", margin: "0 0 16px" }}>
+                Ningún cuestionario coincide con el filtro seleccionado.
+              </p>
+              <Link href="/respuestas" style={{
+                fontSize: 13, fontWeight: 600, color: "#6366f1", textDecoration: "none",
+              }}>
+                Ver todos →
+              </Link>
+            </div>
+          )}
+
           {/* Filas */}
-          {registros.map((reg, i) => {
-            const arr      = Array.isArray(reg.respuestas) ? (reg.respuestas as number[]) : []
-            const resultado = calcularResultado(arr, textos)
-            const sem       = SEM[resultado.semaforo as Semaforo]
+          {filtrados.map(({ reg, resultado }, i) => {
+            const sem = SEM[resultado.semaforo as Semaforo]
             const avatarColor = AVATAR_COLORS[i % AVATAR_COLORS.length]
             const tieneCriticos = resultado.itemsCriticos.length > 0
 
@@ -165,9 +207,8 @@ export default async function RespuestasPage() {
                   display: "grid",
                   gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 80px",
                   padding: "14px 20px",
-                  borderBottom: i < registros.length - 1 ? "1px solid #f1f5f9" : "none",
+                  borderBottom: i < filtrados.length - 1 ? "1px solid #f1f5f9" : "none",
                   alignItems: "center",
-                  transition: "background 0.1s",
                 }}
               >
                 {/* Nombre + avatar */}
@@ -201,6 +242,7 @@ export default async function RespuestasPage() {
                 <span style={{
                   display: "inline-flex", alignItems: "center", gap: 6,
                   background: sem.bg, color: sem.color,
+                  border: `1px solid ${sem.borde}`,
                   borderRadius: 20, padding: "3px 10px",
                   fontSize: 11, fontWeight: 700, width: "fit-content",
                 }}>
@@ -236,8 +278,7 @@ export default async function RespuestasPage() {
                 <Link href={`/respuestas/${reg.id}`} style={{
                   fontSize: 12, fontWeight: 600, color: "#4f46e5",
                   textDecoration: "none", display: "flex", alignItems: "center", gap: 4,
-                }}
-                >
+                }}>
                   Detalle
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
                        stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -247,6 +288,23 @@ export default async function RespuestasPage() {
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* ── Footer ── */}
+      {registros.length > 0 && (
+        <div style={{ marginTop: 12, padding: "0 4px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontSize: 12, color: "#94a3b8" }}>
+            {params.semaforo
+              ? `${filtrados.length} de ${registros.length} registros`
+              : `${registros.length} registros en total`
+            }
+          </span>
+          {params.semaforo && (
+            <Link href="/respuestas" style={{ fontSize: 12, color: "#6366f1", textDecoration: "none", fontWeight: 500 }}>
+              Ver todos →
+            </Link>
+          )}
         </div>
       )}
     </div>

@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import BadgeSemaforo from "@/components/semaforo/BadgeSemaforo"
 import { Semaforo } from "@/lib/enums"
 
@@ -21,7 +20,6 @@ export default function TablaEstudiantes({ filas }: { filas: FilaEstudiante[] })
             <th className="text-left px-4 py-3 font-medium text-gray-600">Estudiante</th>
             <th className="text-left px-4 py-3 font-medium text-gray-600">Grado / Grupo</th>
             <th className="text-left px-4 py-3 font-medium text-gray-600">Último tamizaje</th>
-            <th className="text-left px-4 py-3 font-medium text-gray-600">Acción</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -38,15 +36,6 @@ export default function TablaEstudiantes({ filas }: { filas: FilaEstudiante[] })
                 ) : (
                   <span className="text-xs text-gray-400">Sin tamizaje</span>
                 )}
-              </td>
-              <td className="px-4 py-3">
-                <Link
-                  href={`/cuestionario/${est.id}`}
-                  className="inline-block px-3 py-1.5 bg-blue-600 text-white text-xs
-                             font-medium rounded-lg hover:bg-blue-700 transition"
-                >
-                  Aplicar SENA
-                </Link>
               </td>
             </tr>
           ))}

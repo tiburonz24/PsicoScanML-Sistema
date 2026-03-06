@@ -1,4 +1,6 @@
 import Link from "next/link"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 import { getEstudiantes } from "@/lib/data/mock"
 import { Semaforo } from "@/lib/enums"
 import FiltrosEstudiantes from "@/components/estudiantes/FiltrosEstudiantes"
@@ -35,6 +37,8 @@ function iniciales(nombre: string) {
 
 export default async function EstudiantesPage({ searchParams }: Props) {
   const params      = await searchParams
+  const session     = await getServerSession(authOptions)
+  const esAdmin     = session?.user?.rol === "ADMIN"
   const todos       = await getEstudiantes()
 
   // ── Derivar opciones únicas de grupo y grado ─────────────────────────────
@@ -131,11 +135,13 @@ export default async function EstudiantesPage({ searchParams }: Props) {
         </div>
       </div>
 
-      {/* ── Importación masiva ── */}
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
-        <ImportarEstudiantes />
-        <ImportarRespuestas />
-      </div>
+      {/* ── Importación masiva (solo ADMIN) ── */}
+      {esAdmin && (
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+          <ImportarEstudiantes />
+          <ImportarRespuestas />
+        </div>
+      )}
 
       {/* ── Cards de resumen (clickeables como filtro rápido) ── */}
       <div style={{

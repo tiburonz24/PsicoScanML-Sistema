@@ -59,6 +59,16 @@ function IconCitas() {
     </svg>
   )
 }
+function IconUsuarios() {
+  return (
+    <svg {...SVG_PROPS}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+      <circle cx="9" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M23 21v-2a4 4 0 00-3-3.87"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16 3.13a4 4 0 010 7.75"/>
+    </svg>
+  )
+}
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard",       href: "/dashboard",            roles: [Rol.ADMIN, Rol.DIRECTOR, Rol.PSICOLOGO, Rol.ORIENTADOR], icon: <IconDashboard /> },
@@ -67,6 +77,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Cuestionario",    href: "/cuestionario",         roles: [Rol.PSICOLOGO, Rol.ADMIN],                                icon: <IconCuestionario /> },
   { label: "Respuestas",      href: "/respuestas",           roles: [Rol.PSICOLOGO, Rol.ADMIN, Rol.ORIENTADOR],               icon: <IconRespuestas /> },
   { label: "Histórico ML",   href: "/historico",            roles: [Rol.ADMIN],                                              icon: <IconHistorico /> },
+  { label: "Usuarios",       href: "/usuarios",             roles: [Rol.ADMIN],                                              icon: <IconUsuarios /> },
   { label: "Mi Cuestionario", href: "/cuestionario/mi-sena", roles: [Rol.ESTUDIANTE],                                         icon: <IconCuestionario /> },
 ]
 

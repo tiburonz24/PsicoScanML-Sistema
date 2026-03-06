@@ -19,13 +19,26 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
-        const user = await prisma.usuario.findUnique({
-          where: { email: credentials.email },
-        })
-        if (!user) return null
+        let user
+        try {
+          user = await prisma.usuario.findUnique({
+            where: { email: credentials.email },
+          })
+        } catch (e) {
+          console.error("[auth] Error al consultar DB:", e)
+          return null
+        }
+
+        if (!user) {
+          console.warn("[auth] Usuario no encontrado:", credentials.email)
+          return null
+        }
 
         const passwordOk = await bcrypt.compare(credentials.password, user.password)
-        if (!passwordOk) return null
+        if (!passwordOk) {
+          console.warn("[auth] Contraseña incorrecta para:", credentials.email)
+          return null
+        }
 
         return {
           id:           user.id,
