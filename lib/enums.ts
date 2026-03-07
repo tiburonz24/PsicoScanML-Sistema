@@ -58,3 +58,35 @@ export const TipoSesion = {
   DEVOLUCION:         "DEVOLUCION",
 } as const
 export type TipoSesion = (typeof TipoSesion)[keyof typeof TipoSesion]
+
+export const TipoContacto = {
+  LLAMADA:             "LLAMADA",
+  MENSAJE_TEXTO:       "MENSAJE_TEXTO",
+  CONTACTO_POR_ALUMNO: "CONTACTO_POR_ALUMNO",
+  CITA_PADRES:         "CITA_PADRES",
+} as const
+export type TipoContacto = (typeof TipoContacto)[keyof typeof TipoContacto]
+
+export const ResultadoContacto = {
+  CONTESTO:       "CONTESTO",
+  NO_CONTESTO:    "NO_CONTESTO",
+  MENSAJE_ENVIADO:"MENSAJE_ENVIADO",
+  SIN_RESPUESTA:  "SIN_RESPUESTA",
+  ACUDIO:         "ACUDIO",
+  NO_ACUDIO:      "NO_ACUDIO",
+} as const
+export type ResultadoContacto = (typeof ResultadoContacto)[keyof typeof ResultadoContacto]
+
+export const TipoInstitucion = {
+  PUBLICA:  "PUBLICA",
+  PRIVADA:  "PRIVADA",
+} as const
+export type TipoInstitucion = (typeof TipoInstitucion)[keyof typeof TipoInstitucion]
+
+export const EstadoCanalizacion = {
+  PENDIENTE:       "PENDIENTE",
+  EN_PROCESO:      "EN_PROCESO",
+  COMPLETADA:      "COMPLETADA",
+  SIN_SEGUIMIENTO: "SIN_SEGUIMIENTO",
+} as const
+export type EstadoCanalizacion = (typeof EstadoCanalizacion)[keyof typeof EstadoCanalizacion]

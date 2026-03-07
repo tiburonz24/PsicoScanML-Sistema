@@ -98,14 +98,14 @@ function ModalUsuario({
             />
           </div>
 
-          {/* Email */}
+          {/* Usuario */}
           <div>
             <label style={{ fontSize: 12, fontWeight: 600, color: "#374151", display: "block", marginBottom: 6 }}>
-              Correo electrónico
+              Usuario
             </label>
             <input
-              type="email" value={email} onChange={e => setEmail(e.target.value)}
-              required placeholder="correo@cecyten.edu.mx"
+              type="text" value={email} onChange={e => setEmail(e.target.value)}
+              required placeholder="Nombre de usuario"
               style={{
                 width: "100%", boxSizing: "border-box",
                 padding: "10px 12px", borderRadius: 8,
@@ -395,7 +395,7 @@ export default function UsuariosContent({
           background: "#f8fafc",
           borderBottom: "1px solid #e2e8f0",
         }}>
-          {["Usuario", "Correo electrónico", "Rol", "Alta", ""].map(h => (
+          {["Usuario", "Nombre de usuario", "Rol", "Alta", ""].map(h => (
             <span key={h} style={{
               fontSize: 11, fontWeight: 700, color: "#94a3b8",
               textTransform: "uppercase", letterSpacing: "0.06em",

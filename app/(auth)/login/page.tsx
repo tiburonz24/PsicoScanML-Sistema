@@ -18,7 +18,7 @@ export default function LoginPage() {
     setError("")
     const result = await signIn("credentials", { email, password, redirect: false })
     if (result?.error) {
-      setError("Correo o contraseña incorrectos.")
+      setError("Usuario o contraseña incorrectos.")
       setLoading(false)
     } else {
       router.push("/dashboard")
@@ -156,18 +156,18 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit}>
 
-            {/* Campo correo */}
+            {/* Campo usuario */}
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 6 }}>
-                Correo electrónico
+                Usuario
               </label>
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                autoComplete="email"
-                placeholder="usuario@cecyten.edu.mx"
+                autoComplete="username"
+                placeholder="Tu nombre de usuario"
                 style={{
                   width: "100%", boxSizing: "border-box",
                   padding: "10px 14px", fontSize: 14,

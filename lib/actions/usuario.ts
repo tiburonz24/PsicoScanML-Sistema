@@ -25,14 +25,17 @@ export async function crearUsuario(data: {
   if (!ROLES_STAFF.includes(data.rol)) throw new Error("Rol no válido")
   if (data.password.length < 6) throw new Error("La contraseña debe tener al menos 6 caracteres")
 
-  const existe = await prisma.usuario.findUnique({ where: { email: data.email } })
-  if (existe) throw new Error("Ya existe un usuario con ese correo")
+  const usuario = data.email.trim()
+  if (!usuario) throw new Error("El usuario no puede estar vacío")
+
+  const existe = await prisma.usuario.findUnique({ where: { email: usuario } })
+  if (existe) throw new Error("Ya existe un usuario con ese nombre")
 
   const hash = await bcrypt.hash(data.password, 12)
   await prisma.usuario.create({
     data: {
       nombre:   data.nombre.trim(),
-      email:    data.email.trim().toLowerCase(),
+      email:    usuario,
       password: hash,
       rol:      data.rol as Rol,
     },
@@ -47,10 +50,13 @@ export async function actualizarUsuario(
   const session = await requireAdmin()
   if (!ROLES_STAFF.includes(data.rol)) throw new Error("Rol no válido")
 
+  const usuario = data.email.trim()
+  if (!usuario) throw new Error("El usuario no puede estar vacío")
+
   const existe = await prisma.usuario.findFirst({
-    where: { email: data.email, NOT: { id } },
+    where: { email: usuario, NOT: { id } },
   })
-  if (existe) throw new Error("Ya existe otro usuario con ese correo")
+  if (existe) throw new Error("Ya existe otro usuario con ese nombre")
 
   // No permitir quitarse el rol ADMIN a sí mismo
   if (session.user.email === (await prisma.usuario.findUnique({ where: { id }, select: { email: true } }))?.email) {
@@ -59,7 +65,7 @@ export async function actualizarUsuario(
 
   const update: Record<string, unknown> = {
     nombre: data.nombre.trim(),
-    email:  data.email.trim().toLowerCase(),
+    email:  usuario,
     rol:    data.rol as Rol,
   }
   if (data.password && data.password.length > 0) {

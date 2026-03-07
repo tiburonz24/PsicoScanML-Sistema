@@ -119,16 +119,17 @@ export async function POST(req: NextRequest) {
   const auth = await requireSession([Rol.ADMIN])
   if (!auth.ok) return auth.response
 
+  // ── Parsear archivo antes de iniciar el stream ────────────────────────────
+  let filas: Record<string, string>[]
+  let columnasEncontradas: string[]
+
   try {
     const form = await req.formData()
     const file = form.get("file") as File | null
     if (!file) {
       return NextResponse.json({ error: "No se recibió ningún archivo." }, { status: 400 })
     }
-
     const buffer = Buffer.from(await file.arrayBuffer())
-    let filas: Record<string, string>[]
-
     try {
       filas = await parsearArchivo(buffer, file.name)
     } catch (e) {
@@ -137,97 +138,13 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       )
     }
-
     if (filas.length === 0) {
       return NextResponse.json(
         { error: "No se encontraron filas en el archivo. Verifica que tenga columnas: id, edad, sexo, respuestas." },
         { status: 400 }
       )
     }
-
-    // Diagnóstico: columnas encontradas en la primera fila
-    const columnasEncontradas = filas.length > 0 ? Object.keys(filas[0]) : []
-
-    let insertados = 0
-    let omitidos = 0
-    let duplicados = 0
-    const errores: string[] = []
-    const muestra: Array<{ nombre: string; semaforo: string; tipoCaso: string; edad: number; sexo: string }> = []
-
-    // Contadores de razón de omisión (para diagnóstico)
-    let sinId = 0, sinEdad = 0, sinRespuestas = 0, respInvalida = 0
-
-    for (const fila of filas) {
-      // Buscar id (puede ser alfanumérico: MCG05, 123, etc.)
-      const idStr   = (fila["id"] ?? fila["folio"] ?? fila["no"] ?? fila["num"] ?? fila["numero"] ?? "").trim()
-      const edadStr = (fila["edad"] ?? fila["age"] ?? "").trim()
-      const sexoStr = (fila["sexo"] ?? fila["sex"] ?? fila["genero"] ?? "").trim()
-      // "Respuestas " con espacio → normKey lo convierte a "respuestas"
-      const respStr = (fila["respuestas"] ?? fila["responses"] ?? fila["resp"] ?? "").trim()
-
-      const edad = parseInt(edadStr, 10)
-
-      if (!idStr)                                { omitidos++; sinId++; continue }
-      if (isNaN(edad) || edad < 10 || edad > 25) { omitidos++; sinEdad++; continue }
-
-      // Validar cadena de respuestas (188 dígitos 1-5)
-      const soloDigitos = respStr.replace(/\D/g, "")
-      if (soloDigitos.length !== 188)            { omitidos++; sinRespuestas++; continue }
-
-      const respuestasArray = soloDigitos.split("").map(Number)
-      if (respuestasArray.some((r) => r < 1 || r > 5)) { omitidos++; respInvalida++; continue }
-
-      const sexo   = normalizarSexo(sexoStr)
-      // CURP sintética: HIST + id alfanumérico relleno hasta 14 chars = 18 total
-      const idNorm = idStr.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14).padStart(14, "0")
-      const curp   = `HIST${idNorm}`
-      const nombre = `Alumno ${idStr}`
-
-      // Crear estudiante — skip silencioso si la CURP ya existe
-      const estudiante = await prisma.estudiante
-        .create({
-          data: { curp, nombre, edad, sexo, grado: "Histórico", grupo: "Histórico", escuela: "Histórico SENA" },
-        })
-        .catch(() => null)
-
-      if (!estudiante) { duplicados++; continue }
-
-      try {
-        const { semaforo, tipoCaso } = await procesarYGuardarTamizaje(
-          estudiante.id,
-          respuestasArray,
-          { skipML: true }   // import masivo: solo scoring local, sin llamada ML
-        )
-        insertados++
-        muestra.push({ nombre, semaforo, tipoCaso, edad, sexo })
-      } catch (err) {
-        errores.push(`Alumno ${idStr}: ${err instanceof Error ? err.message : String(err)}`)
-        await prisma.estudiante.delete({ where: { id: estudiante.id } }).catch(() => {})
-      }
-    }
-
-    return NextResponse.json({
-      insertados,
-      omitidos,
-      duplicados,
-      errores,
-      muestra: muestra.slice(-5),
-      // Diagnóstico (visible en la consola del servidor y en la respuesta)
-      _debug: {
-        totalFilas: filas.length,
-        columnas: columnasEncontradas,
-        omitidosPorSinId: sinId,
-        omitidosPorEdad: sinEdad,
-        omitidosPorRespuestas: sinRespuestas,
-        omitidosPorRespInvalida: respInvalida,
-        ejemploPrimeraFila: filas[0] ? {
-          id: filas[0]["id"] ?? filas[0]["folio"] ?? "(no encontrado)",
-          edad: filas[0]["edad"] ?? "(no encontrado)",
-          sexo: filas[0]["sexo"] ?? "(no encontrado)",
-          respuestas_len: (filas[0]["respuestas"] ?? "").replace(/\D/g, "").length,
-        } : null,
-      },
-    })
+    columnasEncontradas = Object.keys(filas[0])
   } catch (err) {
     console.error("[importar-respuestas]", err)
     return NextResponse.json(
@@ -235,4 +152,110 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     )
   }
+
+  // ── Streaming SSE del procesamiento fila a fila ───────────────────────────
+  const encoder = new TextEncoder()
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      function enviar(data: object) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`))
+      }
+
+      let insertados = 0
+      let omitidos = 0
+      let duplicados = 0
+      let sinId = 0, sinEdad = 0, sinRespuestas = 0, respInvalida = 0
+      const errores: string[] = []
+      const muestra: Array<{ nombre: string; semaforo: string; tipoCaso: string; edad: number; sexo: string }> = []
+      const total = filas.length
+      let procesados = 0
+
+      enviar({ type: "start", total })
+
+      for (const fila of filas) {
+        procesados++
+
+        const idStr   = (fila["id"] ?? fila["folio"] ?? fila["no"] ?? fila["num"] ?? fila["numero"] ?? "").trim()
+        const edadStr = (fila["edad"] ?? fila["age"] ?? "").trim()
+        const sexoStr = (fila["sexo"] ?? fila["sex"] ?? fila["genero"] ?? "").trim()
+        const respStr = (fila["respuestas"] ?? fila["responses"] ?? fila["resp"] ?? "").trim()
+        const edad    = parseInt(edadStr, 10)
+
+        if (!idStr)                                { omitidos++; sinId++;          enviar({ type: "progress", procesados, total, insertados, omitidos, duplicados }); continue }
+        if (isNaN(edad) || edad < 10 || edad > 25) { omitidos++; sinEdad++;        enviar({ type: "progress", procesados, total, insertados, omitidos, duplicados }); continue }
+
+        const soloDigitos = respStr.replace(/\D/g, "")
+        if (soloDigitos.length !== 188)            { omitidos++; sinRespuestas++;  enviar({ type: "progress", procesados, total, insertados, omitidos, duplicados }); continue }
+
+        const respuestasArray = soloDigitos.split("").map(Number)
+        if (respuestasArray.some((r) => r < 1 || r > 5)) { omitidos++; respInvalida++; enviar({ type: "progress", procesados, total, insertados, omitidos, duplicados }); continue }
+
+        const sexo   = normalizarSexo(sexoStr)
+        const idNorm = idStr.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 14).padStart(14, "0")
+        const curp   = `HIST${idNorm}`
+        const nombre = `Alumno ${idStr}`
+
+        const estudiante = await prisma.estudiante
+          .create({
+            data: { curp, nombre, edad, sexo, grado: "Histórico", grupo: "Histórico", escuela: "Histórico SENA" },
+          })
+          .catch(() => null)
+
+        if (!estudiante) {
+          duplicados++
+          enviar({ type: "progress", procesados, total, insertados, omitidos, duplicados })
+          continue
+        }
+
+        try {
+          const { semaforo, tipoCaso } = await procesarYGuardarTamizaje(
+            estudiante.id,
+            respuestasArray,
+            { skipML: true }
+          )
+          insertados++
+          muestra.push({ nombre, semaforo, tipoCaso, edad, sexo })
+        } catch (err) {
+          errores.push(`Alumno ${idStr}: ${err instanceof Error ? err.message : String(err)}`)
+          await prisma.estudiante.delete({ where: { id: estudiante.id } }).catch(() => {})
+        }
+
+        enviar({ type: "progress", procesados, total, insertados, omitidos, duplicados })
+      }
+
+      enviar({
+        type: "done",
+        insertados,
+        omitidos,
+        duplicados,
+        errores,
+        muestra: muestra.slice(-5),
+        _debug: {
+          totalFilas: filas.length,
+          columnas: columnasEncontradas,
+          omitidosPorSinId: sinId,
+          omitidosPorEdad: sinEdad,
+          omitidosPorRespuestas: sinRespuestas,
+          omitidosPorRespInvalida: respInvalida,
+          ejemploPrimeraFila: filas[0] ? {
+            id: filas[0]["id"] ?? filas[0]["folio"] ?? "(no encontrado)",
+            edad: filas[0]["edad"] ?? "(no encontrado)",
+            sexo: filas[0]["sexo"] ?? "(no encontrado)",
+            respuestas_len: (filas[0]["respuestas"] ?? "").replace(/\D/g, "").length,
+          } : null,
+        },
+      })
+
+      controller.close()
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "X-Accel-Buffering": "no",
+    },
+  })
 }

@@ -35,6 +35,10 @@ export async function agendarCita(
   if (isNaN(fecha.getTime())) {
     return { error: "Fecha inválida." }
   }
+  const diaSemana = fecha.getDay() // 0=Dom, 6=Sáb
+  if (diaSemana === 0 || diaSemana === 6) {
+    return { error: "Solo se pueden agendar citas de lunes a viernes." }
+  }
 
   try {
     await prisma.cita.create({ data: { estudianteId, fecha, notas } })

@@ -20,6 +20,14 @@ type Resultado = {
   error?:      string
 }
 
+type Progreso = {
+  procesados: number
+  total:      number
+  insertados: number
+  omitidos:   number
+  duplicados: number
+}
+
 const SEMAFORO_STYLE: Record<string, { label: string; color: string; bg: string; dot: string; borde: string }> = {
   VERDE:        { label: "Sin riesgo",  color: "#15803d", bg: "#f0fdf4", dot: "#22c55e", borde: "#86efac" },
   AMARILLO:     { label: "Revisión",    color: "#92400e", bg: "#fffbeb", dot: "#f59e0b", borde: "#fde68a" },
@@ -35,6 +43,7 @@ export default function ImportarRespuestas() {
   const [cargando, setCargando]   = useState(false)
   const [resultado, setResultado] = useState<Resultado | null>(null)
   const [arrastrar, setArrastrar] = useState(false)
+  const [progreso, setProgreso]   = useState<Progreso | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   function handleArchivo(file: File | null) {
@@ -52,16 +61,52 @@ export default function ImportarRespuestas() {
     if (!archivo) return
     setCargando(true)
     setResultado(null)
+    setProgreso(null)
     const form = new FormData()
     form.append("file", archivo)
     try {
-      const res  = await fetch("/api/estudiantes/importar-respuestas", { method: "POST", body: form })
-      const data = await res.json()
-      setResultado(data as Resultado)
+      const res = await fetch("/api/estudiantes/importar-respuestas", { method: "POST", body: form })
+
+      // Errores de validación tempranos (no-streaming)
+      if (!res.ok) {
+        const data = await res.json()
+        setResultado(data as Resultado)
+        return
+      }
+
+      // Leer el stream SSE
+      const reader  = res.body!.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const bloques = buffer.split("\n\n")
+        buffer = bloques.pop() ?? ""
+
+        for (const bloque of bloques) {
+          const linea = bloque.trim()
+          if (!linea.startsWith("data: ")) continue
+          try {
+            const evento = JSON.parse(linea.slice(6))
+            if (evento.type === "start") {
+              setProgreso({ procesados: 0, total: evento.total, insertados: 0, omitidos: 0, duplicados: 0 })
+            } else if (evento.type === "progress") {
+              setProgreso({ procesados: evento.procesados, total: evento.total, insertados: evento.insertados, omitidos: evento.omitidos, duplicados: evento.duplicados })
+            } else if (evento.type === "done") {
+              setResultado({ insertados: evento.insertados, omitidos: evento.omitidos, duplicados: evento.duplicados, errores: evento.errores, muestra: evento.muestra })
+            }
+          } catch { /* ignorar líneas mal formadas */ }
+        }
+      }
     } catch {
       setResultado({ insertados: 0, omitidos: 0, duplicados: 0, errores: [], muestra: [], error: "No se pudo conectar con el servidor." })
     } finally {
       setCargando(false)
+      setProgreso(null)
     }
   }
 
@@ -78,7 +123,7 @@ export default function ImportarRespuestas() {
 
       {/* ── Botón para abrir/cerrar ── */}
       <button
-        onClick={() => { setAbierto(v => !v); setResultado(null); setArchivo(null) }}
+        onClick={() => { setAbierto(v => !v); setResultado(null); setArchivo(null); setProgreso(null) }}
         style={{
           display: "flex", alignItems: "center", gap: 8,
           padding: "9px 18px", borderRadius: 8,
@@ -152,7 +197,7 @@ export default function ImportarRespuestas() {
                 <span style={{ fontSize: 13, fontWeight: 600, color: "#7c3aed" }}>{archivo.name}</span>
                 <span style={{ fontSize: 11, color: "#94a3b8" }}>({(archivo.size / 1024).toFixed(1)} KB)</span>
                 <button
-                  onClick={(e) => { e.stopPropagation(); setArchivo(null); setResultado(null) }}
+                  onClick={(e) => { e.stopPropagation(); setArchivo(null); setResultado(null); setProgreso(null) }}
                   style={{ background: "none", border: "none", cursor: "pointer", color: "#94a3b8", padding: 2 }}
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
@@ -196,8 +241,70 @@ export default function ImportarRespuestas() {
               transition: "all 0.15s",
             }}
           >
-            {cargando ? "Importando y calculando tamizajes…" : "Importar con respuestas"}
+            {cargando ? "Procesando…" : "Importar con respuestas"}
           </button>
+
+          {/* ── Barra de progreso ── */}
+          {progreso && (
+            <div style={{ marginTop: 14 }}>
+              {/* Encabezado */}
+              {(() => {
+                const terminado = progreso.total > 0 && progreso.procesados >= progreso.total
+                return (
+                  <>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: terminado ? "#15803d" : "#6d28d9" }}>
+                        {terminado ? "¡Procesamiento completado!" : "Procesando estudiantes…"}
+                      </span>
+                      <span style={{ fontSize: 12, color: "#64748b" }}>
+                        {progreso.procesados} / {progreso.total}
+                        <span style={{ marginLeft: 6, fontWeight: 700, color: terminado ? "#15803d" : "#7c3aed" }}>
+                          ({Math.round((progreso.procesados / progreso.total) * 100)}%)
+                        </span>
+                      </span>
+                    </div>
+
+                    {/* Barra */}
+                    <div style={{
+                      height: terminado ? 20 : 10,
+                      borderRadius: 99,
+                      background: terminado ? "#dcfce7" : "#ede9fe",
+                      overflow: "hidden",
+                      transition: "height 0.2s ease-out, background 0.2s ease-out",
+                    }}>
+                      <div style={{
+                        height: "100%",
+                        width: `${(progreso.procesados / progreso.total) * 100}%`,
+                        background: terminado
+                          ? "linear-gradient(90deg, #16a34a, #15803d)"
+                          : "linear-gradient(90deg, #7c3aed, #6d28d9)",
+                        borderRadius: 99,
+                        transition: "width 0.15s ease-out, background 0.2s ease-out",
+                      }} />
+                    </div>
+                  </>
+                )
+              })()}
+
+              {/* Contadores en tiempo real */}
+              <div style={{
+                display: "flex", gap: 16, marginTop: 10,
+                padding: "8px 12px", borderRadius: 8,
+                background: "#f5f3ff", border: "1px solid #ede9fe",
+              }}>
+                {[
+                  { label: "Importados",  valor: progreso.insertados, color: "#15803d" },
+                  { label: "Duplicados",  valor: progreso.duplicados, color: "#92400e" },
+                  { label: "Omitidos",    valor: progreso.omitidos,   color: "#991b1b" },
+                ].map(({ label, valor, color }) => (
+                  <div key={label} style={{ textAlign: "center", flex: 1 }}>
+                    <p style={{ fontSize: 18, fontWeight: 800, color, margin: 0 }}>{valor}</p>
+                    <p style={{ fontSize: 10, color: "#64748b", margin: "1px 0 0" }}>{label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* ── Resultados ── */}
           {resultado && (

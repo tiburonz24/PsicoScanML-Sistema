@@ -1,18 +1,20 @@
 import { PrismaClient } from "@prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
+import { Pool } from "pg"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({
+  const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
+    connectionTimeoutMillis: 30000,
+    idleTimeoutMillis: 30000,
+    max: 3,
   })
-  return new PrismaClient({
-    adapter,
-    log: ["error"],
-  })
+  const adapter = new PrismaPg(pool)
+  return new PrismaClient({ adapter, log: ["error"] })
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient()

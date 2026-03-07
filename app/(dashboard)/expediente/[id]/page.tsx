@@ -6,6 +6,9 @@ import { Semaforo, Rol } from "@/lib/enums"
 import { authOptions } from "@/lib/auth"
 import FormExpediente from "@/components/expediente/FormExpediente"
 import ExpedienteAcciones from "./ExpedienteAcciones"
+import NivelRiesgoCard from "@/components/expediente/NivelRiesgoCard"
+import ContactoPadresSection from "@/components/expediente/ContactoPadresSection"
+import CanalizacionSection from "@/components/expediente/CanalizacionSection"
 
 const ROLES_EXPEDIENTE: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN]
 
@@ -68,6 +71,16 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
     orderBy: { fecha: "desc" },
   })
 
+  const contactos = await prisma.contactoPadres.findMany({
+    where: { estudianteId },
+    orderBy: { fecha: "desc" },
+  })
+
+  const canalizaciones = await prisma.canalizacion.findMany({
+    where: { estudianteId },
+    orderBy: { fecha: "desc" },
+  })
+
   const tamizaje = estudiante.tamizajes[0] as typeof estudiante.tamizajes[0] | undefined
   const sem = tamizaje ? SEM_COLORS[tamizaje.semaforo as Semaforo] : null
 
@@ -92,7 +105,32 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
         .slice(0, 5)
     : []
 
-  // Serializar sesiones para el cliente
+  // Serializar datos para el cliente
+  const contactosDto = contactos.map(c => ({
+    id:        c.id,
+    fecha:     c.fecha.toISOString(),
+    tipo:      c.tipo as string,
+    resultado: c.resultado as string,
+    notas:     c.notas,
+  }))
+
+  const canalizacionesDto = canalizaciones.map(c => ({
+    id:                c.id,
+    fecha:             c.fecha.toISOString(),
+    institucion:       c.institucion,
+    tipoInstitucion:   c.tipoInstitucion as string,
+    tipoAtencion:      c.tipoAtencion,
+    motivo:            c.motivo,
+    nivelRiesgo:       c.nivelRiesgo,
+    urgente:           c.urgente,
+    estado:            c.estado as string,
+    notas:             c.notas,
+    firmaPadres:       c.firmaPadres,
+    documentoRecibido: c.documentoRecibido,
+    tipoDocumento:     c.tipoDocumento,
+    fechaDocumento:    c.fechaDocumento?.toISOString() ?? null,
+  }))
+
   const sesionesDto = sesiones.map((s) => ({
     id:              s.id,
     fecha:           s.fecha.toISOString(),
@@ -186,6 +224,15 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
         </>
       )}
 
+      {/* ── Nivel de riesgo clínico ── */}
+      <div style={{ marginBottom: 28 }}>
+        <SeccionLabel>Valoración de riesgo clínico</SeccionLabel>
+        <NivelRiesgoCard
+          estudianteId={estudianteId}
+          nivelRiesgo={expediente.nivelRiesgo ?? null}
+        />
+      </div>
+
       {/* ── Expediente (form editable) ── */}
       <div style={{ marginBottom: 28 }}>
         <FormExpediente
@@ -195,6 +242,24 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
           diagnosticoPreliminar={expediente.diagnosticoPreliminar}
           planIntervencion={expediente.planIntervencion}
           estado={expediente.estado}
+        />
+      </div>
+
+      {/* ── Contacto con padres/tutores ── */}
+      <div style={{ marginBottom: 28 }}>
+        <SeccionLabel>Contacto con padres / tutor</SeccionLabel>
+        <ContactoPadresSection
+          estudianteId={estudianteId}
+          contactos={contactosDto}
+        />
+      </div>
+
+      {/* ── Canalizaciones externas ── */}
+      <div style={{ marginBottom: 28 }}>
+        <SeccionLabel>Canalizaciones externas</SeccionLabel>
+        <CanalizacionSection
+          estudianteId={estudianteId}
+          canalizaciones={canalizacionesDto}
         />
       </div>
 

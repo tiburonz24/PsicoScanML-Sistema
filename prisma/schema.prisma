@@ -47,8 +47,10 @@ model Estudiante {
   tamizajes     Tamizaje[]
   citas         Cita[]
   respuestasRaw RespuestasCuestionario[]
-  expediente    ExpedienteClinico?
-  sesiones      Sesion[]
+  expediente       ExpedienteClinico?
+  sesiones         Sesion[]
+  contactosPadres  ContactoPadres[]
+  canalizaciones   Canalizacion[]
 }
 
 // =============================================
@@ -184,9 +186,67 @@ model ExpedienteClinico {
   diagnosticoPreliminar String?
   planIntervencion      String?
   estado                EstadoExpediente @default(ACTIVO)
+  nivelRiesgo           Int?             // 1-10 valoración clínica manual
   abiertaEn             DateTime         @default(now())
   actualizadaEn         DateTime         @updatedAt
   estudiante            Estudiante       @relation(fields: [estudianteId], references: [id])
+}
+
+model ContactoPadres {
+  id           String            @id @default(cuid())
+  estudianteId String
+  fecha        DateTime          @default(now())
+  tipo         TipoContacto
+  resultado    ResultadoContacto
+  notas        String?
+  estudiante   Estudiante        @relation(fields: [estudianteId], references: [id])
+}
+
+model Canalizacion {
+  id                String             @id @default(cuid())
+  estudianteId      String
+  institucion       String
+  tipoInstitucion   TipoInstitucion    @default(PUBLICA)
+  tipoAtencion      String?
+  motivo            String
+  nivelRiesgo       Int?
+  urgente           Boolean            @default(false)
+  fecha             DateTime           @default(now())
+  estado            EstadoCanalizacion @default(PENDIENTE)
+  notas             String?
+  firmaPadres       Boolean            @default(false)
+  documentoRecibido Boolean            @default(false)
+  tipoDocumento     String?
+  fechaDocumento    DateTime?
+  estudiante        Estudiante         @relation(fields: [estudianteId], references: [id])
+}
+
+enum TipoContacto {
+  LLAMADA
+  MENSAJE_TEXTO
+  CONTACTO_POR_ALUMNO
+  CITA_PADRES
+}
+
+enum ResultadoContacto {
+  CONTESTO
+  NO_CONTESTO
+  MENSAJE_ENVIADO
+  SIN_RESPUESTA
+  ACUDIO
+  NO_ACUDIO
+}
+
+enum TipoInstitucion {
+  PUBLICA
+  PRIVADA
+}
+
+enum EstadoCanalizacion {
+  PENDIENTE
+  EN_PROCESO
+  COMPLETADA
+  SIN_SEGUIMIENTO
 }
 
 model Sesion {
