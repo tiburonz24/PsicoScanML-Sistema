@@ -4,14 +4,18 @@
  * Ejecutar: npx prisma db seed
  */
 
-import { PrismaClient } from "@prisma/client"
-import { PrismaPg } from "@prisma/adapter-pg"
-import bcrypt from "bcryptjs"
-import "dotenv/config"
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const dotenv = require("dotenv")
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const nodePath = require("path")
+dotenv.config({ path: nodePath.resolve(__dirname, "../.env"), override: true })
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
-})
+import { PrismaClient } from "@prisma/client"
+import { PrismaNeonHttp } from "@prisma/adapter-neon"
+import bcrypt from "bcryptjs"
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const adapter = new PrismaNeonHttp(process.env.DATABASE_URL as string, {} as any)
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
@@ -31,31 +35,9 @@ async function main() {
     bcrypt.hash("dir123", 12),
   ])
 
-  await prisma.usuario.createMany({
-    data: [
-      {
-        id: "u-1",
-        email: "psicologo@cecyten.edu.mx",
-        password: passPsicologo,
-        nombre: "Psicologa Demo",
-        rol: "PSICOLOGO",
-      },
-      {
-        id: "u-2",
-        email: "admin@cecyten.edu.mx",
-        password: passAdmin,
-        nombre: "Admin Demo",
-        rol: "ADMIN",
-      },
-      {
-        id: "u-3",
-        email: "director@cecyten.edu.mx",
-        password: passDirector,
-        nombre: "Director Demo",
-        rol: "DIRECTOR",
-      },
-    ],
-  })
+  await prisma.usuario.create({ data: { id: "u-1", email: "psicologo@cecyten.edu.mx", password: passPsicologo, nombre: "Psicologa Demo", rol: "PSICOLOGO" } })
+  await prisma.usuario.create({ data: { id: "u-2", email: "admin@cecyten.edu.mx", password: passAdmin, nombre: "Admin Demo", rol: "ADMIN" } })
+  await prisma.usuario.create({ data: { id: "u-3", email: "director@cecyten.edu.mx", password: passDirector, nombre: "Director Demo", rol: "DIRECTOR" } })
 
   console.log("Creando estudiantes, tamizajes y citas...")
 

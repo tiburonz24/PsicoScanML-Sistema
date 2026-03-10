@@ -1,20 +1,14 @@
 import "server-only"
 import { PrismaClient } from "@prisma/client"
-import { PrismaPg } from "@prisma/adapter-pg"
-import { Pool } from "pg"
+import { PrismaNeonHttp } from "@prisma/adapter-neon"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
 function createPrismaClient() {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    connectionTimeoutMillis: 30000,
-    idleTimeoutMillis: 30000,
-    max: 3,
-  })
-  const adapter = new PrismaPg(pool)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const adapter = new PrismaNeonHttp(process.env.DATABASE_URL as string, {} as any)
   return new PrismaClient({ adapter, log: ["error"] })
 }
 

@@ -87,20 +87,18 @@ export async function completarCitaConSesion(
   }
 
   try {
-    await prisma.$transaction([
-      prisma.cita.update({ where: { id: citaId }, data: { estado: "COMPLETADA" } }),
-      prisma.sesion.create({
-        data: {
-          citaId,
-          estudianteId,
-          tipo:            tipo as "EVALUACION_INICIAL" | "SEGUIMIENTO" | "INTERVENCION" | "CRISIS" | "CIERRE" | "DEVOLUCION",
-          motivo,
-          notas,
-          acuerdos,
-          planActualizado,
-        },
-      }),
-    ])
+    await prisma.cita.update({ where: { id: citaId }, data: { estado: "COMPLETADA" } })
+    await prisma.sesion.create({
+      data: {
+        citaId,
+        estudianteId,
+        tipo:            tipo as "EVALUACION_INICIAL" | "SEGUIMIENTO" | "INTERVENCION" | "CRISIS" | "CIERRE" | "DEVOLUCION",
+        motivo,
+        notas,
+        acuerdos,
+        planActualizado,
+      },
+    })
   } catch (e) {
     console.error("[completarCitaConSesion]", e)
     return { error: "No se pudo guardar la sesión. Intenta de nuevo." }
