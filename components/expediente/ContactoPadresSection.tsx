@@ -18,7 +18,7 @@ type Props = {
 }
 
 const TIPO_LABELS: Record<string, { label: string; icon: string; color: string }> = {
-  LLAMADA:             { label: "Llamada telefónica",     icon: "📞", color: "#1e40af" },
+  LLAMADA:             { label: "Llamada telefónica",     icon: "📞", color: "#1A7A8A" },
   MENSAJE_TEXTO:       { label: "Mensaje de texto",        icon: "💬", color: "#0891b2" },
   CONTACTO_POR_ALUMNO: { label: "Contacto por el alumno", icon: "🎓", color: "#7c3aed" },
   CITA_PADRES:         { label: "Cita con padres",         icon: "👨‍👩‍👧", color: "#15803d" },
@@ -27,8 +27,8 @@ const TIPO_LABELS: Record<string, { label: string; icon: string; color: string }
 const RESULTADO_LABELS: Record<string, { label: string; color: string; bg: string; border: string }> = {
   CONTESTO:        { label: "Contestó",          color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0" },
   NO_CONTESTO:     { label: "No contestó",       color: "#92400e", bg: "#fffbeb", border: "#fde68a" },
-  MENSAJE_ENVIADO: { label: "Mensaje enviado",   color: "#1e40af", bg: "#eff6ff", border: "#bfdbfe" },
-  SIN_RESPUESTA:   { label: "Sin respuesta",     color: "#64748b", bg: "#f8fafc", border: "#e2e8f0" },
+  MENSAJE_ENVIADO: { label: "Mensaje enviado",   color: "#1A7A8A", bg: "rgba(42,191,191,0.12)", border: "rgba(42,191,191,0.35)" },
+  SIN_RESPUESTA:   { label: "Sin respuesta",     color: "#4A5568", bg: "#f8fafc", border: "#e2e8f0" },
   ACUDIO:          { label: "Acudió a la cita",  color: "#15803d", bg: "#f0fdf4", border: "#bbf7d0" },
   NO_ACUDIO:       { label: "No acudió",         color: "#991b1b", bg: "#fef2f2", border: "#fecaca" },
 }
@@ -74,7 +74,7 @@ export default function ContactoPadresSection({ estudianteId, contactos: init }:
                 <span style={{ fontSize: 18, lineHeight: 1.4 }}>{t?.icon ?? "📋"}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: t?.color ?? "#0f172a" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: t?.color ?? "#0D475A" }}>
                       {t?.label ?? c.tipo}
                     </span>
                     {r && (
@@ -119,7 +119,7 @@ export default function ContactoPadresSection({ estudianteId, contactos: init }:
             display: "flex", alignItems: "center", gap: 6,
             background: "none", border: "1.5px dashed #cbd5e1",
             borderRadius: 8, padding: "8px 14px",
-            fontSize: 12, fontWeight: 600, color: "#64748b", cursor: "pointer",
+            fontSize: 12, fontWeight: 600, color: "#4A5568", cursor: "pointer",
           }}
         >
           <svg width={13} height={13} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -137,13 +137,13 @@ export default function ContactoPadresSection({ estudianteId, contactos: init }:
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
             {/* Tipo */}
             <div>
-              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#4A5568", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
                 Tipo de contacto
               </label>
               <select
                 name="tipo" value={tipo}
                 onChange={e => setTipo(e.target.value)}
-                style={{ width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "8px 10px", fontSize: 13, outline: "none", boxSizing: "border-box" as const }}
+                style={{ width: "100%", border: "1.5px solid #dce8ec", borderRadius: 7, padding: "8px 10px", fontSize: 13, outline: "none", background: "#F4F8FA", color: "#0D475A", boxSizing: "border-box" as const }}
               >
                 {Object.entries(TIPO_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v.icon} {v.label}</option>
@@ -153,12 +153,12 @@ export default function ContactoPadresSection({ estudianteId, contactos: init }:
 
             {/* Resultado */}
             <div>
-              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#4A5568", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
                 Resultado
               </label>
               <select
                 name="resultado"
-                style={{ width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 7, padding: "8px 10px", fontSize: 13, outline: "none", boxSizing: "border-box" as const }}
+                style={{ width: "100%", border: "1.5px solid #dce8ec", borderRadius: 7, padding: "8px 10px", fontSize: 13, outline: "none", background: "#F4F8FA", color: "#0D475A", boxSizing: "border-box" as const }}
               >
                 {resultadosDisponibles.map(r => (
                   <option key={r} value={r}>{RESULTADO_LABELS[r]?.label ?? r}</option>
@@ -169,7 +169,7 @@ export default function ContactoPadresSection({ estudianteId, contactos: init }:
 
           {/* Notas */}
           <div style={{ marginBottom: 12 }}>
-            <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+            <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: "#4A5568", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
               Notas (opcional)
             </label>
             <textarea
@@ -185,13 +185,13 @@ export default function ContactoPadresSection({ estudianteId, contactos: init }:
 
           <div style={{ display: "flex", gap: 8 }}>
             <button type="submit" disabled={isPending} style={{
-              background: "#4f46e5", color: "white", border: "none",
+              background: "linear-gradient(90deg, #0D475A, #1A7A8A)", color: "white", border: "none",
               borderRadius: 7, padding: "8px 18px", fontSize: 12, fontWeight: 600, cursor: "pointer",
             }}>
               {isPending ? "Guardando…" : "Registrar"}
             </button>
             <button type="button" onClick={() => setAbierto(false)} style={{
-              background: "none", color: "#64748b", border: "1px solid #e2e8f0",
+              background: "none", color: "#4A5568", border: "1.5px solid #dce8ec",
               borderRadius: 7, padding: "8px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer",
             }}>
               Cancelar

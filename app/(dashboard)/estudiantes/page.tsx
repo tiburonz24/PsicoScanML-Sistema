@@ -2,9 +2,11 @@ import Link from "next/link"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { getEstudiantes } from "@/lib/data/mock"
+import { prisma } from "@/lib/db"
 import { Semaforo } from "@/lib/enums"
 import FiltrosEstudiantes from "@/components/estudiantes/FiltrosEstudiantes"
 import ImportarEstudiantes from "@/components/estudiantes/ImportarEstudiantes"
+import ExportarParaSena from "@/components/estudiantes/ExportarParaSena"
 import ImportarRespuestas from "@/components/estudiantes/ImportarRespuestas"
 
 type SearchParams = Promise<{
@@ -29,7 +31,7 @@ const SEXO_LABEL: Record<string, string> = {
   MASCULINO: "M", FEMENINO: "F", OTRO: "Otro",
 }
 
-const AVATAR_COLORS = ["#4f46e5", "#0891b2", "#7c3aed", "#0f766e", "#b45309"]
+const AVATAR_COLORS = ["#0D475A", "#1A7A8A", "#2ABFBF", "#0f766e", "#b45309"]
 
 function iniciales(nombre: string) {
   return nombre.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase()
@@ -40,6 +42,11 @@ export default async function EstudiantesPage({ searchParams }: Props) {
   const session     = await getServerSession(authOptions)
   const esAdmin     = session?.user?.rol === "ADMIN"
   const todos       = await getEstudiantes()
+  const pendientesExport = await prisma.respuestasCuestionario.findMany({
+    where:  { procesado: false },
+    select: { estudianteId: true },
+    distinct: ["estudianteId"],
+  }).then(r => r.length)
 
   // ── Derivar opciones únicas de grupo y grado ─────────────────────────────
   const grupos = [...new Set(todos.map(e => e.grupo))].sort()
@@ -86,47 +93,27 @@ export default async function EstudiantesPage({ searchParams }: Props) {
   const hayFiltros = !!(params.semaforo || params.grupo || params.grado || params.q || params.desde || params.hasta)
 
   return (
-    <div style={{ paddingTop: 8 }}>
-
+    <div>
       {/* ── Cabecera ── */}
-      <div style={{
-        display: "flex", alignItems: "flex-start",
-        justifyContent: "space-between", flexWrap: "wrap",
-        gap: 16, marginBottom: 24,
-      }}>
+      <div className="page-header">
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", margin: "0 0 4px" }}>
-            Estudiantes
-          </h1>
-          <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+          <h1 className="page-title">Estudiantes</h1>
+          <p className="page-subtitle">
             {todos.length} estudiantes registrados · CECyTEN Plantel Tepic
           </p>
         </div>
         <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-          <a href="/api/export/excel" style={{
-            background: "white", color: "#15803d",
-            border: "1.5px solid #86efac",
-            borderRadius: 8, padding: "9px 18px",
-            fontSize: 13, fontWeight: 600, textDecoration: "none",
-            display: "flex", alignItems: "center", gap: 6,
-          }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+          <a href="/api/export/excel" className="btn-secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
               <polyline points="14 2 14 8 20 8"/>
-              <line x1="12" y1="18" x2="12" y2="12"/>
-              <line x1="9" y1="15" x2="15" y2="15"/>
+              <line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
             </svg>
             Exportar Excel
           </a>
-          <Link href="/cuestionario" style={{
-            background: "linear-gradient(90deg, #4f46e5, #4338ca)",
-            color: "white", borderRadius: 8, padding: "9px 18px",
-            fontSize: 13, fontWeight: 600, textDecoration: "none",
-            display: "flex", alignItems: "center", gap: 6,
-            boxShadow: "0 2px 8px rgba(79,70,229,0.35)",
-          }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+          <Link href="/estudiantes/nuevo" className="btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                  stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
@@ -139,6 +126,7 @@ export default async function EstudiantesPage({ searchParams }: Props) {
       {esAdmin && (
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
           <ImportarEstudiantes />
+          <ExportarParaSena count={pendientesExport} />
           <ImportarRespuestas />
         </div>
       )}
@@ -150,28 +138,25 @@ export default async function EstudiantesPage({ searchParams }: Props) {
         gap: 12, marginBottom: 20,
       }}>
         {([
-          { sem: "VERDE",        label: "Sin riesgo",  valor: sinRiesgo,   color: "#15803d", bg: "#f0fdf4", borde: "#bbf7d0" },
-          { sem: "AMARILLO",     label: "Revisión",    valor: revision,    color: "#92400e", bg: "#fffbeb", borde: "#fde68a" },
-          { sem: "ROJO",         label: "Prioritario", valor: prioritario, color: "#991b1b", bg: "#fef2f2", borde: "#fecaca" },
-          { sem: "ROJO_URGENTE", label: "Urgente",     valor: urgente,     color: "#7f1d1d", bg: "#fee2e2", borde: "#fca5a5" },
-        ] as const).map(({ sem, label, valor, color, bg, borde }) => {
+          { sem: "VERDE",        label: "Sin riesgo",  valor: sinRiesgo,   accent: "#68D391", text: "#276749" },
+          { sem: "AMARILLO",     label: "Revisión",    valor: revision,    accent: "#F6AD55", text: "#975a16" },
+          { sem: "ROJO",         label: "Prioritario", valor: prioritario, accent: "#FC8181", text: "#9b2c2c" },
+          { sem: "ROJO_URGENTE", label: "Urgente",     valor: urgente,     accent: "#FC8181", text: "#7b2222" },
+        ] as const).map(({ sem, label, valor, accent, text }) => {
           const activo = params.semaforo === sem
           return (
-            <Link
-              key={sem}
-              href={activo ? "/estudiantes" : `/estudiantes?semaforo=${sem}`}
+            <Link key={sem} href={activo ? "/estudiantes" : `/estudiantes?semaforo=${sem}`}
               style={{
-                background: bg,
-                border: `${activo ? 2 : 1}px solid ${activo ? color : borde}`,
-                borderRadius: 10, padding: "12px 16px",
-                textAlign: "center", textDecoration: "none",
-                display: "block",
-                boxShadow: activo ? `0 0 0 3px ${borde}` : "none",
-                transition: "box-shadow 0.15s",
+                background: activo ? `${accent}22` : "#fff",
+                border: `${activo ? 2 : 1}px solid ${activo ? accent : "#dce8ec"}`,
+                borderRadius: 12, padding: "14px 16px",
+                textAlign: "center", textDecoration: "none", display: "block",
+                transition: "all 0.15s",
+                boxShadow: activo ? `0 0 0 3px ${accent}33` : "none",
               }}
             >
-              <p style={{ fontSize: 26, fontWeight: 800, color, margin: 0 }}>{valor}</p>
-              <p style={{ fontSize: 11, color, margin: "2px 0 0", fontWeight: activo ? 700 : 500 }}>
+              <p style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: 28, fontWeight: 800, color: text, margin: 0, lineHeight: 1 }}>{valor}</p>
+              <p style={{ fontSize: 11, color: text, margin: "5px 0 0", fontWeight: activo ? 700 : 500, letterSpacing: "0.3px" }}>
                 {activo ? `▸ ${label}` : label}
               </p>
             </Link>
@@ -224,14 +209,14 @@ export default async function EstudiantesPage({ searchParams }: Props) {
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <p style={{ fontWeight: 700, color: "#0f172a", fontSize: 14, margin: "0 0 4px" }}>
+            <p style={{ fontWeight: 700, color: "#0D475A", fontSize: 14, margin: "0 0 4px" }}>
               Sin resultados
             </p>
             <p style={{ fontSize: 13, color: "#94a3b8", margin: "0 0 16px" }}>
               Ningún estudiante coincide con los filtros seleccionados.
             </p>
             <Link href="/estudiantes" style={{
-              fontSize: 13, fontWeight: 600, color: "#6366f1", textDecoration: "none",
+              fontSize: 13, fontWeight: 600, color: "#1A7A8A", textDecoration: "none",
             }}>
               Limpiar filtros →
             </Link>
@@ -269,7 +254,7 @@ export default async function EstudiantesPage({ searchParams }: Props) {
                   {iniciales(est.nombre)}
                 </div>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", margin: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#0D475A", margin: 0 }}>
                     {est.nombre}
                   </p>
                   <p style={{ fontSize: 12, color: "#94a3b8", margin: "1px 0 0" }}>
@@ -316,7 +301,7 @@ export default async function EstudiantesPage({ searchParams }: Props) {
 
               {/* Acción */}
               <Link href={`/estudiantes/${est.id}`} style={{
-                fontSize: 12, fontWeight: 600, color: "#4f46e5",
+                fontSize: 12, fontWeight: 600, color: "#1A7A8A",
                 textDecoration: "none", display: "flex", alignItems: "center", gap: 4,
               }}>
                 Expediente
@@ -344,7 +329,7 @@ export default async function EstudiantesPage({ searchParams }: Props) {
           </span>
           {hayFiltros && (
             <Link href="/estudiantes" style={{
-              fontSize: 12, color: "#6366f1", textDecoration: "none", fontWeight: 500,
+              fontSize: 12, color: "#1A7A8A", textDecoration: "none", fontWeight: 500,
             }}>
               Ver todos →
             </Link>

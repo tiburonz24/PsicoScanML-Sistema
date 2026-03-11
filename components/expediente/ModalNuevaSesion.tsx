@@ -11,25 +11,26 @@ type Props = {
 
 const OVERLAY: React.CSSProperties = {
   position: "fixed", inset: 0,
-  background: "rgba(0,0,0,0.45)",
+  background: "rgba(13,71,90,0.45)", backdropFilter: "blur(3px)",
   display: "flex", alignItems: "center", justifyContent: "center",
   zIndex: 50,
 }
 const CARD: React.CSSProperties = {
-  background: "white", borderRadius: 16,
+  background: "white", borderRadius: 18,
   padding: "28px 32px", width: "100%", maxWidth: 480,
   maxHeight: "90vh", overflowY: "auto",
-  boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+  boxShadow: "0 24px 64px rgba(13,71,90,0.2)",
 }
 const LABEL: React.CSSProperties = {
   display: "block", fontSize: 11, fontWeight: 700,
-  color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em",
+  color: "#4A5568", textTransform: "uppercase", letterSpacing: "0.06em",
   marginBottom: 5,
 }
 const INPUT: React.CSSProperties = {
-  width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 8,
-  padding: "9px 12px", fontSize: 13, color: "#0f172a",
-  outline: "none", boxSizing: "border-box",
+  width: "100%", border: "1.5px solid #dce8ec", borderRadius: 8,
+  padding: "9px 12px", fontSize: 13, color: "#0D475A",
+  outline: "none", boxSizing: "border-box", background: "#F4F8FA",
+  fontFamily: "inherit",
 }
 
 const LABELS_TIPO: Record<string, string> = {
@@ -54,7 +55,7 @@ export default function ModalNuevaSesion({ estudianteId, onClose }: Props) {
     <div style={OVERLAY} onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div style={CARD}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>Nueva sesión</h2>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0D475A", fontFamily: "var(--font-syne), sans-serif" }}>Nueva sesión</h2>
           <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#94a3b8" }}>
             <svg width={16} height={16} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -127,7 +128,7 @@ export default function ModalNuevaSesion({ estudianteId, onClose }: Props) {
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
             <button
               type="button" onClick={onClose}
-              style={{ background: "none", color: "#64748b", border: "1.5px solid #e2e8f0",
+              style={{ background: "none", color: "#4A5568", border: "1.5px solid #dce8ec",
                 borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
               disabled={isPending}
             >
@@ -135,7 +136,7 @@ export default function ModalNuevaSesion({ estudianteId, onClose }: Props) {
             </button>
             <button
               type="submit"
-              style={{ background: "#4f46e5", color: "white", border: "none",
+              style={{ background: "linear-gradient(90deg, #0D475A, #1A7A8A)", color: "white", border: "none",
                 borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
               disabled={isPending}
             >

@@ -19,8 +19,8 @@ export default function AgendarCitaBtn({ estudianteId, nombreEstudiante, estudia
       <button
         onClick={() => setOpen(true)}
         style={{
-          background: "white", color: "#4f46e5",
-          border: "1.5px solid #a5b4fc",
+          background: "white", color: "#1A7A8A",
+          border: "1.5px solid #99f6e4",
           borderRadius: 8, padding: "7px 14px",
           fontSize: 12, fontWeight: 600,
           cursor: "pointer",

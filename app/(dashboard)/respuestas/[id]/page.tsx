@@ -72,19 +72,19 @@ export default async function DetalleRespuestaPage({ params }: Props) {
 
       {/* ── Breadcrumb ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
-        <Link href="/respuestas" style={{ fontSize: 13, color: "#6366f1", textDecoration: "none", fontWeight: 500 }}>
+        <Link href="/respuestas" style={{ fontSize: 13, color: "#1A7A8A", textDecoration: "none", fontWeight: 500 }}>
           Respuestas
         </Link>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
              stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="9 18 15 12 9 6"/>
         </svg>
-        <span style={{ fontSize: 13, color: "#0f172a", fontWeight: 600 }}>{reg.estudiante.nombre}</span>
+        <span style={{ fontSize: 13, color: "#0D475A", fontWeight: 600 }}>{reg.estudiante.nombre}</span>
       </div>
 
       {/* ── Perfil ── */}
       <div style={{
-        background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)",
+        background: "linear-gradient(135deg, #0D475A 0%, #1A7A8A 100%)",
         borderRadius: 16, padding: "24px 28px",
         display: "flex", alignItems: "center",
         justifyContent: "space-between", flexWrap: "wrap",
@@ -104,10 +104,10 @@ export default async function DetalleRespuestaPage({ params }: Props) {
             <h1 style={{ fontSize: 21, fontWeight: 800, color: "white", margin: "0 0 4px" }}>
               {reg.estudiante.nombre}
             </h1>
-            <p style={{ fontSize: 13, color: "#a5b4fc", margin: 0 }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", margin: 0 }}>
               {reg.estudiante.edad} años · {reg.estudiante.grado} &quot;{reg.estudiante.grupo}&quot;
             </p>
-            <p style={{ fontSize: 12, color: "#818cf8", margin: "4px 0 0" }}>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", margin: "4px 0 0" }}>
               Enviado el{" "}
               {new Date(reg.fecha).toLocaleDateString("es-MX", {
                 weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -126,7 +126,7 @@ export default async function DetalleRespuestaPage({ params }: Props) {
           }}>
             {sem.label}
           </span>
-          <span style={{ fontSize: 11, color: "#a5b4fc" }}>
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>
             {resultado.totalItemsAltos} ítems con respuesta alta (4–5)
           </span>
         </div>
@@ -307,7 +307,7 @@ export default async function DetalleRespuestaPage({ params }: Props) {
                       {escala?.label ?? clave}
                     </p>
                     <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 6 }}>
-                      <span style={{ fontSize: 20, fontWeight: 800, color: "#0f172a" }}>{puntos}</span>
+                      <span style={{ fontSize: 20, fontWeight: 800, color: "#0D475A" }}>{puntos}</span>
                       <span style={{ fontSize: 11, color: "#94a3b8" }}>/ {max}</span>
                     </div>
                     <div style={{ background: "#e2e8f0", borderRadius: 4, height: 4, overflow: "hidden" }}>

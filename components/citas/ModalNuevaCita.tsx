@@ -14,32 +14,33 @@ type Props = {
 
 const OVERLAY: React.CSSProperties = {
   position: "fixed", inset: 0,
-  background: "rgba(0,0,0,0.45)",
+  background: "rgba(13,71,90,0.45)", backdropFilter: "blur(3px)",
   display: "flex", alignItems: "center", justifyContent: "center",
   zIndex: 50,
 }
 const CARD: React.CSSProperties = {
-  background: "white", borderRadius: 16,
+  background: "white", borderRadius: 18,
   padding: "28px 32px", width: "100%", maxWidth: 440,
-  boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+  boxShadow: "0 24px 64px rgba(13,71,90,0.2)",
 }
 const LABEL: React.CSSProperties = {
   display: "block", fontSize: 11, fontWeight: 700,
-  color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em",
+  color: "#4A5568", textTransform: "uppercase", letterSpacing: "0.06em",
   marginBottom: 5,
 }
 const INPUT: React.CSSProperties = {
-  width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 8,
-  padding: "9px 12px", fontSize: 13, color: "#0f172a",
-  outline: "none", boxSizing: "border-box",
+  width: "100%", border: "1.5px solid #dce8ec", borderRadius: 8,
+  padding: "9px 12px", fontSize: 13, color: "#0D475A",
+  outline: "none", boxSizing: "border-box", background: "#F4F8FA",
+  fontFamily: "inherit",
 }
 const BTN_PRIMARY: React.CSSProperties = {
-  background: "#4f46e5", color: "white", border: "none",
+  background: "linear-gradient(90deg, #0D475A, #1A7A8A)", color: "white", border: "none",
   borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 600,
   cursor: "pointer",
 }
 const BTN_GHOST: React.CSSProperties = {
-  background: "none", color: "#64748b", border: "1.5px solid #e2e8f0",
+  background: "none", color: "#4A5568", border: "1.5px solid #dce8ec",
   borderRadius: 8, padding: "10px 20px", fontSize: 13, fontWeight: 600,
   cursor: "pointer",
 }
@@ -129,7 +130,7 @@ export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudi
     return (
       <>
         {nombre.slice(0, idx)}
-        <span style={{ background: "#e0e7ff", color: "#3730a3", borderRadius: 2, padding: "0 1px" }}>
+        <span style={{ background: "rgba(42,191,191,0.2)", color: "#0D475A", borderRadius: 2, padding: "0 1px" }}>
           {nombre.slice(idx, idx + query.length)}
         </span>
         {nombre.slice(idx + query.length)}
@@ -154,7 +155,7 @@ export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudi
     <div style={OVERLAY} onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
       <div style={CARD}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0f172a" }}>Agendar cita</h2>
+          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: "#0D475A", fontFamily: "var(--font-syne), sans-serif" }}>Agendar cita</h2>
           <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#94a3b8" }}>
             <svg width={16} height={16} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -191,7 +192,7 @@ export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudi
                     {/* Icono lupa */}
                     <svg
                       width={15} height={15} fill="none" viewBox="0 0 24 24"
-                      stroke={dropdownOpen ? "#4f46e5" : "#94a3b8"} strokeWidth={2.2}
+                      stroke={dropdownOpen ? "#1A7A8A" : "#94a3b8"} strokeWidth={2.2}
                       style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", transition: "stroke 0.15s" }}
                     >
                       <circle cx="11" cy="11" r="8" /><path strokeLinecap="round" d="M21 21l-4.35-4.35" />
@@ -209,8 +210,8 @@ export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudi
                         ...INPUT,
                         paddingLeft: 34,
                         paddingRight: selectedId ? 34 : 12,
-                        borderColor: dropdownOpen ? "#6366f1" : selectedId ? "#86efac" : "#e2e8f0",
-                        boxShadow: dropdownOpen ? "0 0 0 3px rgba(99,102,241,0.12)" : "none",
+                        borderColor: dropdownOpen ? "#2ABFBF" : selectedId ? "#2ABFBF" : "#dce8ec",
+                        boxShadow: dropdownOpen ? "0 0 0 3px rgba(42,191,191,0.15)" : "none",
                         transition: "border-color 0.15s, box-shadow 0.15s",
                       }}
                     />
@@ -251,9 +252,9 @@ export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudi
                     <div style={{
                       position: "absolute", top: "calc(100% + 4px)", left: 0, right: 0,
                       background: "white",
-                      border: "1.5px solid #e0e7ff",
+                      border: "1.5px solid rgba(42,191,191,0.3)",
                       borderRadius: 10,
-                      boxShadow: "0 8px 24px rgba(79,70,229,0.12)",
+                      boxShadow: "0 8px 24px rgba(13,71,90,0.1)",
                       zIndex: 100,
                       overflow: "hidden",
                     }}>
@@ -296,24 +297,24 @@ export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudi
                                   padding: "9px 12px",
                                   cursor: "pointer",
                                   display: "flex", alignItems: "center", gap: 9,
-                                  background: highlighted ? "#eef2ff" : "white",
-                                  borderLeft: highlighted ? "3px solid #6366f1" : "3px solid transparent",
+                                  background: highlighted ? "rgba(42,191,191,0.08)" : "white",
+                                  borderLeft: highlighted ? "3px solid #1A7A8A" : "3px solid transparent",
                                   transition: "background 0.1s",
                                 }}
                               >
                                 {/* Avatar */}
                                 <div style={{
                                   width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-                                  background: highlighted ? "#6366f1" : "#e0e7ff",
+                                  background: highlighted ? "#1A7A8A" : "#E8F4F6",
                                   display: "flex", alignItems: "center", justifyContent: "center",
                                   fontSize: 11, fontWeight: 700,
-                                  color: highlighted ? "white" : "#4f46e5",
+                                  color: highlighted ? "white" : "#1A7A8A",
                                   transition: "background 0.1s, color 0.1s",
                                 }}>
                                   {est.nombre.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase()}
                                 </div>
                                 {/* Nombre con resaltado */}
-                                <span style={{ fontSize: 13, color: "#0f172a", fontWeight: 500 }}>
+                                <span style={{ fontSize: 13, color: "#0D475A", fontWeight: 500 }}>
                                   {resaltar(est.nombre)}
                                 </span>
                               </li>

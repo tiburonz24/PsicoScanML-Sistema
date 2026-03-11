@@ -19,17 +19,17 @@ type CitaDto = {
 type EstudianteDto = { id: string; nombre: string }
 
 const ESTADO_BADGE: Record<string, { bg: string; color: string; border: string; label: string }> = {
-  PENDIENTE:  { bg: "#fffbeb", color: "#92400e", border: "#fde68a", label: "Pendiente"  },
-  CONFIRMADA: { bg: "#eff6ff", color: "#1e40af", border: "#bfdbfe", label: "Confirmada" },
-  COMPLETADA: { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0", label: "Completada" },
-  CANCELADA:  { bg: "#f8fafc", color: "#64748b", border: "#e2e8f0", label: "Cancelada"  },
+  PENDIENTE:  { bg: "rgba(246,173,85,0.12)",  color: "#975a16", border: "rgba(246,173,85,0.35)",  label: "Pendiente"  },
+  CONFIRMADA: { bg: "rgba(42,191,191,0.12)",  color: "#1A7A8A", border: "rgba(42,191,191,0.35)",  label: "Confirmada" },
+  COMPLETADA: { bg: "rgba(104,211,145,0.12)", color: "#276749", border: "rgba(104,211,145,0.35)", label: "Completada" },
+  CANCELADA:  { bg: "rgba(13,71,90,0.06)",    color: "#4A5568", border: "rgba(13,71,90,0.12)",    label: "Cancelada"  },
 }
 
 const ESTADO_CAL: Record<string, { bg: string; color: string; border: string; dot: string }> = {
-  PENDIENTE:  { bg: "#fef3c7", color: "#92400e", border: "#fcd34d", dot: "#f59e0b" },
-  CONFIRMADA: { bg: "#dbeafe", color: "#1e40af", border: "#93c5fd", dot: "#3b82f6" },
-  COMPLETADA: { bg: "#dcfce7", color: "#15803d", border: "#86efac", dot: "#22c55e" },
-  CANCELADA:  { bg: "#f1f5f9", color: "#94a3b8", border: "#e2e8f0", dot: "#cbd5e1" },
+  PENDIENTE:  { bg: "rgba(246,173,85,0.18)",  color: "#975a16", border: "#F6AD55", dot: "#F6AD55" },
+  CONFIRMADA: { bg: "rgba(42,191,191,0.18)",  color: "#1A7A8A", border: "#2ABFBF", dot: "#2ABFBF" },
+  COMPLETADA: { bg: "rgba(104,211,145,0.18)", color: "#276749", border: "#68D391", dot: "#68D391" },
+  CANCELADA:  { bg: "rgba(13,71,90,0.06)",    color: "#4A5568", border: "#dce8ec", dot: "#dce8ec" },
 }
 
 const HORAS    = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
@@ -67,15 +67,14 @@ function StatCard({ label, count, color }: { label: string; count: number; color
   return (
     <div style={{
       background: "white", borderRadius: 12,
-      border: "1px solid #f1f5f9",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+      border: "1px solid #dce8ec",
       padding: "16px 20px",
       display: "flex", alignItems: "center", gap: 12,
     }}>
       <div style={{ width: 8, height: 8, borderRadius: "50%", background: color, flexShrink: 0 }} />
       <div>
-        <p style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", margin: "0 0 2px" }}>{count}</p>
-        <p style={{ fontSize: 11, color: "#94a3b8", margin: 0, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        <p style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: 22, fontWeight: 800, color: "#0D475A", margin: "0 0 2px" }}>{count}</p>
+        <p style={{ fontSize: 10.5, color: "#4A5568", margin: 0, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.8px" }}>
           {label}
         </p>
       </div>
@@ -150,8 +149,8 @@ export default function CitasContent({
       {/* ── Encabezado ── */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", margin: "0 0 2px" }}>Citas</h1>
-          <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: "#0D475A", margin: "0 0 2px" }}>Citas</h1>
+          <p style={{ fontSize: 13, color: "#4A5568", margin: 0 }}>
             Gestión de agenda · CECyTEN Tepic
           </p>
         </div>
@@ -166,7 +165,7 @@ export default function CitasContent({
                 padding: "6px 14px", borderRadius: 6, border: "none",
                 fontSize: 12, fontWeight: 600, cursor: "pointer",
                 background: view === v ? "white" : "transparent",
-                color: view === v ? "#0f172a" : "#64748b",
+                color: view === v ? "#0D475A" : "#4A5568",
                 boxShadow: view === v ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
                 transition: "all 0.15s",
               }}>
@@ -177,7 +176,7 @@ export default function CitasContent({
           <button
             onClick={() => setModalNueva(true)}
             style={{
-              background: "#4f46e5", color: "white", border: "none",
+              background: "#0D475A", color: "white", border: "none",
               borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600,
               cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
             }}
@@ -192,9 +191,9 @@ export default function CitasContent({
 
       {/* ── Stats ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 24 }}>
-        <StatCard label="Pendientes"      count={pendientes}     color="#f59e0b" />
-        <StatCard label="Confirmadas"     count={confirmadas}    color="#3b82f6" />
-        <StatCard label="Completadas hoy" count={completadasHoy} color="#22c55e" />
+        <StatCard label="Pendientes"      count={pendientes}     color="#F6AD55" />
+        <StatCard label="Confirmadas"     count={confirmadas}    color="#2ABFBF" />
+        <StatCard label="Completadas hoy" count={completadasHoy} color="#68D391" />
       </div>
 
       {/* ══════════════════════════════════════════════
@@ -224,14 +223,14 @@ export default function CitasContent({
             >‹</button>
 
             <div style={{ textAlign: "center" }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", margin: 0 }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#0D475A", margin: 0 }}>
                 {semanaLabel(inicioW)}
               </p>
               {semanaOffset !== 0 && (
                 <button
                   onClick={() => setSemanaOffset(0)}
                   style={{
-                    fontSize: 11, color: "#6366f1", background: "none",
+                    fontSize: 11, color: "#1A7A8A", background: "none",
                     border: "none", cursor: "pointer", padding: 0, fontWeight: 600,
                   }}
                 >
@@ -272,7 +271,7 @@ export default function CitasContent({
                     }}>
                       <p style={{
                         fontSize: 11, fontWeight: 700,
-                        color: hoyDia ? "#4f46e5" : "#94a3b8",
+                        color: hoyDia ? "#1A7A8A" : "#94a3b8",
                         textTransform: "uppercase", letterSpacing: "0.06em",
                         margin: "0 0 4px",
                       }}>
@@ -280,7 +279,7 @@ export default function CitasContent({
                       </p>
                       <div style={{
                         width: 30, height: 30, borderRadius: "50%",
-                        background: hoyDia ? "#4f46e5" : "transparent",
+                        background: hoyDia ? "#1A7A8A" : "transparent",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         margin: "0 auto",
                       }}>
@@ -327,7 +326,7 @@ export default function CitasContent({
                         borderLeft: "1px solid #f1f5f9",
                         padding: "3px 4px",
                         minHeight: HORA_PX,
-                        background: hoyDia ? "rgba(79,70,229,0.02)" : "transparent",
+                        background: hoyDia ? "rgba(42,191,191,0.04)" : "transparent",
                         position: "relative",
                       }}>
                         {celdaCitas.map(c => {
@@ -372,10 +371,10 @@ export default function CitasContent({
                                   boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
                                   padding: 12,
                                 }}>
-                                  <p style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", margin: "0 0 2px" }}>
+                                  <p style={{ fontSize: 13, fontWeight: 700, color: "#0D475A", margin: "0 0 2px" }}>
                                     {c.estudiante.nombre}
                                   </p>
-                                  <p style={{ fontSize: 11, color: "#64748b", margin: "0 0 10px" }}>
+                                  <p style={{ fontSize: 11, color: "#4A5568", margin: "0 0 10px" }}>
                                     {new Date(c.fecha).toLocaleDateString("es-MX", {
                                       weekday: "long", day: "numeric", month: "long",
                                       hour: "2-digit", minute: "2-digit",
@@ -391,7 +390,7 @@ export default function CitasContent({
                                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
                                     {c.estado === "PENDIENTE" && (<>
                                       <button onClick={() => { handleEstado(c.id, "CONFIRMADA"); setCitaPopup(null) }}
-                                        style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 6, cursor: "pointer", background: "#eff6ff", color: "#1e40af", border: "1px solid #bfdbfe" }}>
+                                        style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 6, cursor: "pointer", background: "rgba(42,191,191,0.12)", color: "#1A7A8A", border: "1px solid rgba(42,191,191,0.35)" }}>
                                         Confirmar
                                       </button>
                                       <button onClick={() => { handleEstado(c.id, "CANCELADA"); setCitaPopup(null) }}
@@ -401,7 +400,7 @@ export default function CitasContent({
                                     </>)}
                                     {c.estado === "CONFIRMADA" && (<>
                                       <button onClick={() => { setCitaACompletar(c); setCitaPopup(null) }}
-                                        style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 6, cursor: "pointer", background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0" }}>
+                                        style={{ fontSize: 11, fontWeight: 600, padding: "5px 10px", borderRadius: 6, cursor: "pointer", background: "rgba(104,211,145,0.12)", color: "#276749", border: "1px solid rgba(104,211,145,0.35)" }}>
                                         Completar
                                       </button>
                                       <button onClick={() => { handleEstado(c.id, "CANCELADA"); setCitaPopup(null) }}
@@ -413,7 +412,7 @@ export default function CitasContent({
 
                                   <Link href={`/expediente/${c.estudianteId}`}
                                     onClick={() => setCitaPopup(null)}
-                                    style={{ fontSize: 11, fontWeight: 600, color: "#4f46e5", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
+                                    style={{ fontSize: 11, fontWeight: 600, color: "#1A7A8A", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
                                     Ver expediente →
                                   </Link>
                                 </div>
@@ -441,7 +440,7 @@ export default function CitasContent({
                   background: ESTADO_CAL[k].bg,
                   border: `1.5px solid ${ESTADO_CAL[k].dot}`,
                 }} />
-                <span style={{ fontSize: 11, color: "#64748b", fontWeight: 500 }}>{v.label}</span>
+                <span style={{ fontSize: 11, color: "#4A5568", fontWeight: 500 }}>{v.label}</span>
               </div>
             ))}
           </div>
@@ -494,7 +493,7 @@ export default function CitasContent({
                     >
                       <td style={{ padding: "14px 16px" }}>
                         <Link href={`/expediente/${cita.estudianteId}`}
-                          style={{ fontSize: 13, fontWeight: 600, color: "#4f46e5", textDecoration: "none" }}>
+                          style={{ fontSize: 13, fontWeight: 600, color: "#1A7A8A", textDecoration: "none" }}>
                           {cita.estudiante.nombre}
                         </Link>
                       </td>
@@ -510,7 +509,7 @@ export default function CitasContent({
                           {badge.label}
                         </span>
                       </td>
-                      <td style={{ padding: "14px 16px", fontSize: 12, color: "#64748b", maxWidth: 220 }}>
+                      <td style={{ padding: "14px 16px", fontSize: 12, color: "#4A5568", maxWidth: 220 }}>
                         {cita.notas ? (
                           <span style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                             {cita.notas}
@@ -523,7 +522,7 @@ export default function CitasContent({
                         {cita.estado === "PENDIENTE" && (
                           <div style={{ display: "flex", gap: 6 }}>
                             <button onClick={() => handleEstado(cita.id, "CONFIRMADA")} disabled={isPending}
-                              style={{ fontSize: 11, fontWeight: 600, padding: "5px 12px", borderRadius: 6, cursor: "pointer", background: "#eff6ff", color: "#1e40af", border: "1px solid #bfdbfe" }}>
+                              style={{ fontSize: 11, fontWeight: 600, padding: "5px 12px", borderRadius: 6, cursor: "pointer", background: "rgba(42,191,191,0.12)", color: "#1A7A8A", border: "1px solid rgba(42,191,191,0.35)" }}>
                               Confirmar
                             </button>
                             <button onClick={() => handleEstado(cita.id, "CANCELADA")} disabled={isPending}
@@ -535,7 +534,7 @@ export default function CitasContent({
                         {cita.estado === "CONFIRMADA" && (
                           <div style={{ display: "flex", gap: 6 }}>
                             <button onClick={() => setCitaACompletar(cita)}
-                              style={{ fontSize: 11, fontWeight: 600, padding: "5px 12px", borderRadius: 6, cursor: "pointer", background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0" }}>
+                              style={{ fontSize: 11, fontWeight: 600, padding: "5px 12px", borderRadius: 6, cursor: "pointer", background: "rgba(104,211,145,0.12)", color: "#276749", border: "1px solid rgba(104,211,145,0.35)" }}>
                               Completar
                             </button>
                             <button onClick={() => handleEstado(cita.id, "CANCELADA")} disabled={isPending}

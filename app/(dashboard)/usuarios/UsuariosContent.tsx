@@ -13,10 +13,10 @@ type UsuarioDto = {
 }
 
 const ROL_META: Record<string, { label: string; bg: string; color: string; border: string; avatar: string }> = {
-  ADMIN:      { label: "Admin",       bg: "#ede9fe", color: "#5b21b6", border: "#c4b5fd", avatar: "#4f46e5" },
-  PSICOLOGO:  { label: "Psicóloga/o", bg: "#fce7f3", color: "#9d174d", border: "#f9a8d4", avatar: "#be185d" },
-  DIRECTOR:   { label: "Director",    bg: "#e0f2fe", color: "#0c4a6e", border: "#7dd3fc", avatar: "#0369a1" },
-  ORIENTADOR: { label: "Orientador",  bg: "#fef3c7", color: "#92400e", border: "#fde68a", avatar: "#b45309" },
+  ADMIN:      { label: "Admin",       bg: "rgba(13,71,90,0.08)",   color: "#0D475A", border: "rgba(13,71,90,0.2)",   avatar: "#0D475A" },
+  PSICOLOGO:  { label: "Psicóloga/o", bg: "rgba(42,191,191,0.12)", color: "#1A7A8A", border: "rgba(42,191,191,0.3)", avatar: "#1A7A8A" },
+  DIRECTOR:   { label: "Director",    bg: "rgba(26,122,138,0.1)",  color: "#0D475A", border: "rgba(26,122,138,0.25)",avatar: "#2ABFBF" },
+  ORIENTADOR: { label: "Orientador",  bg: "rgba(246,173,85,0.12)", color: "#975a16", border: "rgba(246,173,85,0.3)", avatar: "#b45309" },
 }
 
 const ROLES_STAFF = ["PSICOLOGO", "ADMIN", "DIRECTOR", "ORIENTADOR"]
@@ -56,7 +56,7 @@ function ModalUsuario({
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0f172a", margin: "0 0 2px" }}>
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0D475A", margin: "0 0 2px" }}>
               {usuario ? "Editar usuario" : "Nuevo usuario"}
             </h2>
             <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
@@ -174,7 +174,7 @@ function ModalUsuario({
             </button>
             <button type="submit" disabled={loading} style={{
               flex: 1, padding: "10px", borderRadius: 8, border: "none",
-              background: loading ? "#a5b4fc" : "#4f46e5",
+              background: loading ? "#1A7A8A" : "#0D475A",
               color: "white", fontSize: 14, fontWeight: 600,
               cursor: loading ? "not-allowed" : "pointer",
             }}>
@@ -222,13 +222,13 @@ function ModalEliminar({
           </svg>
         </div>
 
-        <h3 style={{ fontSize: 17, fontWeight: 800, color: "#0f172a", textAlign: "center", margin: "0 0 8px" }}>
+        <h3 style={{ fontSize: 17, fontWeight: 800, color: "#0D475A", textAlign: "center", margin: "0 0 8px" }}>
           Eliminar usuario
         </h3>
         <p style={{ fontSize: 13, color: "#64748b", textAlign: "center", margin: "0 0 6px" }}>
           ¿Estás segura de que deseas eliminar a
         </p>
-        <p style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", textAlign: "center", margin: "0 0 20px" }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "#0D475A", textAlign: "center", margin: "0 0 20px" }}>
           {usuario.nombre}
         </p>
         <p style={{ fontSize: 12, color: "#ef4444", textAlign: "center", margin: "0 0 24px" }}>
@@ -319,7 +319,7 @@ export default function UsuariosContent({
         gap: 16, marginBottom: 24,
       }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", margin: "0 0 4px" }}>
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: "#0D475A", margin: "0 0 4px" }}>
             Usuarios
           </h1>
           <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
@@ -329,7 +329,7 @@ export default function UsuariosContent({
         <button
           onClick={() => { setError(""); setModalUsuario("nuevo") }}
           style={{
-            background: "#4f46e5", color: "white", border: "none",
+            background: "#0D475A", color: "white", border: "none",
             borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600,
             cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
           }}
@@ -431,7 +431,7 @@ export default function UsuariosContent({
                   {iniciales(u.nombre)}
                 </div>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", margin: 0 }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#0D475A", margin: 0 }}>
                     {u.nombre}
                     {soy && (
                       <span style={{

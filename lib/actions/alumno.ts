@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db"
 import { REACTIVOS, TOTAL_REACTIVOS } from "@/lib/data/reactivos"
-import { calcularResultado } from "@/lib/sena/scoring"
+import { calcularResultado, ESCALAS, INC_PAIRS } from "@/lib/sena/scoring"
 
 // ─────────────────────────────────────────────
 // LOGIN CON CURP
@@ -63,18 +63,66 @@ export async function guardarRespuestasAlumno(
     return { error: "Respuestas fuera de rango (1–5)." }
   }
 
-  // Calcular puntuaciones básicas con el motor SENA
-  const textos = REACTIVOS.map(r => r.texto)
+  // Calcular puntuaciones con el motor SENA
+  const textos  = REACTIVOS.map(r => r.texto)
   const resultado = calcularResultado(respuestas, textos)
 
+  // ── Escalas de control normalizadas ──────────────────────────────────────
+  // inc: media de diferencias absolutas entre pares similares (rango 0-4)
+  const incBruta = INC_PAIRS.reduce(
+    (acc, [a, b]) => acc + Math.abs((respuestas[a - 1] ?? 0) - (respuestas[b - 1] ?? 0)), 0
+  )
+  const inc = parseFloat((incBruta / INC_PAIRS.length).toFixed(2))
+  // neg: cuenta de ítems con respuesta ≥ 3 (contenido extremo patológico)
+  const neg = ESCALAS.neg.items.filter(i => (respuestas[i - 1] ?? 0) >= 3).length
+  // pos: cuenta de ítems con respuesta ≥ 4 (sesgo de ajuste positivo)
+  const pos = ESCALAS.pos.items.filter(i => (respuestas[i - 1] ?? 0) >= 4).length
+
+  // ── T-scores ─────────────────────────────────────────────────────────────
+  // Se usan 50 (media normativa) como placeholder.
+  // El módulo ML los actualizará cuando el modelo entrenado esté disponible.
+  const t50 = 50
+
+  // Serializar ítems críticos al formato del modelo Tamizaje
+  const itemsCriticosDb = resultado.itemsCriticos.map(ic => ({
+    item:              ic.item,
+    texto:             ic.texto,
+    categoria:         ic.categoria,
+    respuesta:         ic.respuesta,
+    etiquetaRespuesta: ic.etiqueta,
+  }))
+
   try {
-    await prisma.respuestasCuestionario.create({
-      data: {
-        estudianteId,
-        respuestas,
-        procesado: true,
-      },
-    })
+    await prisma.$transaction([
+      prisma.respuestasCuestionario.create({
+        data: { estudianteId, respuestas, procesado: true },
+      }),
+      prisma.tamizaje.create({
+        data: {
+          estudianteId,
+          inc, neg, pos,
+          // Índices globales (placeholder T=50)
+          glo_t: t50, emo_t: t50, con_t: t50, eje_t: t50, ctx_t: t50, rec_t: t50,
+          // Problemas interiorizados (placeholder T=50)
+          dep_t: t50, ans_t: t50, asc_t: t50, som_t: t50, pst_t: t50, obs_t: t50,
+          // Problemas exteriorizados (placeholder T=50)
+          ate_t: t50, hip_t: t50, ira_t: t50, agr_t: t50, des_t: t50, ant_t: t50,
+          // Otros problemas (placeholder T=50)
+          sus_t: t50, esq_t: t50, ali_t: t50,
+          // Contextuales (placeholder T=50)
+          fam_t: t50, esc_t: t50, com_t: t50,
+          // Vulnerabilidades (placeholder T=50)
+          reg_t: t50, bus_t: t50,
+          // Recursos personales (placeholder T=50)
+          aut_t: t50, soc_t: t50, cnc_t: t50,
+          // Resultado del scoring
+          tipoCaso:     resultado.tipoCaso as "SIN_RIESGO" | "CON_RIESGO" | "INCONSISTENCIA" | "IMPRESION_POSITIVA" | "IMPRESION_NEGATIVA",
+          semaforo:     resultado.semaforo as "VERDE" | "AMARILLO" | "ROJO" | "ROJO_URGENTE",
+          observaciones: resultado.observaciones,
+          itemsCriticos: itemsCriticosDb,
+        },
+      }),
+    ])
   } catch {
     return { error: "Error al guardar las respuestas. Intenta de nuevo." }
   }
@@ -83,8 +131,6 @@ export async function guardarRespuestasAlumno(
   const jar = await cookies()
   jar.delete("alumno_id")
 
-  // Guardar resultado en la sesión temporal para mostrarlo en /alumno/gracias
-  // (pasamos el semáforo como query param para la página de gracias)
   redirect(`/alumno/gracias?s=${resultado.semaforo}&c=${resultado.itemsCriticos.length}`)
 }
 

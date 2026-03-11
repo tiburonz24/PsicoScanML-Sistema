@@ -2,6 +2,7 @@
 
 import { useActionState } from "react"
 import { loginConCurp } from "@/lib/actions/alumno"
+import Image from "next/image"
 
 export default function LoginAlumnoPage() {
   const [state, action, isPending] = useActionState(loginConCurp, undefined)
@@ -18,7 +19,7 @@ export default function LoginAlumnoPage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "48px 44px",
-          background: "linear-gradient(160deg, #0f172a 0%, #1e1b4b 55%, #312e81 100%)",
+          background: "linear-gradient(160deg, #0D475A 0%, #1A7A8A 55%, #2ABFBF 100%)",
           position: "relative",
           overflow: "hidden",
         }}
@@ -27,36 +28,30 @@ export default function LoginAlumnoPage() {
         <div style={{
           position: "absolute", top: -120, right: -80,
           width: 340, height: 340, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(99,102,241,0.18), transparent)",
+          background: "radial-gradient(circle, rgba(42,191,191,0.18), transparent)",
           pointerEvents: "none",
         }} />
         <div style={{
           position: "absolute", bottom: -80, left: -60,
           width: 260, height: 260, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(45,212,191,0.12), transparent)",
+          background: "radial-gradient(circle, rgba(255,255,255,0.07), transparent)",
           pointerEvents: "none",
         }} />
 
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 14, position: "relative" }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 12,
-            background: "rgba(255,255,255,0.1)",
-            border: "1px solid rgba(255,255,255,0.2)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            flexShrink: 0,
-          }}>
-            {/* Ícono cerebro / bienestar */}
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                 stroke="#2dd4bf" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="PsicoScan ML"
+            width={56}
+            height={56}
+            style={{ borderRadius: 12, background: "white", padding: 3, flexShrink: 0 }}
+          />
           <div>
-            <p style={{ color: "white", fontWeight: 700, fontSize: 15, lineHeight: 1, margin: 0 }}>
-              PsicoScan ML
+            <p style={{ color: "white", fontWeight: 800, fontSize: 18, lineHeight: 1.1, margin: 0, fontFamily: "var(--font-syne), sans-serif" }}>
+              Psico<span style={{ color: "#A7F3F3" }}>Scan</span> ML
             </p>
-            <p style={{ color: "#a5b4fc", fontSize: 11, margin: "3px 0 0" }}>
+            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, margin: "3px 0 0" }}>
               CECyTEN · Plantel Tepic
             </p>
           </div>
@@ -87,7 +82,7 @@ export default function LoginAlumnoPage() {
             Tu bienestar emocional nos importa
           </h1>
 
-          <p style={{ color: "#c7d2fe", fontSize: 14, lineHeight: 1.75, margin: 0 }}>
+          <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 14, lineHeight: 1.75, margin: 0 }}>
             Este cuestionario nos ayuda a identificar cómo te sientes y brindarte
             el apoyo que necesitas. Es confidencial y solo lo verá el personal de orientación.
           </p>
@@ -103,7 +98,7 @@ export default function LoginAlumnoPage() {
             ].map(({ valor, label }) => (
               <div key={label}>
                 <p style={{ color: "white", fontSize: 24, fontWeight: 800, margin: 0 }}>{valor}</p>
-                <p style={{ color: "#818cf8", fontSize: 11, margin: "3px 0 0" }}>{label}</p>
+                <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, margin: "3px 0 0" }}>{label}</p>
               </div>
             ))}
           </div>
@@ -120,10 +115,10 @@ export default function LoginAlumnoPage() {
               <div key={n} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{
                   width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
-                  background: "rgba(99,102,241,0.35)",
-                  border: "1px solid rgba(165,180,252,0.3)",
+                  background: "rgba(255,255,255,0.15)",
+                  border: "1px solid rgba(255,255,255,0.25)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 12, fontWeight: 700, color: "#a5b4fc",
+                  fontSize: 12, fontWeight: 700, color: "rgba(255,255,255,0.9)",
                 }}>
                   {n}
                 </div>
@@ -134,7 +129,7 @@ export default function LoginAlumnoPage() {
         </div>
 
         {/* Pie */}
-        <p style={{ color: "#4f46e5", fontSize: 11, position: "relative" }}>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, position: "relative" }}>
           © {new Date().getFullYear()} CECyTEN — Información protegida y confidencial
         </p>
       </div>
@@ -152,18 +147,17 @@ export default function LoginAlumnoPage() {
 
         {/* Logo visible solo en móvil */}
         <div className="md:hidden" style={{ marginBottom: 32, textAlign: "center" }}>
-          <div style={{
-            width: 52, height: 52, borderRadius: 14, margin: "0 auto 12px",
-            background: "linear-gradient(135deg, #1e1b4b, #312e81)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
-                 stroke="#2dd4bf" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
-          <p style={{ fontWeight: 700, color: "#1e1b4b", fontSize: 18, margin: 0 }}>PsicoScan ML</p>
-          <p style={{ color: "#6366f1", fontSize: 12, margin: "4px 0 0" }}>CECyTEN · Plantel Tepic</p>
+          <Image
+            src="/logo.png"
+            alt="PsicoScan ML"
+            width={72}
+            height={72}
+            style={{ borderRadius: 14, margin: "0 auto 10px", display: "block" }}
+          />
+          <p style={{ fontWeight: 800, color: "#0D475A", fontSize: 18, margin: 0, fontFamily: "var(--font-syne), sans-serif" }}>
+            Psico<span style={{ color: "#2ABFBF" }}>Scan</span> ML
+          </p>
+          <p style={{ color: "#1A7A8A", fontSize: 12, margin: "4px 0 0" }}>CECyTEN · Plantel Tepic</p>
         </div>
 
         {/* Tarjeta del formulario */}
@@ -192,10 +186,10 @@ export default function LoginAlumnoPage() {
                 <path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
               </svg>
             </div>
-            <h2 style={{ fontSize: 22, fontWeight: 700, color: "#0f172a", margin: "0 0 6px" }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: "#0D475A", margin: "0 0 6px" }}>
               Acceso para alumnos
             </h2>
-            <p style={{ fontSize: 13, color: "#64748b", margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 13, color: "#4A5568", margin: 0, lineHeight: 1.5 }}>
               Ingresa tu CURP para acceder al cuestionario SENA
             </p>
           </div>
@@ -225,7 +219,7 @@ export default function LoginAlumnoPage() {
                   letterSpacing: "0.12em", textAlign: "center",
                   border: "1.5px solid #e2e8f0", borderRadius: 10,
                   outline: "none", background: "#f8fafc",
-                  color: "#0f172a", transition: "border-color 0.15s, box-shadow 0.15s",
+                  color: "#0D475A", transition: "border-color 0.15s, box-shadow 0.15s",
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = "#0d9488"

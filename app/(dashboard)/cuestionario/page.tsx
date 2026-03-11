@@ -1,5 +1,5 @@
+import Link from "next/link"
 import { getEstudiantes } from "@/lib/data/mock"
-import ModalNuevoEstudiante from "@/components/cuestionario/ModalNuevoEstudiante"
 import BannerEnlace from "@/components/cuestionario/BannerEnlace"
 import TablaEstudiantes from "@/components/cuestionario/TablaEstudiantes"
 import type { FilaEstudiante } from "@/components/cuestionario/TablaEstudiantes"
@@ -11,53 +11,126 @@ export default async function CuestionarioPage({ searchParams }: Props) {
   const { registrado, token, nombre } = await searchParams
   const estudiantes = await getEstudiantes()
 
-  // Construir URL base para el enlace público
   const hdrs = await headers()
   const host = hdrs.get("host") ?? "localhost:3000"
   const protocol = host.startsWith("localhost") ? "http" : "https"
   const baseUrl = `${protocol}://${host}`
-
   const enlace = token ? `${baseUrl}/tamizaje/${token}` : null
 
-  // Serializar datos para el componente cliente (sin Date objects)
   const filas: FilaEstudiante[] = estudiantes.map((est) => {
     const ultimo = est.tamizajes[0]
     return {
-      id:             est.id,
-      nombre:         est.nombre,
-      gradoGrupo:     `${est.grado} "${est.grupo}"`,
-      semaforo:       ultimo?.semaforo ?? null,
+      id:              est.id,
+      nombre:          est.nombre,
+      gradoGrupo:      `${est.grado} "${est.grupo}"`,
+      semaforo:        ultimo?.semaforo ?? null,
       fechaFormateada: ultimo
         ? new Date(ultimo.fecha).toLocaleDateString("es-MX")
         : null,
     }
   })
 
+  const total        = filas.length
+  const conTamizaje  = filas.filter(f => f.semaforo !== null).length
+  const sinTamizaje  = total - conTamizaje
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">Cuestionario SENA</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Registra estudiantes y genera su enlace de cuestionario
-          </p>
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+
+      {/* ── Header ── */}
+      <div style={{
+        background: "linear-gradient(135deg, #0D475A 0%, #1A7A8A 100%)",
+        borderRadius: 16, padding: "24px 28px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        flexWrap: "wrap", gap: 20,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: 14, flexShrink: 0,
+            background: "rgba(255,255,255,0.15)",
+            border: "1px solid rgba(255,255,255,0.25)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width={24} height={24} viewBox="0 0 24 24" fill="none"
+                 stroke="white" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1={16} y1={13} x2={8} y2={13}/>
+              <line x1={16} y1={17} x2={8} y2={17}/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <div>
+            <h1 style={{
+              fontSize: 20, fontWeight: 800, color: "white",
+              margin: "0 0 4px", fontFamily: "var(--font-syne), sans-serif",
+            }}>
+              Cuestionario SENA
+            </h1>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", margin: 0 }}>
+              Gestión de aplicaciones del cuestionario por estudiante
+            </p>
+          </div>
         </div>
-        <ModalNuevoEstudiante />
+
+        {/* Stats */}
+        <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+          {[
+            { valor: total,       label: "Registrados" },
+            { valor: conTamizaje, label: "Con tamizaje" },
+            { valor: sinTamizaje, label: "Pendientes" },
+          ].map(({ valor, label }) => (
+            <div key={label} style={{ textAlign: "center" }}>
+              <p style={{
+                fontSize: 26, fontWeight: 800, color: "white", margin: 0,
+                fontFamily: "var(--font-syne), sans-serif", lineHeight: 1,
+              }}>{valor}</p>
+              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", margin: "4px 0 0" }}>{label}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Banner de enlace generado */}
+      {/* ── Toolbar ── */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+        <Link
+          href="/estudiantes/nuevo"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "10px 20px", borderRadius: 9, fontSize: 14, fontWeight: 600,
+            background: "linear-gradient(90deg, #0D475A, #1A7A8A)",
+            color: "white", textDecoration: "none",
+            boxShadow: "0 2px 8px rgba(13,71,90,0.25)",
+          }}
+        >
+          <svg width={14} height={14} viewBox="0 0 24 24" fill="none"
+               stroke="white" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+            <line x1={12} y1={5} x2={12} y2={19}/>
+            <line x1={5} y1={12} x2={19} y2={12}/>
+          </svg>
+          Nuevo estudiante
+        </Link>
+      </div>
+
+      {/* ── Banner enlace (tras registro) ── */}
       {registrado && enlace && nombre && (
         <BannerEnlace nombre={decodeURIComponent(nombre)} enlace={enlace} />
       )}
-
-      {/* Banner simple sin token (por si acaso) */}
       {registrado && !enlace && (
-        <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
+        <div style={{
+          padding: "14px 20px", borderRadius: 12,
+          background: "rgba(42,191,191,0.07)",
+          border: "1px solid rgba(42,191,191,0.3)",
+          borderLeft: "4px solid #2ABFBF",
+          fontSize: 13, fontWeight: 600, color: "#1A7A8A",
+        }}>
           Estudiante registrado correctamente.
         </div>
       )}
 
+      {/* ── Tabla ── */}
       <TablaEstudiantes filas={filas} />
+
     </div>
   )
 }

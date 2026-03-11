@@ -1,34 +1,168 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  /* Paleta psicología — indigo profundo */
-  --color-psico-50:  #eef2ff;
-  --color-psico-100: #e0e7ff;
-  --color-psico-200: #c7d2fe;
-  --color-psico-400: #818cf8;
-  --color-psico-500: #6366f1;
-  --color-psico-600: #4f46e5;
-  --color-psico-700: #4338ca;
-  --color-psico-800: #3730a3;
-  --color-psico-900: #312e81;
-  --color-psico-950: #1e1b4b;
-
-  /* Teal — bienestar */
-  --color-bienestar-400: #2dd4bf;
-  --color-bienestar-500: #14b8a6;
-  --color-bienestar-600: #0d9488;
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-syne);
 }
 
 :root {
-  --background: #f5f3ff;
-  --foreground: #1e1b4b;
+  --navy:    #0D475A;
+  --teal:    #1A7A8A;
+  --aqua:    #2ABFBF;
+  --bg:      #F4F8FA;
+  --surface: #E8F4F6;
+  --border:  #dce8ec;
+  --muted:   #4A5568;
 }
 
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #F4F8FA;
+  color: #0D475A;
+  font-family: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Typography ── */
+.page-title {
+  font-family: var(--font-syne), sans-serif;
+  font-size: 22px; font-weight: 800;
+  color: #0D475A; letter-spacing: -0.5px; margin: 0 0 3px;
+}
+.page-subtitle { font-size: 13px; color: #4A5568; margin: 0; }
+.section-title {
+  font-family: var(--font-syne), sans-serif;
+  font-size: 15px; font-weight: 700; color: #0D475A;
+}
+.section-label {
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #1A7A8A;
+}
+
+/* ── Cards ── */
+.card {
+  background: #fff; border-radius: 16px;
+  border: 1px solid #dce8ec; padding: 22px 24px;
+}
+.card-sm {
+  background: #fff; border-radius: 12px;
+  border: 1px solid #dce8ec; padding: 16px 18px;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background: #0D475A; color: #fff;
+  border: none; border-radius: 8px;
+  padding: 9px 18px; font-size: 13px; font-weight: 600;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.btn-primary:hover { background: #1A7A8A; }
+
+.btn-secondary {
+  background: #fff; color: #0D475A;
+  border: 1.5px solid #dce8ec; border-radius: 8px;
+  padding: 9px 18px; font-size: 13px; font-weight: 600;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer; transition: border-color 0.15s, color 0.15s; white-space: nowrap;
+}
+.btn-secondary:hover { border-color: #2ABFBF; color: #1A7A8A; }
+
+.btn-ghost {
+  background: transparent; color: #1A7A8A;
+  border: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 13px; font-weight: 600;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-ghost:hover { background: #E8F4F6; }
+
+/* ── Tables ── */
+.data-table {
+  background: #fff; border-radius: 16px;
+  border: 1px solid #dce8ec; overflow: hidden;
+}
+.data-table-head {
+  background: #F4F8FA; border-bottom: 1px solid #dce8ec;
+  padding: 11px 20px;
+}
+.data-table-head span {
+  font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px; color: #1A7A8A;
+}
+.data-table-row {
+  padding: 14px 20px;
+  border-bottom: 1px solid #F4F8FA;
+  transition: background 0.1s;
+}
+.data-table-row:last-child { border-bottom: none; }
+.data-table-row:hover { background: #F4F8FA; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.badge-verde    { background: rgba(104,211,145,0.15); color: #276749; border: 1px solid rgba(104,211,145,0.3); }
+.badge-amarillo { background: rgba(246,173,85,0.15);  color: #975a16; border: 1px solid rgba(246,173,85,0.3); }
+.badge-rojo     { background: rgba(252,129,129,0.15); color: #9b2c2c; border: 1px solid rgba(252,129,129,0.3); }
+.badge-urgente  { background: rgba(252,129,129,0.25); color: #7b2222; border: 1px solid rgba(252,129,129,0.5); }
+.badge-teal     { background: #E8F4F6; color: #1A7A8A; border: 1px solid #dce8ec; }
+.badge-navy     { background: rgba(13,71,90,0.08); color: #0D475A; border: 1px solid rgba(13,71,90,0.15); }
+
+/* ── Form inputs ── */
+.input {
+  width: 100%; border: 1.5px solid #dce8ec; border-radius: 8px;
+  padding: 9px 12px; font-size: 13px; color: #0D475A;
+  background: #fff; outline: none; transition: border-color 0.15s;
+  font-family: var(--font-dm-sans), sans-serif;
+}
+.input:focus { border-color: #2ABFBF; }
+
+.label {
+  display: block; font-size: 12px; font-weight: 600;
+  color: #0D475A; margin-bottom: 5px;
+}
+
+/* ── Page header pattern ── */
+.page-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; flex-wrap: wrap;
+  gap: 16px; margin-bottom: 28px;
+}
+
+/* ── Link accent ── */
+a.link-teal { color: #1A7A8A; text-decoration: none; font-weight: 600; }
+a.link-teal:hover { color: #2ABFBF; }
+
+/* ── Stat cards hover ── */
+.stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,71,90,0.08); }
+.cita-item:hover { border-color: #2ABFBF !important; }
+.alerta-item { transition: opacity 0.15s; }
+.alerta-item:hover { opacity: 0.85; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center; padding: 56px 32px;
+  background: #fff; border-radius: 16px; border: 1px solid #dce8ec;
+}
+.empty-state-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: #E8F4F6; margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Modal overlay ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(13,71,90,0.45); backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.modal-box {
+  background: #fff; border-radius: 18px;
+  width: 100%; max-width: 460px; padding: 28px;
+  box-shadow: 0 24px 64px rgba(13,71,90,0.2);
 }

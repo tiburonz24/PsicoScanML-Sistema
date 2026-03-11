@@ -15,19 +15,19 @@ type Props = {
 
 const LABEL: React.CSSProperties = {
   display: "block", fontSize: 11, fontWeight: 700,
-  color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em",
+  color: "#4A5568", textTransform: "uppercase", letterSpacing: "0.06em",
   marginBottom: 5,
 }
 const TEXTAREA: React.CSSProperties = {
-  width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 8,
-  padding: "10px 12px", fontSize: 13, color: "#0f172a",
+  width: "100%", border: "1.5px solid #dce8ec", borderRadius: 8,
+  padding: "10px 12px", fontSize: 13, color: "#0D475A",
   outline: "none", resize: "vertical", boxSizing: "border-box",
-  fontFamily: "inherit", lineHeight: 1.6,
+  fontFamily: "inherit", lineHeight: 1.6, background: "#F4F8FA",
 }
 const SELECT: React.CSSProperties = {
-  border: "1.5px solid #e2e8f0", borderRadius: 8,
-  padding: "8px 12px", fontSize: 13, color: "#0f172a",
-  outline: "none", background: "white", cursor: "pointer",
+  border: "1.5px solid #dce8ec", borderRadius: 8,
+  padding: "8px 12px", fontSize: 13, color: "#0D475A",
+  outline: "none", background: "#F4F8FA", cursor: "pointer",
 }
 
 const LABELS_ESTADO: Record<string, string> = {
@@ -39,7 +39,7 @@ const LABELS_ESTADO: Record<string, string> = {
 const COLORS_ESTADO: Record<string, { bg: string; color: string; border: string }> = {
   ACTIVO:    { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" },
   CERRADO:   { bg: "#f8fafc", color: "#475569", border: "#e2e8f0" },
-  DERIVADO:  { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
+  DERIVADO:  { bg: "rgba(42,191,191,0.12)", color: "#1A7A8A", border: "rgba(42,191,191,0.35)" },
   EN_ESPERA: { bg: "#fffbeb", color: "#92400e", border: "#fde68a" },
 }
 
@@ -66,7 +66,7 @@ export default function FormExpediente({
         padding: "16px 24px", borderBottom: "1px solid #f1f5f9",
         background: "#fafafa",
       }}>
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#0f172a" }}>Expediente clínico</p>
+        <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#0D475A" }}>Expediente clínico</p>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{
             fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 20,
@@ -156,7 +156,7 @@ export default function FormExpediente({
             type="submit"
             disabled={isPending}
             style={{
-              background: "#4f46e5", color: "white", border: "none",
+              background: "linear-gradient(90deg, #0D475A, #1A7A8A)", color: "white", border: "none",
               borderRadius: 8, padding: "10px 24px", fontSize: 13, fontWeight: 600,
               cursor: isPending ? "not-allowed" : "pointer",
               opacity: isPending ? 0.7 : 1,

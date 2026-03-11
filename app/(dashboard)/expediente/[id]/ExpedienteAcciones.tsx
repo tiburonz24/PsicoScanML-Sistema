@@ -23,12 +23,12 @@ const LABELS_TIPO: Record<string, string> = {
 }
 
 const TIPO_COLORS: Record<string, { bg: string; color: string; border: string }> = {
-  EVALUACION_INICIAL: { bg: "#eff6ff", color: "#1e40af", border: "#bfdbfe" },
-  SEGUIMIENTO:        { bg: "#f0fdf4", color: "#15803d", border: "#bbf7d0" },
-  INTERVENCION:       { bg: "#faf5ff", color: "#6b21a8", border: "#e9d5ff" },
-  CRISIS:             { bg: "#fff1f2", color: "#9f1239", border: "#fecdd3" },
-  CIERRE:             { bg: "#f8fafc", color: "#475569", border: "#e2e8f0" },
-  DEVOLUCION:         { bg: "#fffbeb", color: "#92400e", border: "#fde68a" },
+  EVALUACION_INICIAL: { bg: "rgba(42,191,191,0.12)", color: "#1A7A8A",  border: "rgba(42,191,191,0.35)" },
+  SEGUIMIENTO:        { bg: "#f0fdf4",                color: "#15803d",  border: "#bbf7d0" },
+  INTERVENCION:       { bg: "rgba(13,71,90,0.08)",    color: "#0D475A",  border: "rgba(13,71,90,0.2)" },
+  CRISIS:             { bg: "#fff1f2",                color: "#9f1239",  border: "#fecdd3" },
+  CIERRE:             { bg: "#f8fafc",                color: "#475569",  border: "#e2e8f0" },
+  DEVOLUCION:         { bg: "#fffbeb",                color: "#92400e",  border: "#fde68a" },
 }
 
 function formatFecha(iso: string) {
@@ -60,13 +60,13 @@ export default function ExpedienteAcciones({
           padding: "16px 24px", borderBottom: "1px solid #f1f5f9",
           background: "#fafafa",
         }}>
-          <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
+          <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#0D475A" }}>
             Sesiones ({sesiones.length})
           </p>
           <button
             onClick={() => setModalOpen(true)}
             style={{
-              background: "#4f46e5", color: "white", border: "none",
+              background: "#0D475A", color: "white", border: "none",
               borderRadius: 7, padding: "7px 14px", fontSize: 12, fontWeight: 600,
               cursor: "pointer", display: "flex", alignItems: "center", gap: 5,
             }}
@@ -125,7 +125,7 @@ export default function ExpedienteAcciones({
                         {LABELS_TIPO[s.tipo] ?? s.tipo}
                       </span>
                       {s.motivo && (
-                        <span style={{ fontSize: 11, color: "#64748b" }}>· {s.motivo}</span>
+                        <span style={{ fontSize: 11, color: "#4A5568" }}>· {s.motivo}</span>
                       )}
                     </div>
 

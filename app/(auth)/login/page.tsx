@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -26,7 +27,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ display: "flex", minHeight: "100vh", fontFamily: "var(--font-dm-sans), system-ui, sans-serif" }}>
 
       {/* ── Panel izquierdo — Identidad institucional ── */}
       <div
@@ -36,26 +37,24 @@ export default function LoginPage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "48px 40px",
-          background: "linear-gradient(160deg, #1e1b4b 0%, #312e81 60%, #1e40af 100%)",
+          background: "linear-gradient(160deg, #0D475A 0%, #1A7A8A 60%, #2ABFBF 100%)",
         }}
         className="hidden md:flex"
       >
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 10,
-            background: "rgba(255,255,255,0.15)",
-            border: "1px solid rgba(255,255,255,0.25)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-                 stroke="#2dd4bf" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <Image
+            src="/logo.png"
+            alt="PsicoScan ML"
+            width={56}
+            height={56}
+            style={{ borderRadius: 12, background: "white", padding: 3, flexShrink: 0 }}
+          />
           <div>
-            <p style={{ color: "white", fontWeight: 700, fontSize: 15, lineHeight: 1 }}>PsicoScan ML</p>
-            <p style={{ color: "#a5b4fc", fontSize: 11, marginTop: 2 }}>CECyTEN · Plantel Tepic</p>
+            <p style={{ color: "white", fontWeight: 800, fontSize: 18, lineHeight: 1.1, fontFamily: "var(--font-syne), sans-serif" }}>
+              Psico<span style={{ color: "#A7F3F3" }}>Scan</span> ML
+            </p>
+            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 11, marginTop: 3 }}>CECyTEN · Plantel Tepic</p>
           </div>
         </div>
 
@@ -63,30 +62,30 @@ export default function LoginPage() {
         <div>
           <div style={{
             display: "inline-block",
-            background: "rgba(99,102,241,0.3)",
-            border: "1px solid rgba(165,180,252,0.3)",
+            background: "rgba(255,255,255,0.12)",
+            border: "1px solid rgba(255,255,255,0.25)",
             borderRadius: 6,
-            padding: "4px 10px",
+            padding: "4px 12px",
             marginBottom: 20,
           }}>
-            <span style={{ color: "#a5b4fc", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <span style={{ color: "rgba(255,255,255,0.85)", fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}>
               Sistema de Bienestar Estudiantil
             </span>
           </div>
 
-          <h1 style={{ color: "white", fontSize: 30, fontWeight: 800, lineHeight: 1.2, margin: "0 0 16px" }}>
+          <h1 style={{ color: "white", fontSize: 30, fontWeight: 800, lineHeight: 1.2, margin: "0 0 16px", fontFamily: "var(--font-syne), sans-serif" }}>
             Acompañando el bienestar emocional del plantel
           </h1>
 
-          <p style={{ color: "#c7d2fe", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+          <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
             Plataforma de tamizaje SENA con clasificación por inteligencia artificial
             para la detección temprana de riesgos en estudiantes de bachillerato.
           </p>
 
           {/* Separador */}
-          <div style={{ height: 1, background: "rgba(255,255,255,0.12)", margin: "32px 0" }} />
+          <div style={{ height: 1, background: "rgba(255,255,255,0.15)", margin: "32px 0" }} />
 
-          {/* Stats / indicadores */}
+          {/* Stats */}
           <div style={{ display: "flex", gap: 32 }}>
             {[
               { valor: "188", label: "Reactivos SENA" },
@@ -94,15 +93,15 @@ export default function LoginPage() {
               { valor: "ML",  label: "Clasificación IA" },
             ].map(({ valor, label }) => (
               <div key={label}>
-                <p style={{ color: "white", fontSize: 22, fontWeight: 800, margin: 0 }}>{valor}</p>
-                <p style={{ color: "#818cf8", fontSize: 11, margin: "2px 0 0" }}>{label}</p>
+                <p style={{ color: "white", fontSize: 22, fontWeight: 800, margin: 0, fontFamily: "var(--font-syne), sans-serif" }}>{valor}</p>
+                <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, margin: "2px 0 0" }}>{label}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Pie del panel */}
-        <p style={{ color: "#6366f1", fontSize: 11 }}>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>
           © {new Date().getFullYear()} CECyTEN — Uso exclusivo del personal autorizado
         </p>
       </div>
@@ -114,24 +113,23 @@ export default function LoginPage() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "#f8fafc",
+        background: "#F4F8FA",
         padding: "40px 24px",
       }}>
 
         {/* Logo visible solo en móvil */}
         <div className="md:hidden" style={{ marginBottom: 32, textAlign: "center" }}>
-          <div style={{
-            width: 48, height: 48, borderRadius: 12, margin: "0 auto 10px",
-            background: "linear-gradient(135deg, #4f46e5, #3730a3)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-                 stroke="#2dd4bf" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
-          <p style={{ fontWeight: 700, color: "#1e1b4b", fontSize: 18 }}>PsicoScan ML</p>
-          <p style={{ color: "#6366f1", fontSize: 12 }}>CECyTEN · Plantel Tepic</p>
+          <Image
+            src="/logo.png"
+            alt="PsicoScan ML"
+            width={72}
+            height={72}
+            style={{ borderRadius: 14, margin: "0 auto 10px", display: "block" }}
+          />
+          <p style={{ fontWeight: 800, color: "#0D475A", fontSize: 18, fontFamily: "var(--font-syne), sans-serif" }}>
+            Psico<span style={{ color: "#2ABFBF" }}>Scan</span> ML
+          </p>
+          <p style={{ color: "#1A7A8A", fontSize: 12, marginTop: 2 }}>CECyTEN · Plantel Tepic</p>
         </div>
 
         {/* Tarjeta del formulario */}
@@ -142,14 +140,14 @@ export default function LoginPage() {
           borderRadius: 16,
           boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08)",
           padding: "36px 32px",
-          border: "1px solid #e2e8f0",
+          border: "1px solid #dce8ec",
         }}>
 
           <div style={{ marginBottom: 28 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 700, color: "#0f172a", margin: "0 0 6px" }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, color: "#0D475A", margin: "0 0 6px", fontFamily: "var(--font-syne), sans-serif" }}>
               Iniciar sesión
             </h2>
-            <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
+            <p style={{ fontSize: 13, color: "#4A5568", margin: 0 }}>
               Ingresa tus credenciales de acceso al sistema
             </p>
           </div>
@@ -171,12 +169,12 @@ export default function LoginPage() {
                 style={{
                   width: "100%", boxSizing: "border-box",
                   padding: "10px 14px", fontSize: 14,
-                  border: "1.5px solid #e2e8f0", borderRadius: 8,
-                  outline: "none", background: "#f8fafc",
-                  color: "#0f172a", transition: "border-color 0.15s",
+                  border: "1.5px solid #dce8ec", borderRadius: 8,
+                  outline: "none", background: "#F4F8FA",
+                  color: "#0D475A", transition: "border-color 0.15s",
                 }}
-                onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
-                onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
+                onFocus={(e) => (e.target.style.borderColor = "#2ABFBF")}
+                onBlur={(e) => (e.target.style.borderColor = "#dce8ec")}
               />
             </div>
 
@@ -195,12 +193,12 @@ export default function LoginPage() {
                   style={{
                     width: "100%", boxSizing: "border-box",
                     padding: "10px 40px 10px 14px", fontSize: 14,
-                    border: "1.5px solid #e2e8f0", borderRadius: 8,
-                    outline: "none", background: "#f8fafc",
-                    color: "#0f172a", transition: "border-color 0.15s",
+                    border: "1.5px solid #dce8ec", borderRadius: 8,
+                    outline: "none", background: "#F4F8FA",
+                    color: "#0D475A", transition: "border-color 0.15s",
                   }}
-                  onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
-                  onBlur={(e) => (e.target.style.borderColor = "#e2e8f0")}
+                  onFocus={(e) => (e.target.style.borderColor = "#2ABFBF")}
+                  onBlur={(e) => (e.target.style.borderColor = "#dce8ec")}
                 />
                 <button
                   type="button"
@@ -251,9 +249,9 @@ export default function LoginPage() {
               style={{
                 width: "100%", padding: "11px 0", borderRadius: 8,
                 border: "none", cursor: loading ? "not-allowed" : "pointer",
-                background: loading ? "#a5b4fc" : "linear-gradient(90deg, #4f46e5, #4338ca)",
+                background: loading ? "#1A7A8A" : "linear-gradient(90deg, #0D475A, #1A7A8A)",
                 color: "white", fontSize: 14, fontWeight: 600,
-                transition: "opacity 0.15s, transform 0.1s",
+                transition: "opacity 0.15s",
                 opacity: loading ? 0.7 : 1,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
               }}

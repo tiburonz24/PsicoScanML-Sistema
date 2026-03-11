@@ -46,7 +46,7 @@ export default function NivelRiesgoCard({ estudianteId, nivelRiesgo }: Props) {
   return (
     <div style={{
       background: nivel ? nivel.bg : "#f8fafc",
-      border: `1.5px solid ${nivel ? nivel.border : "#e2e8f0"}`,
+      border: `1.5px solid ${nivel ? nivel.border : "#dce8ec"}`,
       borderRadius: 12, padding: "16px 20px",
       transition: "all 0.2s",
     }}>
@@ -81,11 +81,11 @@ export default function NivelRiesgoCard({ estudianteId, nivelRiesgo }: Props) {
                 <input
                   type="range" min={1} max={10} value={draft}
                   onChange={e => setDraft(Number(e.target.value))}
-                  style={{ flex: 1, accentColor: getNivel(draft)?.color ?? "#6366f1" }}
+                  style={{ flex: 1, accentColor: getNivel(draft)?.color ?? "#1A7A8A" }}
                 />
                 <span style={{
                   fontSize: 18, fontWeight: 800, minWidth: 28, textAlign: "center",
-                  color: getNivel(draft)?.color ?? "#64748b",
+                  color: getNivel(draft)?.color ?? "#4A5568",
                 }}>
                   {draft}
                 </span>
@@ -104,7 +104,7 @@ export default function NivelRiesgoCard({ estudianteId, nivelRiesgo }: Props) {
               </div>
               <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                 <button onClick={guardar} disabled={isPending} style={{
-                  background: "#4f46e5", color: "white", border: "none",
+                  background: "linear-gradient(90deg, #0D475A, #1A7A8A)", color: "white", border: "none",
                   borderRadius: 6, padding: "7px 16px", fontSize: 12, fontWeight: 600, cursor: "pointer",
                 }}>
                   {isPending ? "Guardando…" : "Guardar"}
@@ -118,7 +118,7 @@ export default function NivelRiesgoCard({ estudianteId, nivelRiesgo }: Props) {
                   </button>
                 )}
                 <button onClick={() => setEditando(false)} style={{
-                  background: "none", color: "#64748b", border: "1px solid #e2e8f0",
+                  background: "none", color: "#4A5568", border: "1.5px solid #dce8ec",
                   borderRadius: 6, padding: "7px 14px", fontSize: 12, fontWeight: 600, cursor: "pointer",
                 }}>
                   Cancelar
@@ -135,7 +135,7 @@ export default function NivelRiesgoCard({ estudianteId, nivelRiesgo }: Props) {
                 return (
                   <div key={n} style={{
                     flex: 1, height: 6, borderRadius: 3,
-                    background: activo ? (niv?.color ?? "#6366f1") : "#e2e8f0",
+                    background: activo ? (niv?.color ?? "#1A7A8A") : "#e2e8f0",
                     transition: "background 0.2s",
                   }} />
                 )
@@ -150,7 +150,7 @@ export default function NivelRiesgoCard({ estudianteId, nivelRiesgo }: Props) {
             style={{
               background: "none", border: "1px solid #e2e8f0",
               borderRadius: 6, padding: "5px 12px",
-              fontSize: 11, fontWeight: 600, color: "#64748b",
+              fontSize: 11, fontWeight: 600, color: "#4A5568",
               cursor: "pointer", flexShrink: 0,
             }}
           >

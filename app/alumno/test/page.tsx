@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db"
 import { guardarRespuestasAlumno } from "@/lib/actions/alumno"
 import FormularioCuestionario from "@/components/cuestionario/FormularioCuestionario"
+import Image from "next/image"
 
 export default async function TestAlumnoPage() {
   const jar = await cookies()
@@ -24,14 +25,14 @@ export default async function TestAlumnoPage() {
   const accionGuardar = guardarRespuestasAlumno.bind(null, estudiante.id)
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f0f9ff", fontFamily: "system-ui, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "#F4F8FA", fontFamily: "system-ui, sans-serif" }}>
 
       {/* ── Header sticky ── */}
       <header style={{
         position: "sticky", top: 0, zIndex: 40,
-        background: "#0c4a6e",
-        borderBottom: "1px solid #075985",
-        boxShadow: "0 2px 8px rgba(12,74,110,0.25)",
+        background: "#0D475A",
+        borderBottom: "1px solid #1A7A8A",
+        boxShadow: "0 2px 8px rgba(13,71,90,0.25)",
       }}>
         <div style={{
           maxWidth: 780, margin: "0 auto",
@@ -39,17 +40,13 @@ export default async function TestAlumnoPage() {
           display: "flex", alignItems: "center", gap: 14,
         }}>
           {/* Logo */}
-          <div style={{
-            width: 38, height: 38, borderRadius: 10, flexShrink: 0,
-            background: "rgba(255,255,255,0.12)",
-            border: "1px solid rgba(255,255,255,0.2)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                 stroke="#7dd3fc" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </div>
+          <Image
+            src="/logo.png"
+            alt="PsicoScan ML"
+            width={38}
+            height={38}
+            style={{ borderRadius: 8, background: "white", padding: 2, flexShrink: 0 }}
+          />
 
           {/* Info estudiante */}
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -57,7 +54,7 @@ export default async function TestAlumnoPage() {
                         whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               {estudiante.nombre}
             </p>
-            <p style={{ fontSize: 12, color: "#7dd3fc", margin: "2px 0 0" }}>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.65)", margin: "2px 0 0" }}>
               {estudiante.grado} &quot;{estudiante.grupo}&quot; · CECyTEN Plantel Tepic
             </p>
           </div>
@@ -86,23 +83,23 @@ export default async function TestAlumnoPage() {
         <div style={{
           display: "flex", alignItems: "flex-start", gap: 12,
           background: "white",
-          border: "1px solid #bae6fd",
-          borderLeft: "4px solid #0ea5e9",
+          border: "1px solid rgba(42,191,191,0.3)",
+          borderLeft: "4px solid #2ABFBF",
           borderRadius: 14,
           padding: "14px 18px",
           marginBottom: 20,
-          boxShadow: "0 1px 3px rgba(14,165,233,0.08)",
+          boxShadow: "0 1px 3px rgba(13,71,90,0.06)",
         }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-               stroke="#0284c7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+               stroke="#1A7A8A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
                style={{ flexShrink: 0, marginTop: 1 }}>
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
           <div>
-            <p style={{ fontSize: 14, fontWeight: 700, color: "#0c4a6e", margin: "0 0 3px" }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#0D475A", margin: "0 0 3px" }}>
               Tus respuestas son completamente confidenciales
             </p>
-            <p style={{ fontSize: 13, color: "#0284c7", margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 13, color: "#1A7A8A", margin: 0, lineHeight: 1.5 }}>
               Solo el equipo de orientación y psicología de tu plantel tendrá acceso.
               Responde con sinceridad — no hay respuestas correctas ni incorrectas.
             </p>

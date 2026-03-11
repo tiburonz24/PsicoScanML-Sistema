@@ -42,11 +42,13 @@ export async function agendarCita(
 
   try {
     await prisma.cita.create({ data: { estudianteId, fecha, notas } })
-    await prisma.expedienteClinico.upsert({
-      where:  { estudianteId },
-      create: { estudianteId },
-      update: {},
+    const expediente = await prisma.expedienteClinico.findFirst({
+      where: { estudianteId },
+      select: { id: true },
     })
+    if (!expediente) {
+      await prisma.expedienteClinico.create({ data: { estudianteId } })
+    }
   } catch (e) {
     console.error("[agendarCita]", e)
     return { error: "No se pudo agendar la cita. Intenta de nuevo." }

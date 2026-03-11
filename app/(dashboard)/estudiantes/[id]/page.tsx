@@ -11,7 +11,7 @@ import AgendarCitaBtn from "@/components/citas/AgendarCitaBtn"
 
 const ROLES_ESTUDIANTE_DETALLE: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN, Rol.DIRECTOR]
 
-type Props = { params: Promise<{ id: string }> }
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ nuevo?: string }> }
 
 const SEM: Record<Semaforo, { label: string; color: string; bg: string; borde: string; bLeft: string }> = {
   VERDE:        { label: "Sin riesgo",  color: "#15803d", bg: "#f0fdf4", borde: "#bbf7d0", bLeft: "#22c55e" },
@@ -109,28 +109,36 @@ function TarjetaControl({ label, valor, umbral }: { label: string; valor: number
   const elevado = valor >= umbral
   return (
     <div style={{
-      background: elevado ? "#fff7ed" : "white",
-      border: `1px solid ${elevado ? "#fed7aa" : "#e2e8f0"}`,
+      background: "white",
+      border: `1.5px solid ${elevado ? "#fed7aa" : "#dce8ec"}`,
+      borderTop: `3px solid ${elevado ? "#f97316" : "#2ABFBF"}`,
       borderRadius: 12, padding: "18px 20px",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+      boxShadow: "0 2px 8px rgba(13,71,90,0.06)",
     }}>
       <p style={{
-        fontSize: 11, color: "#94a3b8", margin: "0 0 8px",
-        fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em",
+        fontSize: 10, color: "#94a3b8", margin: "0 0 10px",
+        fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em",
       }}>
         {label}
       </p>
-      <p style={{ fontSize: 32, fontWeight: 800, margin: "0 0 6px", color: elevado ? "#c2410c" : "#0f172a" }}>
+      <p style={{ fontSize: 34, fontWeight: 800, margin: "0 0 8px", color: elevado ? "#c2410c" : "#0D475A", fontFamily: "var(--font-syne), sans-serif", lineHeight: 1 }}>
         {valor}
       </p>
       <span style={{
+        display: "inline-flex", alignItems: "center", gap: 4,
         fontSize: 11, fontWeight: 700,
-        color: elevado ? "#ea580c" : "#16a34a",
-        background: elevado ? "#fff7ed" : "#f0fdf4",
+        color: elevado ? "#ea580c" : "#0D475A",
+        background: elevado ? "#fff7ed" : "rgba(42,191,191,0.1)",
         padding: "3px 10px", borderRadius: 20,
-        border: `1px solid ${elevado ? "#fed7aa" : "#bbf7d0"}`,
+        border: `1px solid ${elevado ? "#fed7aa" : "rgba(42,191,191,0.35)"}`,
       }}>
-        {elevado ? "⚠ Elevado" : "✓ Normal"}
+        <svg width={10} height={10} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          {elevado
+            ? <><path strokeLinecap="round" strokeLinejoin="round" d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1={12} y1={9} x2={12} y2={13}/><line x1={12} y1={17} x2="12.01" y2={17}/></>
+            : <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+          }
+        </svg>
+        {elevado ? "Elevado" : "Normal"}
       </span>
     </div>
   )
@@ -147,11 +155,12 @@ function SeccionLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default async function EstudianteDetallePage({ params }: Props) {
+export default async function EstudianteDetallePage({ params, searchParams }: Props) {
   const session = await getServerSession(authOptions)
   if (!session || !ROLES_ESTUDIANTE_DETALLE.includes(session.user.rol as Rol)) redirect("/dashboard")
 
   const { id } = await params
+  const { nuevo } = await searchParams
   const [estudiante, todosEstudiantes] = await Promise.all([
     getEstudianteById(id),
     prisma.estudiante.findMany({ select: { id: true, nombre: true }, orderBy: { nombre: "asc" } }),
@@ -173,17 +182,42 @@ export default async function EstudianteDetallePage({ params }: Props) {
   return (
     <div style={{ paddingTop: 8, maxWidth: 900 }}>
 
+      {/* ── Banner registro exitoso ── */}
+      {nuevo === "1" && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 12,
+          padding: "14px 20px", borderRadius: 12, marginBottom: 20,
+          background: "rgba(42,191,191,0.08)",
+          border: "1px solid rgba(42,191,191,0.35)",
+          borderLeft: "4px solid #2ABFBF",
+        }}>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none"
+               stroke="#1A7A8A" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"
+               style={{ flexShrink: 0 }}>
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 700, color: "#1A7A8A", margin: 0 }}>
+              Estudiante registrado correctamente
+            </p>
+            <p style={{ fontSize: 12, color: "#4A5568", margin: "2px 0 0" }}>
+              Ahora puedes agendar una cita o enviarle el cuestionario SENA.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ── Breadcrumb ── */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <Link href="/estudiantes" style={{ fontSize: 13, color: "#6366f1", textDecoration: "none", fontWeight: 500 }}>
+          <Link href="/estudiantes" style={{ fontSize: 13, color: "#1A7A8A", textDecoration: "none", fontWeight: 500 }}>
             Estudiantes
           </Link>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                stroke="#cbd5e1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6"/>
           </svg>
-          <span style={{ fontSize: 13, color: "#0f172a", fontWeight: 600 }}>{estudiante.nombre}</span>
+          <span style={{ fontSize: 13, color: "#0D475A", fontWeight: 600 }}>{estudiante.nombre}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           {/* Expediente clínico */}
@@ -235,7 +269,7 @@ export default async function EstudianteDetallePage({ params }: Props) {
 
       {/* ── Perfil ── */}
       <div style={{
-        background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)",
+        background: "linear-gradient(135deg, #0D475A 0%, #1A7A8A 100%)",
         borderRadius: 16, padding: "24px 28px",
         display: "flex", alignItems: "center",
         justifyContent: "space-between", flexWrap: "wrap",
@@ -252,15 +286,15 @@ export default async function EstudianteDetallePage({ params }: Props) {
             {iniciales(estudiante.nombre)}
           </div>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: "white", margin: "0 0 4px" }}>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: "white", margin: "0 0 4px", fontFamily: "var(--font-syne), sans-serif" }}>
               {estudiante.nombre}
             </h1>
-            <p style={{ fontSize: 13, color: "#a5b4fc", margin: 0 }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", margin: 0 }}>
               {LABELS_SEXO[estudiante.sexo]} · {estudiante.edad} años ·{" "}
               {estudiante.grado} &quot;{estudiante.grupo}&quot; · {estudiante.escuela}
             </p>
             {tamizaje && (
-              <p style={{ fontSize: 12, color: "#818cf8", margin: "4px 0 0" }}>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", margin: "4px 0 0" }}>
                 Tamizaje aplicado el{" "}
                 {new Date(tamizaje.fecha).toLocaleDateString("es-MX", {
                   weekday: "long", day: "numeric", month: "long", year: "numeric",
@@ -280,7 +314,7 @@ export default async function EstudianteDetallePage({ params }: Props) {
             }}>
               {sem.label}
             </span>
-            <span style={{ fontSize: 11, color: "#a5b4fc" }}>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>
               {LABELS_TIPO[tamizaje.tipoCaso] ?? "—"}
             </span>
           </div>
@@ -300,7 +334,7 @@ export default async function EstudianteDetallePage({ params }: Props) {
             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
             <rect x="9" y="3" width="6" height="4" rx="1"/>
           </svg>
-          <p style={{ fontWeight: 700, color: "#0f172a", fontSize: 15, margin: "0 0 6px" }}>
+          <p style={{ fontWeight: 700, color: "#0D475A", fontSize: 15, margin: "0 0 6px" }}>
             Sin tamizajes registrados
           </p>
           <p style={{ fontSize: 13, color: "#94a3b8", margin: 0 }}>
@@ -488,7 +522,7 @@ export default async function EstudianteDetallePage({ params }: Props) {
                       return (
                         <div key={clave} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                           <span style={{
-                            fontSize: 11, color: "#64748b", flexShrink: 0, width: 140,
+                            fontSize: 11, color: "#4A5568", flexShrink: 0, width: 140,
                           }}>
                             {label}
                           </span>
@@ -536,7 +570,7 @@ export default async function EstudianteDetallePage({ params }: Props) {
                   <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
                 <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", margin: "0 0 2px" }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#0D475A", margin: "0 0 2px" }}>
                     {new Date(cita.fecha).toLocaleDateString("es-MX", {
                       weekday: "long", day: "numeric", month: "long", year: "numeric",
                     })}
@@ -546,7 +580,7 @@ export default async function EstudianteDetallePage({ params }: Props) {
                     </span>
                   </p>
                   {cita.notas && (
-                    <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>{cita.notas}</p>
+                    <p style={{ fontSize: 13, color: "#4A5568", margin: 0 }}>{cita.notas}</p>
                   )}
                 </div>
               </div>
