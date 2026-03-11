@@ -468,7 +468,8 @@ export default function CitasContent({
             boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
             overflow: "hidden",
           }}>
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", minWidth: 580, borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "#fafafa", borderBottom: "1px solid #f1f5f9" }}>
                   {["Estudiante", "Fecha y hora", "Estado", "Notas", "Acciones"].map(h => (
@@ -549,6 +550,7 @@ export default function CitasContent({
                 })}
               </tbody>
             </table>
+            </div>{/* overflowX */}
           </div>
         )
       )}

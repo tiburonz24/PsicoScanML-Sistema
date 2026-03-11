@@ -11,14 +11,14 @@ export default async function AplicarCuestionarioPage({ params }: Props) {
   if (!estudiante) notFound()
 
   return (
-    <div className="max-w-4xl space-y-4">
+    <div style={{ maxWidth: 860, display: "flex", flexDirection: "column", gap: 16 }}>
       {/* Navegación */}
-      <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href="/cuestionario" className="hover:underline">
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <Link href="/cuestionario" style={{ fontSize: 13, color: "#1A7A8A", textDecoration: "none", fontWeight: 500 }}>
           Cuestionario
         </Link>
-        <span>/</span>
-        <span className="text-gray-800 font-medium">{estudiante.nombre}</span>
+        <span style={{ color: "#cbd5e1" }}>/</span>
+        <span style={{ fontSize: 13, color: "#0D475A", fontWeight: 600 }}>{estudiante.nombre}</span>
       </div>
 
       <FormularioCuestionario

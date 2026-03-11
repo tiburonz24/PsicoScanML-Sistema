@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["exceljs", "@prisma/adapter-pg", "pg", "pg-native"],
+  serverExternalPackages: [
+    "exceljs",
+    "@prisma/adapter-pg",
+    "@prisma/adapter-neon",
+    "@neondatabase/serverless",
+    "pg",
+    "pg-native",
+  ],
 
   async headers() {
     return [

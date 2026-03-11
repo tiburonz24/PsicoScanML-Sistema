@@ -13,12 +13,13 @@ export default async function MiSenaPage() {
   if (!estudiante) redirect("/dashboard")
 
   return (
-    <div className="max-w-4xl space-y-4">
+    <div style={{ maxWidth: 860, display: "flex", flexDirection: "column", gap: 16 }}>
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Mi Cuestionario SENA</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Lee cada frase con atención y responde con honestidad. No hay respuestas
-          correctas ni incorrectas.
+        <h1 style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: 22, fontWeight: 800, color: "#0D475A", margin: "0 0 4px" }}>
+          Mi Cuestionario SENA
+        </h1>
+        <p style={{ fontSize: 13, color: "#4A5568", margin: 0 }}>
+          Lee cada frase con atención y responde con honestidad. No hay respuestas correctas ni incorrectas.
         </p>
       </div>
 

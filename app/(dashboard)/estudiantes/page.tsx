@@ -180,6 +180,8 @@ export default async function EstudiantesPage({ searchParams }: Props) {
         border: "1px solid #f1f5f9",
         overflow: "hidden",
       }}>
+        <div style={{ overflowX: "auto" }}>
+        <div style={{ minWidth: 560 }}>
         {/* Encabezado tabla */}
         <div style={{
           display: "grid",
@@ -313,6 +315,8 @@ export default async function EstudiantesPage({ searchParams }: Props) {
             </div>
           )
         })}
+      </div>{/* minWidth */}
+      </div>{/* overflowX */}
       </div>
 
       {/* ── Footer de tabla ── */}

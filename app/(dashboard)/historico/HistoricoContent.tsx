@@ -309,13 +309,13 @@ export default function HistoricoContent() {
         {trainResult?.metrics && (
           <div style={{ marginTop: 24 }}>
             {/* Métricas principales */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 20 }}>
               <MetricCard label="Test Accuracy" value={`${(trainResult.metrics.accuracy * 100).toFixed(2)}%`} sub="conjunto de prueba" color="#0D475A" />
               <MetricCard label="CV Mean"       value={`${(trainResult.metrics.cv_mean * 100).toFixed(2)}%`}  sub="validación cruzada" color="#1A7A8A" />
               <MetricCard label="CV ± Desv."    value={`±${(trainResult.metrics.cv_std * 100).toFixed(2)}%`}  sub="estabilidad" color="#2ABFBF" />
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
               {/* F1 por clase */}
               <div style={{ background: "#f8fafc", borderRadius: 12, padding: 16, border: "1px solid #e2e8f0" }}>
                 <p style={{ fontSize: 12, fontWeight: 700, color: "#0D475A", marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.05em" }}>
@@ -404,7 +404,8 @@ export default function HistoricoContent() {
         )}
         {historial.length > 0 && (
           <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #e2e8f0" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", minWidth: 560, borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
                 <tr style={{ background: "linear-gradient(90deg, #0D475A, #1A7A8A)" }}>
                   {["Fecha", "Registros", "Split", "Test Accuracy", "CV Mean ± Std", ""].map((h) => (
@@ -512,6 +513,7 @@ export default function HistoricoContent() {
                 })}
               </tbody>
             </table>
+            </div>{/* overflowX */}
           </div>
         )}
       </StepCard>
@@ -595,7 +597,8 @@ function MetricCard({ label, value, sub, color }: { label: string; value: string
 function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
   return (
     <div style={{ borderRadius: 10, overflow: "hidden", border: "1px solid #e2e8f0" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+      <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", minWidth: 400, borderCollapse: "collapse", fontSize: 13 }}>
         <thead>
           <tr style={{ background: "#f1f5f9", borderBottom: "1px solid #e2e8f0" }}>
             {headers.map((h) => (
@@ -620,6 +623,7 @@ function DataTable({ headers, rows }: { headers: string[]; rows: React.ReactNode
           ))}
         </tbody>
       </table>
+      </div>{/* overflowX */}
     </div>
   )
 }

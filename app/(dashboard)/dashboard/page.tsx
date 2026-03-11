@@ -119,6 +119,8 @@ export default async function DashboardPage() {
         .stat-card:hover  { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,71,90,0.08); }
         .cita-item:hover  { border-color: #2ABFBF !important; }
         .alerta-item:hover { opacity: 0.85; }
+        .dash-main-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; margin-bottom: 24px; }
+        @media (max-width: 900px) { .dash-main-grid { grid-template-columns: 1fr; } }
       `}</style>
       {/* ── Topbar blanca ── */}
       <div style={{
@@ -184,11 +186,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── Main grid: Citas + Alertas ML ── */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 340px",
-        gap: 20, marginBottom: 24,
-      }}>
+      <div className="dash-main-grid">
         {/* Citas del día */}
         <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #dce8ec", padding: "22px 24px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>

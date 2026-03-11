@@ -50,8 +50,9 @@ export async function agendarCita(
       await prisma.expedienteClinico.create({ data: { estudianteId } })
     }
   } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
     console.error("[agendarCita]", e)
-    return { error: "No se pudo agendar la cita. Intenta de nuevo." }
+    return { error: `Error al guardar: ${msg}` }
   }
 
   redirect("/citas")
