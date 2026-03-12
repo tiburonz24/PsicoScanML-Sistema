@@ -106,7 +106,7 @@ export default function Sidebar({ rol, nombre, onClose }: Props) {
               Psico<span style={{ color: "#2ABFBF" }}>Scan</span> ML
             </div>
             <div style={{ fontSize: 9.5, color: "rgba(255,255,255,0.4)", fontStyle: "italic", marginTop: 2 }}>
-              Detectar a tiempo, orientar con datos.
+              Tu mente importa, ¡Conócete!
             </div>
           </div>
         </div>

@@ -53,3 +53,5 @@ ml-api/models/*.pkl
 # Python cache
 ml-api/**/__pycache__/
 ml-api/**/*.pyc
+
+.vercel
