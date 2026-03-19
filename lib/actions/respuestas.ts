@@ -25,7 +25,8 @@ export async function guardarRespuestasPublico(
         respuestas,
       },
     })
-  } catch {
+  } catch (err) {
+    console.error("[guardarRespuestasPublico] Error al guardar en DB:", err)
     return { error: "Error al guardar las respuestas. Inténtalo de nuevo." }
   }
 
