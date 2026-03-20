@@ -161,7 +161,7 @@ export default function LoginAlumnoPage() {
         </div>
 
         {/* Tarjeta del formulario */}
-        <div style={{
+        <div className="login-card" style={{
           width: "100%",
           maxWidth: 400,
           background: "white",
@@ -316,6 +316,19 @@ export default function LoginAlumnoPage() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Responsive login ── */
+        @media (max-width: 480px) {
+          .login-card {
+            padding: 24px 20px !important;
+            border-radius: 16px !important;
+          }
+        }
+        @media (max-width: 360px) {
+          .login-card {
+            padding: 20px 16px !important;
+          }
+        }
       `}</style>
     </div>
   )

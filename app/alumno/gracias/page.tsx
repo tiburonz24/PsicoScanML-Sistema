@@ -96,7 +96,7 @@ export default async function GraciasPage({ searchParams }: Props) {
         <div style={{ height: 5, background: info.accentColor }} />
 
         {/* Header con logo */}
-        <div style={{
+        <div className="gracias-header" style={{
           background: "#0D475A",
           padding: "20px 28px",
           display: "flex",
@@ -121,7 +121,7 @@ export default async function GraciasPage({ searchParams }: Props) {
         </div>
 
         {/* Cuerpo */}
-        <div style={{ padding: "32px 28px 28px", textAlign: "center" }}>
+        <div className="gracias-body" style={{ padding: "32px 28px 28px", textAlign: "center" }}>
 
           {/* Ícono de estado */}
           <div style={{
@@ -236,6 +236,17 @@ export default async function GraciasPage({ searchParams }: Props) {
       }}>
         Sistema PsicoScan ML · CECyTEN Plantel Tepic
       </p>
+
+      <style>{`
+        @media (max-width: 480px) {
+          .gracias-header { padding: 16px 20px !important; }
+          .gracias-body   { padding: 24px 20px 20px !important; }
+        }
+        @media (max-width: 360px) {
+          .gracias-header { padding: 14px 16px !important; }
+          .gracias-body   { padding: 20px 16px 18px !important; }
+        }
+      `}</style>
     </div>
   )
 }

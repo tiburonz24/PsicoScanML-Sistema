@@ -60,7 +60,7 @@ export default async function TestAlumnoPage() {
           </div>
 
           {/* Badge estado */}
-          <div style={{
+          <div className="badge-encurso" style={{
             display: "flex", alignItems: "center", gap: 6,
             background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.35)",
             borderRadius: 99, padding: "5px 12px", flexShrink: 0,
@@ -69,8 +69,9 @@ export default async function TestAlumnoPage() {
               width: 7, height: 7, borderRadius: "50%",
               background: "#4ade80",
               boxShadow: "0 0 0 2px rgba(74,222,128,0.3)",
+              flexShrink: 0,
             }} />
-            <span style={{ fontSize: 12, fontWeight: 600, color: "#4ade80" }}>En curso</span>
+            <span className="badge-texto" style={{ fontSize: 12, fontWeight: 600, color: "#4ade80" }}>En curso</span>
           </div>
         </div>
       </header>
@@ -113,11 +114,18 @@ export default async function TestAlumnoPage() {
       </main>
 
       <style>{`
+        /* ── Contenido principal ── */
         @media (min-width: 480px) {
           .test-main { padding: 24px 16px 48px !important; }
         }
         @media (min-width: 768px) {
           .test-main { padding: 28px 24px 64px !important; }
+        }
+
+        /* ── Header: ocultar texto del badge en pantallas muy pequeñas ── */
+        @media (max-width: 360px) {
+          .badge-texto { display: none !important; }
+          .badge-encurso { padding: 6px 8px !important; }
         }
       `}</style>
     </div>
