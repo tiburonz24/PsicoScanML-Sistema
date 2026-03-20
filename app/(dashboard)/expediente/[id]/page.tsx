@@ -117,7 +117,13 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
   }))
 
   return (
-    <div style={{ paddingTop: 8, maxWidth: 900, display: "flex", flexDirection: "column", gap: 28 }}>
+    <div style={{ paddingTop: 8, maxWidth: 900, width: "100%", display: "flex", flexDirection: "column", gap: 28 }}>
+      <style>{`
+        @media (max-width: 640px) {
+          .exp-header { padding: 18px 16px !important; gap: 12px !important; }
+          .exp-stats { gap: 10px !important; }
+        }
+      `}</style>
 
       {/* ── Breadcrumb ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -137,7 +143,7 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
       </div>
 
       {/* ── Header ── */}
-      <div style={{
+      <div className="exp-header" style={{
         background: "linear-gradient(135deg, #0D475A 0%, #1A7A8A 100%)",
         borderRadius: 16, padding: "24px 28px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -201,7 +207,7 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
               Sin tamizaje
             </span>
           )}
-          <div style={{ display: "flex", gap: 16 }}>
+          <div className="exp-stats" style={{ display: "flex", gap: 16 }}>
             {[
               { n: sesiones.length,      label: "Sesiones" },
               { n: contactos.length,     label: "Contactos" },

@@ -180,7 +180,14 @@ export default async function EstudianteDetallePage({ params, searchParams }: Pr
     : {}
 
   return (
-    <div style={{ paddingTop: 8, maxWidth: 900 }}>
+    <div style={{ paddingTop: 8, maxWidth: 900, width: "100%" }}>
+      <style>{`
+        @media (max-width: 640px) {
+          .est-perfil-header { padding: 18px 16px !important; }
+          .est-acciones { gap: 6px !important; }
+          .est-acciones a, .est-acciones button { font-size: 11px !important; padding: 6px 10px !important; }
+        }
+      `}</style>
 
       {/* ── Banner registro exitoso ── */}
       {nuevo === "1" && (
@@ -219,7 +226,7 @@ export default async function EstudianteDetallePage({ params, searchParams }: Pr
           </svg>
           <span style={{ fontSize: 13, color: "#0D475A", fontWeight: 600 }}>{estudiante.nombre}</span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <div className="est-acciones" style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
           {/* Expediente clínico */}
           <Link href={`/expediente/${estudiante.id}`} style={{
             background: "white", color: "#0f766e",
@@ -268,7 +275,7 @@ export default async function EstudianteDetallePage({ params, searchParams }: Pr
       </div>
 
       {/* ── Perfil ── */}
-      <div style={{
+      <div className="est-perfil-header" style={{
         background: "linear-gradient(135deg, #0D475A 0%, #1A7A8A 100%)",
         borderRadius: 16, padding: "24px 28px",
         display: "flex", alignItems: "center",

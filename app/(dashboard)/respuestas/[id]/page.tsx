@@ -68,7 +68,12 @@ export default async function DetalleRespuestaPage({ params }: Props) {
   }, {})
 
   return (
-    <div style={{ paddingTop: 8, maxWidth: 860 }}>
+    <div style={{ paddingTop: 8, maxWidth: 860, width: "100%" }}>
+      <style>{`
+        @media (max-width: 640px) {
+          .resp-perfil { padding: 18px 16px !important; }
+        }
+      `}</style>
 
       {/* ── Breadcrumb ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
@@ -83,7 +88,7 @@ export default async function DetalleRespuestaPage({ params }: Props) {
       </div>
 
       {/* ── Perfil ── */}
-      <div style={{
+      <div className="resp-perfil" style={{
         background: "linear-gradient(135deg, #0D475A 0%, #1A7A8A 100%)",
         borderRadius: 16, padding: "24px 28px",
         display: "flex", alignItems: "center",

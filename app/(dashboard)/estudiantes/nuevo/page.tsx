@@ -58,7 +58,7 @@ export default async function NuevoEstudiantePage() {
       </div>
 
       {/* ── Formulario ── */}
-      <div style={{
+      <div className="nuevo-form-card" style={{
         background: "white", borderRadius: 14,
         border: "1px solid #e2e8f0",
         boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)",
@@ -67,6 +67,11 @@ export default async function NuevoEstudiantePage() {
         <FormNuevoEstudiante />
       </div>
 
+      <style>{`
+        @media (max-width: 640px) {
+          .nuevo-form-card { padding: 20px 16px !important; border-radius: 12px !important; }
+        }
+      `}</style>
     </div>
   )
 }
