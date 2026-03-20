@@ -23,13 +23,13 @@ const ESCALA = [
   { valor: 5, corto: "Siempre", largo: "Siempre o casi siempre" },
 ]
 
-// Color por valor seleccionado — paleta Azul cielo + teal
+// Color por valor seleccionado — color del logo (teal/navy)
 const COLOR_SELECCIONADO: Record<number, { bg: string; border: string; text: string; shadow: string }> = {
-  1: { bg: "#059669", border: "#047857", text: "white", shadow: "0 3px 10px rgba(5,150,105,0.35)" },
-  2: { bg: "#0ea5e9", border: "#0284c7", text: "white", shadow: "0 3px 10px rgba(14,165,233,0.35)" },
-  3: { bg: "#6366f1", border: "#4f46e5", text: "white", shadow: "0 3px 10px rgba(99,102,241,0.35)" },
-  4: { bg: "#f97316", border: "#ea580c", text: "white", shadow: "0 3px 10px rgba(249,115,22,0.35)" },
-  5: { bg: "#e11d48", border: "#be123c", text: "white", shadow: "0 3px 10px rgba(225,29,72,0.35)" },
+  1: { bg: "#0D475A", border: "#093848", text: "white", shadow: "0 3px 10px rgba(13,71,90,0.35)" },
+  2: { bg: "#0D475A", border: "#093848", text: "white", shadow: "0 3px 10px rgba(13,71,90,0.35)" },
+  3: { bg: "#0D475A", border: "#093848", text: "white", shadow: "0 3px 10px rgba(13,71,90,0.35)" },
+  4: { bg: "#0D475A", border: "#093848", text: "white", shadow: "0 3px 10px rgba(13,71,90,0.35)" },
+  5: { bg: "#0D475A", border: "#093848", text: "white", shadow: "0 3px 10px rgba(13,71,90,0.35)" },
 }
 
 export default function FormularioCuestionario({
