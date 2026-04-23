@@ -45,9 +45,17 @@ const BTN_GHOST: React.CSSProperties = {
   cursor: "pointer",
 }
 
+// Devuelve la hora local actual en formato "YYYY-MM-DDTHH:mm" para datetime-local
+function localNowISO() {
+  const now = new Date()
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+}
+
 export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudiante, onClose }: Props) {
   const [state, action, isPending] = useActionState(agendarCita, undefined)
   const [fechaError, setFechaError] = useState<string | null>(null)
+  // Valor del input datetime-local; lo convertimos a ISO real antes de enviar
+  const [fechaLocal, setFechaLocal] = useState("")
 
   // ── Combobox estado ──────────────────────────────────────────────────────────
   const [query, setQuery]               = useState("")
@@ -140,7 +148,9 @@ export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudi
 
   function handleFechaChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value
+    setFechaLocal(val)
     if (!val) { setFechaError(null); return }
+    // new Date(val) en el browser interpreta datetime-local como hora local ✓
     const dia = new Date(val).getDay()
     if (dia === 0 || dia === 6) {
       setFechaError("Solo se permiten citas de lunes a viernes.")
@@ -332,15 +342,21 @@ export default function ModalNuevaCita({ estudiantes, estudianteId, nombreEstudi
           {/* Fecha y hora */}
           <div>
             <label style={LABEL}>Fecha y hora</label>
+            {/* Hidden field con ISO real (UTC) para que el servidor lo parsee sin error de zona horaria */}
+            <input
+              type="hidden"
+              name="fecha"
+              value={fechaLocal ? new Date(fechaLocal).toISOString() : ""}
+            />
             <input
               type="datetime-local"
-              name="fecha"
               required
               style={{
                 ...INPUT,
                 borderColor: fechaError ? "#f87171" : "#e2e8f0",
               }}
-              min={new Date().toISOString().slice(0, 16)}
+              min={localNowISO()}
+              value={fechaLocal}
               onChange={handleFechaChange}
             />
             {fechaError && (
