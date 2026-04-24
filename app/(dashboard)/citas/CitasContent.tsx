@@ -94,7 +94,16 @@ export default function CitasContent({
   const [modalNueva, setModalNueva]           = useState(false)
   const [citaACompletar, setCitaACompletar]   = useState<CitaDto | null>(null)
   const [view, setView]                       = useState<"semana" | "lista">("semana")
-  const [semanaOffset, setSemanaOffset]       = useState(0)
+  const [semanaOffset, setSemanaOffset] = useState(() => {
+    if (citas.length === 0) return 0
+    const ahora = new Date()
+    const sorted = [...citas].sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime())
+    // Preferir la próxima cita futura; si no hay, la más reciente pasada
+    const target = sorted.find(c => new Date(c.fecha).getTime() >= ahora.getTime()) ?? sorted[sorted.length - 1]
+    const inicioActual = inicioSemana(ahora)
+    const inicioCita   = inicioSemana(new Date(target.fecha))
+    return Math.round((inicioCita.getTime() - inicioActual.getTime()) / (7 * 24 * 60 * 60 * 1000))
+  })
   const [citaPopup, setCitaPopup]             = useState<string | null>(null)
 
   function handleEstado(citaId: string, estado: "CONFIRMADA" | "CANCELADA") {
