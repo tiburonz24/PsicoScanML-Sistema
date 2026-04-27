@@ -29,10 +29,16 @@ async function main() {
   await prisma.estudiante.deleteMany()
 
   console.log("Creando usuarios...")
+  const pwPsicologo = process.env.SEED_PASS_PSICOLOGO
+  const pwAdmin     = process.env.SEED_PASS_ADMIN
+  const pwDirector  = process.env.SEED_PASS_DIRECTOR
+  if (!pwPsicologo || !pwAdmin || !pwDirector) {
+    throw new Error("Define SEED_PASS_PSICOLOGO, SEED_PASS_ADMIN y SEED_PASS_DIRECTOR en .env antes de correr el seed.")
+  }
   const [passPsicologo, passAdmin, passDirector] = await Promise.all([
-    bcrypt.hash("psico123", 12),
-    bcrypt.hash("admin123", 12),
-    bcrypt.hash("dir123", 12),
+    bcrypt.hash(pwPsicologo, 12),
+    bcrypt.hash(pwAdmin,     12),
+    bcrypt.hash(pwDirector,  12),
   ])
 
   await prisma.usuario.create({ data: { id: "u-1", email: "psicologo@cecyten.edu.mx", password: passPsicologo, nombre: "Psicologa Demo", rol: "PSICOLOGO" } })
