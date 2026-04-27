@@ -144,17 +144,7 @@ export default async function DashboardPage() {
             Dashboard clínico
           </h1>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 12, color: "#4A5568" }}>{fecha}</span>
-          <Link href="/estudiantes/nuevo" style={{
-            background: "#0D475A", color: "#fff",
-            borderRadius: 8, padding: "8px 16px",
-            fontSize: 13, fontWeight: 600, textDecoration: "none",
-            whiteSpace: "nowrap",
-          }}>
-            + Nuevo estudiante
-          </Link>
-        </div>
+        <span style={{ fontSize: 12, color: "#4A5568" }}>{fecha}</span>
       </div>
 
       {/* ── Stats ── */}

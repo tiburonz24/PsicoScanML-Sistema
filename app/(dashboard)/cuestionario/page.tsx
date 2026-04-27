@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { getEstudiantes } from "@/lib/data/mock"
 import BannerEnlace from "@/components/cuestionario/BannerEnlace"
 import TablaEstudiantes from "@/components/cuestionario/TablaEstudiantes"
@@ -91,26 +90,6 @@ export default async function CuestionarioPage({ searchParams }: Props) {
         </div>
       </div>
 
-      {/* ── Toolbar ── */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-        <Link
-          href="/estudiantes/nuevo"
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            padding: "10px 20px", borderRadius: 9, fontSize: 14, fontWeight: 600,
-            background: "linear-gradient(90deg, #0D475A, #1A7A8A)",
-            color: "white", textDecoration: "none",
-            boxShadow: "0 2px 8px rgba(13,71,90,0.25)",
-          }}
-        >
-          <svg width={14} height={14} viewBox="0 0 24 24" fill="none"
-               stroke="white" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-            <line x1={12} y1={5} x2={12} y2={19}/>
-            <line x1={5} y1={12} x2={19} y2={12}/>
-          </svg>
-          Nuevo estudiante
-        </Link>
-      </div>
 
       {/* ── Banner enlace (tras registro) ── */}
       {registrado && enlace && nombre && (
