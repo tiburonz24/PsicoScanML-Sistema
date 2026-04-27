@@ -22,6 +22,22 @@ export default async function TestAlumnoPage() {
 
   if (!estudiante) redirect("/alumno/login")
 
+  // Segunda capa: si ya contestó, redirigir a gracias
+  try {
+    const tamizaje = await prisma.tamizaje.findFirst({
+      where: { estudianteId: estudiante.id },
+      select: { semaforo: true, itemsCriticos: true },
+    })
+    if (tamizaje) {
+      const criticos = Array.isArray(tamizaje.itemsCriticos)
+        ? (tamizaje.itemsCriticos as unknown[]).length
+        : 0
+      redirect(`/alumno/gracias?s=${tamizaje.semaforo}&c=${criticos}`)
+    }
+  } catch {
+    // No bloqueante — si falla la verificación, dejamos continuar
+  }
+
   const accionGuardar = guardarRespuestasAlumno.bind(null, estudiante.id)
 
   return (

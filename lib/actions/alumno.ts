@@ -34,6 +34,19 @@ export async function loginConCurp(
     return { error: "No se encontró ningún alumno con esa CURP. Verifica con tu orientador." }
   }
 
+  // Verificar si ya completó el cuestionario
+  try {
+    const yaContesto = await prisma.tamizaje.findFirst({
+      where: { estudianteId: estudiante.id },
+      select: { id: true },
+    })
+    if (yaContesto) {
+      return { error: "Ya completaste el cuestionario. Si tienes dudas o necesitas repetirlo, acude con tu orientador." }
+    }
+  } catch {
+    return { error: "Error de conexión. Intenta de nuevo." }
+  }
+
   // Guardar sesión en cookie (httpOnly, 2 horas)
   const jar = await cookies()
   jar.set("alumno_id", estudiante.id, {
