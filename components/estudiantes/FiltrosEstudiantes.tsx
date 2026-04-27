@@ -33,9 +33,8 @@ export default function FiltrosEstudiantes({ grupos, grados, activos, total }: P
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Sincronizar localQ si el param cambia externamente (ej. limpiar filtros)
-  useEffect(() => {
-    setLocalQ(params.get("q") ?? "")
-  }, [params])
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setLocalQ(params.get("q") ?? "") }, [params])
 
   const pushParams = useCallback((updates: Record<string, string>) => {
     const next = new URLSearchParams(params.toString())

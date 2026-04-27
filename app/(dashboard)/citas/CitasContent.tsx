@@ -392,7 +392,7 @@ export default function CitasContent({
 
                                   {c.notas && (
                                     <p style={{ fontSize: 11, color: "#475569", margin: "0 0 10px", fontStyle: "italic" }}>
-                                      "{c.notas}"
+                                      &ldquo;{c.notas}&rdquo;
                                     </p>
                                   )}
 

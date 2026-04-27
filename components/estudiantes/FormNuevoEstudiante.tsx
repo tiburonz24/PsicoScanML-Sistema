@@ -1,6 +1,7 @@
 "use client"
 
-import { useActionState, useEffect, useRef } from "react"
+import { useActionState, useRef } from "react"
+import Link from "next/link"
 import { registrarEstudiante } from "@/lib/actions/estudiante"
 
 const INPUT: React.CSSProperties = {
@@ -239,7 +240,7 @@ export default function FormNuevoEstudiante() {
         marginTop: 32, display: "flex", gap: 12,
         justifyContent: "flex-end", flexWrap: "wrap",
       }}>
-        <a
+        <Link
           href="/cuestionario"
           style={{
             padding: "10px 24px", borderRadius: 8, fontSize: 14, fontWeight: 600,
@@ -249,7 +250,7 @@ export default function FormNuevoEstudiante() {
           }}
         >
           Cancelar
-        </a>
+        </Link>
         <button
           type="submit"
           disabled={isPending}
