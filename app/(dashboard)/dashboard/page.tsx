@@ -26,8 +26,13 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   if (session?.user?.rol === Rol.ESTUDIANTE) redirect("/cuestionario/mi-sena")
 
-  const hoy = new Date(); hoy.setHours(0, 0, 0, 0)
-  const manana = new Date(hoy); manana.setDate(manana.getDate() + 1)
+  // Calcula el rango "hoy" en hora México (UTC-6, sin horario de verano desde 2022)
+  // para que coincida tanto en local como en producción (Vercel corre en UTC)
+  const MX_OFFSET = 6 * 3600000
+  const mxNow = new Date(Date.now() - MX_OFFSET)
+  const y = mxNow.getUTCFullYear(), mo = mxNow.getUTCMonth(), d = mxNow.getUTCDate()
+  const hoy    = new Date(Date.UTC(y, mo, d,     6, 0, 0, 0))
+  const manana = new Date(Date.UTC(y, mo, d + 1, 6, 0, 0, 0))
 
   const [semaforos, tiposCaso, totalEstudiantes, totalRespuestas, citasHoy, alertasML] = await Promise.all([
     getResumenSemaforos(),
