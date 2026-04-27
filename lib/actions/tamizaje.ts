@@ -1,10 +1,14 @@
 "use server"
 
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
+import { getServerSession } from "next-auth"
 import { REACTIVOS, TOTAL_REACTIVOS } from "@/lib/data/reactivos"
 import { calcularResultado } from "@/lib/sena/scoring"
 import { prisma } from "@/lib/db"
+import { authOptions } from "@/lib/auth"
 import type { Semaforo, TipoCaso } from "@/lib/enums"
+import { Rol } from "@/lib/enums"
 
 export type GuardarTamizajeResult = { error: string } | undefined
 
@@ -145,4 +149,29 @@ export async function guardarTamizaje(
   } else {
     redirect(`/cuestionario/${estudianteId}/completado`)
   }
+}
+
+// ─────────────────────────────────────────────
+// REINICIAR CUESTIONARIO (borrar tamizaje + respuestas)
+// ─────────────────────────────────────────────
+export async function resetearTamizaje(
+  estudianteId: string
+): Promise<{ error: string } | undefined> {
+  const session = await getServerSession(authOptions)
+  const rolesPermitidos: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN]
+  if (!session || !rolesPermitidos.includes(session.user.rol as Rol)) {
+    return { error: "No tienes permiso para esta acción." }
+  }
+
+  try {
+    await prisma.$transaction([
+      prisma.tamizaje.deleteMany({ where: { estudianteId } }),
+      prisma.respuestasCuestionario.deleteMany({ where: { estudianteId } }),
+    ])
+  } catch (err) {
+    console.error("[resetearTamizaje]", err)
+    return { error: "Error al reiniciar el cuestionario. Intenta de nuevo." }
+  }
+
+  revalidatePath(`/expediente/${estudianteId}`)
 }

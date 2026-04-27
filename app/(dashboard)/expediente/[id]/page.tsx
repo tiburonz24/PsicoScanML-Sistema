@@ -9,6 +9,7 @@ import ExpedienteAcciones from "./ExpedienteAcciones"
 import NivelRiesgoCard from "@/components/expediente/NivelRiesgoCard"
 import ContactoPadresSection from "@/components/expediente/ContactoPadresSection"
 import CanalizacionSection from "@/components/expediente/CanalizacionSection"
+import BtnReiniciarTamizaje from "@/components/expediente/BtnReiniciarTamizaje"
 
 const ROLES_EXPEDIENTE: Rol[] = [Rol.PSICOLOGO, Rol.ORIENTADOR, Rol.ADMIN]
 
@@ -257,16 +258,19 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
                 ))}
               </div>
             )}
-            <Link href={`/estudiantes/${estudianteId}`} style={{
-              marginLeft: "auto", fontSize: 11, color: sem.color,
-              textDecoration: "none", fontWeight: 700,
-              display: "flex", alignItems: "center", gap: 4,
-            }}>
-              Ver detalle completo
-              <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </Link>
+            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <BtnReiniciarTamizaje estudianteId={estudianteId} />
+              <Link href={`/estudiantes/${estudianteId}`} style={{
+                fontSize: 11, color: sem.color,
+                textDecoration: "none", fontWeight: 700,
+                display: "flex", alignItems: "center", gap: 4,
+              }}>
+                Ver detalle completo
+                <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </Link>
+            </div>
           </div>
         </Seccion>
       )}
