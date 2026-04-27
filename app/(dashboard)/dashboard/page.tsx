@@ -58,9 +58,9 @@ export default async function DashboardPage() {
   const totalTamizajes = semaforos.reduce((acc, s) => acc + s.total, 0)
 
   const nombre = session?.user?.name ?? "Usuario"
-  const hora   = new Date().getHours()
+  const hora   = mxNow.getUTCHours()  // hora actual en México (UTC-6)
   const saludo = hora < 13 ? "Buenos días" : hora < 19 ? "Buenas tardes" : "Buenas noches"
-  const fecha  = new Date().toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const fecha  = new Date().toLocaleDateString("es-MX", { timeZone: "America/Monterrey", weekday: "long", day: "numeric", month: "long", year: "numeric" })
 
   const STATS = [
     {
