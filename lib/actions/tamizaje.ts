@@ -164,10 +164,8 @@ export async function resetearTamizaje(
   }
 
   try {
-    await prisma.$transaction([
-      prisma.tamizaje.deleteMany({ where: { estudianteId } }),
-      prisma.respuestasCuestionario.deleteMany({ where: { estudianteId } }),
-    ])
+    await prisma.tamizaje.deleteMany({ where: { estudianteId } })
+    await prisma.respuestasCuestionario.deleteMany({ where: { estudianteId } })
   } catch (err) {
     console.error("[resetearTamizaje]", err)
     return { error: "Error al reiniciar el cuestionario. Intenta de nuevo." }
