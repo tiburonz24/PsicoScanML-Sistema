@@ -78,7 +78,7 @@ export default function LoginPage() {
           </h1>
 
           <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
-            Plataforma de tamizaje SENA con clasificación por inteligencia artificial
+            Plataforma de tamizaje con clasificación por inteligencia artificial
             para la detección temprana de riesgos en estudiantes de bachillerato.
           </p>
 
