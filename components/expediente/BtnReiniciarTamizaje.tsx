@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { resetearTamizaje } from "@/lib/actions/tamizaje"
 
 export default function BtnReiniciarTamizaje({ estudianteId }: { estudianteId: string }) {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
+  const router = useRouter()
 
   async function handleClick() {
     if (!confirm(
@@ -17,12 +19,18 @@ export default function BtnReiniciarTamizaje({ estudianteId }: { estudianteId: s
 
     setLoading(true)
     setError(null)
-    const result = await resetearTamizaje(estudianteId)
-    if (result?.error) {
-      setError(result.error)
+    try {
+      const result = await resetearTamizaje(estudianteId)
+      if (result?.error) {
+        setError(result.error)
+        setLoading(false)
+      } else {
+        router.refresh()
+      }
+    } catch {
+      setError("Error inesperado al reiniciar. Intenta de nuevo.")
       setLoading(false)
     }
-    // Si tuvo éxito, revalidatePath recarga la página automáticamente
   }
 
   return (
