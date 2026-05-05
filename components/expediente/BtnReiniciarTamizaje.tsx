@@ -19,16 +19,20 @@ export default function BtnReiniciarTamizaje({ estudianteId }: { estudianteId: s
 
     setLoading(true)
     setError(null)
+
     try {
       const result = await resetearTamizaje(estudianteId)
+
       if (result?.error) {
         setError(result.error)
-        setLoading(false)
-      } else {
-        router.refresh()
+        return
       }
+
+      router.refresh()
+
     } catch {
-      setError("Error inesperado al reiniciar. Intenta de nuevo.")
+      setError("Error de conexión. Intenta de nuevo.")
+    } finally {
       setLoading(false)
     }
   }

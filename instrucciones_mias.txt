@@ -1,0 +1,55 @@
+*----
+
+## Terminal 1 — API de Machine Learning
+
+```bash
+# Entra a la carpeta ml-api
+cd ml-api
+
+# Activa el entorno virtual
+source venv/Scripts/activate
+
+# Arranca la API
+uvicorn main:app --reload --port 8000
+```
+
+Debe decir `Application startup complete.` — **deja esta terminal abierta.**
+
+---
+
+## Terminal 2 — Frontend (Next.js)
+
+Abre nueva terminal con **Ctrl + Shift + `**
+
+```bash
+# Asegúrate de estar en la raíz del proyecto
+cd ..
+
+# Arranca el frontend
+npm run dev
+```
+
+Debe decir `ready on http://localhost:3000` — **deja esta terminal abierta.**
+
+---
+
+## Antes de todo — PostgreSQL
+
+Si PostgreSQL no está corriendo, ábrelo con terminal de administrador:
+
+```bash
+net start postgresql-x64-17
+```
+
+---
+
+## Orden correcto cada vez que abras el proyecto:
+
+1. ▶️ Iniciar PostgreSQL (si no está corriendo)
+2. ▶️ Terminal 1 → activar venv → `uvicorn`
+3. ▶️ Terminal 2 → `npm run dev`
+4. 🌐 Abrir `http://localhost:3000`
+
+---
+
+en caso de que modifiques seeds.ts recuerda correr :"npx prisma db seed" para que se actualize
