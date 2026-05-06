@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"   // ← agregar
+import { useRouter } from "next/navigation"
 import { resetearTamizaje } from "@/lib/actions/tamizaje"
 
 export default function BtnReiniciarTamizaje({ estudianteId }: { estudianteId: string }) {
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
-  const router = useRouter()   // ← agregar
+  const router = useRouter()
 
   async function handleClick() {
     if (!confirm(
@@ -20,7 +20,7 @@ export default function BtnReiniciarTamizaje({ estudianteId }: { estudianteId: s
     setLoading(true)
     setError(null)
 
-    try {                                              // ← agregar try/catch
+    try {
       const result = await resetearTamizaje(estudianteId)
 
       if (result?.error) {
@@ -28,16 +28,14 @@ export default function BtnReiniciarTamizaje({ estudianteId }: { estudianteId: s
         return
       }
 
-      router.refresh()   // ← fuerza al cliente a re-fetch con los datos nuevos
+      router.refresh()
 
     } catch {
       setError("Error de conexión. Intenta de nuevo.")
     } finally {
-      setLoading(false)  // ← siempre se ejecuta
+      setLoading(false)
     }
   }
-
-  // ... JSX sin cambios
 
   return (
     <div>
