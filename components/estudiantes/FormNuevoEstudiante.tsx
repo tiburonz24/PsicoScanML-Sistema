@@ -208,7 +208,7 @@ export default function FormNuevoEstudiante() {
             </p>
             <ul style={{ margin: 0, padding: "0 0 0 16px", fontSize: 12, color: "#4A5568", lineHeight: 1.7 }}>
               <li>Se crea el expediente del estudiante</li>
-              <li>Se genera su token de acceso al cuestionario SENA</li>
+              <li>Se genera su token de acceso al cuestionario </li>
               <li>Podrás agendarle una cita o aplicarle el cuestionario desde su perfil</li>
             </ul>
           </div>

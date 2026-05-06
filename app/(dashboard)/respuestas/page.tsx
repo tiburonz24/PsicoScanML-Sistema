@@ -54,7 +54,7 @@ export default async function RespuestasPage({ searchParams }: Props) {
         <div>
           <h1 className="page-title">Respuestas del alumnado</h1>
           <p className="page-subtitle">
-            Cuestionarios SENA enviados desde el portal · {registros.length}{" "}
+            Cuestionarios enviados desde el portal · {registros.length}{" "}
             {registros.length === 1 ? "registro" : "registros"}
           </p>
         </div>
