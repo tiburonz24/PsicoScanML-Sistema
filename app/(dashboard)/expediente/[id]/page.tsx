@@ -88,7 +88,7 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
         { key: "esc_t", label: "ESC", val: tamizaje.esc_t },
         { key: "glo_t", label: "GLO", val: tamizaje.glo_t },
       ]
-        .filter(e => e.val >= 60)
+        .filter((e): e is { key: string; label: string; val: number } => e.val != null && e.val >= 60)
         .sort((a, b) => b.val - a.val)
         .slice(0, 5)
     : []

@@ -482,10 +482,12 @@ export default async function EstudianteDetallePage({ params, searchParams }: Pr
             </div>
           )}
 
-          {/* ── Perfil de escalas T ── */}
-          <SeccionLabel>Perfil de escalas T</SeccionLabel>
+          {/* ── Perfil de escalas ── */}
+          <SeccionLabel>Perfil de escalas</SeccionLabel>
           <p style={{ fontSize: 12, color: "#94a3b8", margin: "-8px 0 14px" }}>
-            Puntuaciones T normalizadas (media 50 · desviación 10). Elevado ≥ 70.
+            {tamizaje?.escalasCalculadas
+              ? "Puntuaciones T normalizadas (media 50 · desviación 10). Elevado ≥ 70."
+              : "Puntuaciones directas (PD) preliminares, sin baremo oficial aplicado — no son puntuaciones T. Índices globales y de vulnerabilidad marcados \"—\" no tienen forma de calcularse en el sistema todavía."}
           </p>
 
           <div style={{
@@ -523,7 +525,28 @@ export default async function EstudianteDetallePage({ params, searchParams }: Pr
                   </p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {grupo.escalas.map(({ clave, label }) => {
-                      const val = (tamizaje as unknown as Record<string, number>)[clave] ?? 50
+                      const raw = (tamizaje as unknown as Record<string, number | null>)[clave]
+                      if (raw == null) {
+                        return (
+                          <div key={clave} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{
+                              fontSize: 11, color: "#4A5568", flexShrink: 0, width: 140,
+                            }}>
+                              {label}
+                            </span>
+                            <div style={{
+                              flex: 1, background: "#e2e8f0", borderRadius: 4, height: 6, overflow: "hidden",
+                            }} />
+                            <span style={{
+                              fontSize: 11, fontStyle: "italic", width: 28, textAlign: "right",
+                              color: "#94a3b8",
+                            }}>
+                              —
+                            </span>
+                          </div>
+                        )
+                      }
+                      const val = raw
                       const pct = Math.min(Math.round((val / 110) * 100), 100)
                       const color = barColorT(val)
                       return (

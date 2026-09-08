@@ -90,19 +90,22 @@ export async function procesarYGuardarTamizaje(
   } // end if (!skipML)
 
   // ── 3. Guardar tamizaje en base de datos ──────────────────────────────────
+  // Nota: dep_t..cnc_t son PD (suma bruta de items), no puntuaciones T reales.
+  // glo_t/emo_t/con_t/eje_t/ctx_t/rec_t/reg_t/bus_t quedan null: no hay baremo
+  // oficial ni mapeo de items para calcularlas. escalasCalculadas permanece en
+  // false hasta que exista una fuente real de conversion PD->T.
   await prisma.tamizaje.create({
     data: {
       estudianteId,
       inc: pb.inc ?? 0, neg: pb.neg ?? 0, pos: pb.pos ?? 0,
-      glo_t: 50, emo_t: 50, con_t: 50, eje_t: 50, ctx_t: 50, rec_t: 50,
       dep_t: pb.dep ?? 0, ans_t: pb.ans ?? 0, asc_t: pb.asc ?? 0,
       som_t: pb.som ?? 0, pst_t: pb.pst ?? 0, obs_t: pb.obs ?? 0,
       ate_t: pb.ate ?? 0, hip_t: pb.hip ?? 0, ira_t: pb.ira ?? 0,
       agr_t: pb.agr ?? 0, des_t: pb.des ?? 0, ant_t: pb.ant ?? 0,
       sus_t: pb.sus ?? 0, esq_t: pb.esq ?? 0, ali_t: pb.ali ?? 0,
       fam_t: pb.fam ?? 0, esc_t: pb.esc ?? 0, com_t: pb.com ?? 0,
-      reg_t: 0, bus_t: 0,
       aut_t: pb.aut ?? 0, soc_t: pb.soc ?? 0, cnc_t: pb.cnc ?? 0,
+      escalasCalculadas: false,
       semaforo,
       tipoCaso,
       observaciones,

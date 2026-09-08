@@ -2,7 +2,17 @@ import { MockTamizaje } from "@/lib/data/mock"
 
 type Props = { tamizaje: MockTamizaje }
 
-function FilaEscala({ label, valor }: { label: string; valor: number }) {
+function FilaEscala({ label, valor }: { label: string; valor: number | null }) {
+  if (valor == null) {
+    return (
+      <div className="flex items-center gap-2 py-1">
+        <span className="text-xs text-gray-500 w-36 shrink-0">{label}</span>
+        <div className="flex-1 bg-gray-100 rounded-full h-2" />
+        <span className="text-xs w-8 text-right text-gray-400 italic">—</span>
+      </div>
+    )
+  }
+
   const color =
     valor >= 70 ? "text-red-600 font-bold" :
     valor >= 60 ? "text-orange-500 font-semibold" :
@@ -32,7 +42,7 @@ export default function TarjetaEscalas({ tamizaje: t }: Props) {
   return (
     <div className="bg-white rounded-xl shadow p-5 space-y-1 overflow-y-auto max-h-[360px]">
       <h2 className="text-sm font-semibold text-gray-700 mb-3">
-        Escalas numericas (T)
+        Escalas numericas (PD, sin baremo aplicado)
       </h2>
 
       <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mt-2">Indices globales</p>

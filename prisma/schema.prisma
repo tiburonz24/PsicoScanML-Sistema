@@ -86,15 +86,19 @@ model Tamizaje {
   neg Float
   pos Float
 
-  // Indices globales (puntuacion T)
-  glo_t Int
-  emo_t Int
-  con_t Int
-  eje_t Int
-  ctx_t Int
-  rec_t Int
+  // Indices globales — el SENA los calcula combinando varias sub-escalas ya
+  // normalizadas por baremo; sin baremo oficial no se pueden derivar de los
+  // items crudos. Quedan null hasta que exista una fuente real (ver
+  // escalasCalculadas).
+  glo_t Int?
+  emo_t Int?
+  con_t Int?
+  eje_t Int?
+  ctx_t Int?
+  rec_t Int?
 
-  // Problemas interiorizados (T)
+  // Problemas interiorizados — puntuacion directa (PD, suma de items 1-5),
+  // NO puntuacion T normalizada. Ver escalasCalculadas.
   dep_t Int
   ans_t Int
   asc_t Int
@@ -102,7 +106,7 @@ model Tamizaje {
   pst_t Int
   obs_t Int
 
-  // Problemas exteriorizados (T)
+  // Problemas exteriorizados (PD, ver nota arriba)
   ate_t Int
   hip_t Int
   ira_t Int
@@ -110,24 +114,32 @@ model Tamizaje {
   des_t Int
   ant_t Int
 
-  // Otros problemas (T)
+  // Otros problemas (PD, ver nota arriba)
   sus_t Int
   esq_t Int
   ali_t Int
 
-  // Problemas contextuales (T)
+  // Problemas contextuales (PD, ver nota arriba)
   fam_t Int
   esc_t Int
   com_t Int
 
-  // Vulnerabilidades (T)
-  reg_t Int
-  bus_t Int
+  // Vulnerabilidades — este codebase nunca definio el mapeo item->escala
+  // para REG/BUS (a diferencia de las demas escalas en lib/sena/scoring.ts),
+  // asi que no hay forma de calcularlas ni siquiera como PD. Quedan null.
+  reg_t Int?
+  bus_t Int?
 
-  // Recursos personales (T)
+  // Recursos personales (PD, ver nota arriba)
   aut_t Int
   soc_t Int
   cnc_t Int
+
+  // true solo cuando estos valores son puntuaciones T reales (baremo oficial
+  // aplicado, ej. transcritas de un PDF SENA o de una tabla de conversion
+  // validada). Mientras sea false, los campos "_t" arriba son PD crudas o
+  // null — nunca puntuaciones T reales.
+  escalasCalculadas Boolean @default(false)
 
   // Resultado del modelo ML
   tipoCaso      TipoCaso

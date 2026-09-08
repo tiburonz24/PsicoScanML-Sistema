@@ -146,8 +146,11 @@ export async function guardarRespuestasAlumno(
     etiquetaRespuesta: ic.etiqueta,
   }))
 
-  // T-scores: placeholder 50 hasta que el módulo ML esté disponible
-  const t50 = 50
+  // Escalas: PD real (suma bruta de items) donde hay mapeo item->escala.
+  // glo/emo/con/eje/ctx/rec/reg/bus quedan null — no hay baremo ni mapeo de
+  // items para calcularlas (ver nota en prisma/schema.prisma). No fingir un
+  // valor de 50: es un dato que puede llevar a decisiones clinicas.
+  const pb = resultado.puntuacionesBrutas
 
   // ── 6. Guardar en base de datos ───────────────────────────────────────────
   try {
@@ -158,13 +161,14 @@ export async function guardarRespuestasAlumno(
       data: {
         estudianteId,
         inc, neg, pos,
-        glo_t: t50, emo_t: t50, con_t: t50, eje_t: t50, ctx_t: t50, rec_t: t50,
-        dep_t: t50, ans_t: t50, asc_t: t50, som_t: t50, pst_t: t50, obs_t: t50,
-        ate_t: t50, hip_t: t50, ira_t: t50, agr_t: t50, des_t: t50, ant_t: t50,
-        sus_t: t50, esq_t: t50, ali_t: t50,
-        fam_t: t50, esc_t: t50, com_t: t50,
-        reg_t: t50, bus_t: t50,
-        aut_t: t50, soc_t: t50, cnc_t: t50,
+        dep_t: pb.dep ?? 0, ans_t: pb.ans ?? 0, asc_t: pb.asc ?? 0,
+        som_t: pb.som ?? 0, pst_t: pb.pst ?? 0, obs_t: pb.obs ?? 0,
+        ate_t: pb.ate ?? 0, hip_t: pb.hip ?? 0, ira_t: pb.ira ?? 0,
+        agr_t: pb.agr ?? 0, des_t: pb.des ?? 0, ant_t: pb.ant ?? 0,
+        sus_t: pb.sus ?? 0, esq_t: pb.esq ?? 0, ali_t: pb.ali ?? 0,
+        fam_t: pb.fam ?? 0, esc_t: pb.esc ?? 0, com_t: pb.com ?? 0,
+        aut_t: pb.aut ?? 0, soc_t: pb.soc ?? 0, cnc_t: pb.cnc ?? 0,
+        escalasCalculadas: false,
         tipoCaso:     resultado.tipoCaso as "SIN_RIESGO" | "CON_RIESGO" | "INCONSISTENCIA" | "IMPRESION_POSITIVA" | "IMPRESION_NEGATIVA",
         semaforo:     resultado.semaforo as "VERDE" | "AMARILLO" | "ROJO" | "ROJO_URGENTE",
         observaciones: resultado.observaciones,

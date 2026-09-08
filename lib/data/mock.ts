@@ -25,12 +25,12 @@ export type MockTamizaje = {
   inc: number
   neg: number
   pos: number
-  glo_t: number
-  emo_t: number
-  con_t: number
-  eje_t: number
-  ctx_t: number
-  rec_t: number
+  glo_t: number | null
+  emo_t: number | null
+  con_t: number | null
+  eje_t: number | null
+  ctx_t: number | null
+  rec_t: number | null
   dep_t: number
   ans_t: number
   asc_t: number
@@ -49,11 +49,12 @@ export type MockTamizaje = {
   fam_t: number
   esc_t: number
   com_t: number
-  reg_t: number
-  bus_t: number
+  reg_t: number | null
+  bus_t: number | null
   aut_t: number
   soc_t: number
   cnc_t: number
+  escalasCalculadas: boolean
   tipoCaso: TipoCaso
   semaforo: Semaforo
   observaciones: string | null
