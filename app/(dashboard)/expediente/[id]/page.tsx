@@ -228,7 +228,7 @@ export default async function ExpedienteClinicoPage({ params }: Props) {
       {tamizaje && sem && (
         <Seccion
           icon={<svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#1A7A8A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>}
-          titulo="Tamizaje SENA"
+          titulo="Tamizaje "
         >
           <div style={{
             background: sem.bg, border: `1px solid ${sem.border}`,

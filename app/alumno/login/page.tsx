@@ -71,7 +71,7 @@ export default function LoginAlumnoPage() {
               color: "#2dd4bf", fontSize: 11, fontWeight: 600,
               letterSpacing: "0.08em", textTransform: "uppercase",
             }}>
-              Cuestionario SENA
+              Cuestionario
             </span>
           </div>
 
@@ -190,7 +190,7 @@ export default function LoginAlumnoPage() {
               Acceso para alumnos
             </h2>
             <p style={{ fontSize: 13, color: "#4A5568", margin: 0, lineHeight: 1.5 }}>
-              Ingresa tu CURP para acceder al cuestionario SENA
+              Ingresa tu CURP para acceder al cuestionario 
             </p>
           </div>
 

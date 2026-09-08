@@ -32,7 +32,7 @@ export default function BannerEnlace({ nombre, enlace }: Props) {
         </p>
       </div>
       <p style={{ fontSize: 12, color: "#4A5568", margin: 0 }}>
-        Comparte este enlace para que el alumno conteste el cuestionario SENA:
+        Comparte este enlace para que el alumno conteste el cuestionario :
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <code style={{
