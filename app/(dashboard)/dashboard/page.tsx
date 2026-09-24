@@ -54,7 +54,9 @@ export default async function DashboardPage() {
     }),
   ])
 
-  const urgentes = alertasML.filter(t => t.semaforo === Semaforo.ROJO_URGENTE).length
+  // Total real de casos urgentes en todo el sistema — no solo entre los 4
+  // que se muestran en el panel "Alertas ML" (ese find limita a take:4).
+  const urgentes = semaforos.find(s => s.semaforo === Semaforo.ROJO_URGENTE)?.total ?? 0
   const totalTamizajes = semaforos.reduce((acc, s) => acc + s.total, 0)
 
   const nombre = session?.user?.name ?? "Usuario"
