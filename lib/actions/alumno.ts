@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/db"
 import { REACTIVOS, TOTAL_REACTIVOS } from "@/lib/data/reactivos"
-import { calcularResultado, ESCALAS, INC_PAIRS } from "@/lib/sena/scoring"
+import { calcularResultado, ESCALAS, calcularInconsistencia } from "@/lib/sena/scoring"
 
 // ─────────────────────────────────────────────
 // LOGIN CON CURP
@@ -126,10 +126,7 @@ export async function guardarRespuestasAlumno(
     resultado = calcularResultado(respuestas, textos)
 
     // Escalas de control normalizadas
-    const incBruta = INC_PAIRS.reduce(
-      (acc, [a, b]) => acc + Math.abs((respuestas[a - 1] ?? 0) - (respuestas[b - 1] ?? 0)), 0
-    )
-    inc = parseFloat((incBruta / INC_PAIRS.length).toFixed(2))
+    inc = calcularInconsistencia(respuestas).promedio
     neg = ESCALAS.neg.items.filter(i => (respuestas[i - 1] ?? 0) >= 3).length
     pos = ESCALAS.pos.items.filter(i => (respuestas[i - 1] ?? 0) >= 4).length
   } catch (err) {
