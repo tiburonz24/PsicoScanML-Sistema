@@ -3,6 +3,7 @@ import ExcelJS from "exceljs"
 import { prisma } from "@/lib/db"
 import { requireSession } from "@/lib/api-auth"
 import { Rol } from "@/lib/enums"
+import { calcularPrioridad, extraerItemsCriticos } from "@/lib/sena/scoring"
 
 // ─── Helpers de formato ─────────────────────────────────────────────────────
 
@@ -25,6 +26,20 @@ const SEMAFORO_BG: Record<string, string> = {
   AMARILLO:     "FFfffbeb",
   ROJO:         "FFfef2f2",
   ROJO_URGENTE: "FFfee2e2",
+}
+
+const PRIORIDAD_COLOR: Record<string, string> = {
+  maxima:   "FF7f1d1d",
+  alta:     "FF991b1b",
+  media:    "FFb45309",
+  estandar: "FF64748b",
+}
+
+const PRIORIDAD_BG: Record<string, string> = {
+  maxima:   "FFfee2e2",
+  alta:     "FFfef2f2",
+  media:    "FFfffbeb",
+  estandar: "FFf8fafc",
 }
 
 const TIPO_LABEL: Record<string, string> = {
@@ -76,10 +91,12 @@ const COLS_PERSONALES = [
 ]
 
 const COLS_RESULTADO = [
-  { header: "Fecha tamizaje",    key: "fecha",          width: 16 },
-  { header: "Nivel de riesgo",   key: "semaforo",       width: 16 },
-  { header: "Tipo de caso",      key: "tipoCaso",       width: 22 },
-  { header: "Observaciones",     key: "observaciones",  width: 40 },
+  { header: "Fecha tamizaje",    key: "fecha",           width: 16 },
+  { header: "Nivel de riesgo",   key: "semaforo",        width: 16 },
+  { header: "Prioridad",         key: "prioridad",       width: 14 },
+  { header: "Tipo de caso",      key: "tipoCaso",        width: 22 },
+  { header: "Observaciones",     key: "observaciones",   width: 40 },
+  { header: "Motivo de prioridad", key: "motivoPrioridad", width: 46 },
 ]
 
 const COLS_ESCALAS = [
@@ -150,11 +167,15 @@ async function fetchEstudiantes(id?: string) {
     },
   })
 
-  // Ordenar por urgencia, luego por fecha de tamizaje más reciente
+  // Ordenar por urgencia, luego por prioridad clínica (ver calcularPrioridad),
+  // luego por fecha de tamizaje más reciente
   rows.sort((a, b) => {
     const ua = URGENCIA_ORDER[a.tamizajes[0]?.semaforo ?? "VERDE"] ?? 4
     const ub = URGENCIA_ORDER[b.tamizajes[0]?.semaforo ?? "VERDE"] ?? 4
     if (ua !== ub) return ua - ub
+    const pa = calcularPrioridad(extraerItemsCriticos(a.tamizajes[0]?.itemsCriticos)).score
+    const pb = calcularPrioridad(extraerItemsCriticos(b.tamizajes[0]?.itemsCriticos)).score
+    if (pa !== pb) return pb - pa
     const fa = a.tamizajes[0]?.fecha?.getTime() ?? 0
     const fb = b.tamizajes[0]?.fecha?.getTime() ?? 0
     return fb - fa
@@ -231,14 +252,17 @@ function addSheet(
   // Filas de datos
   for (const est of estudiantes) {
     const t = est.tamizajes[0] ?? null
+    const prioridad = t ? calcularPrioridad(extraerItemsCriticos(t.itemsCriticos)) : null
     const rowData = {
       nombre: est.nombre, curp: est.curp, edad: est.edad,
       sexo:    SEXO_LABEL[est.sexo] ?? est.sexo,
       grado: est.grado, grupo: est.grupo, escuela: est.escuela,
       fecha:         t ? fmtFecha(t.fecha)                        : "Sin tamizaje",
       semaforo:      t ? SEMAFORO_LABEL[t.semaforo] ?? t.semaforo : "—",
+      prioridad:     prioridad ? prioridad.etiqueta : "—",
       tipoCaso:      t ? TIPO_LABEL[t.tipoCaso]     ?? t.tipoCaso : "—",
       observaciones: t?.observaciones ?? "—",
+      motivoPrioridad: prioridad ? prioridad.motivo : "—",
       glo_t: t?.glo_t ?? "—", emo_t: t?.emo_t ?? "—", con_t: t?.con_t ?? "—",
       eje_t: t?.eje_t ?? "—", ctx_t: t?.ctx_t ?? "—", rec_t: t?.rec_t ?? "—",
       dep_t: t?.dep_t ?? "—", ans_t: t?.ans_t ?? "—", asc_t: t?.asc_t ?? "—",
@@ -265,6 +289,14 @@ function addSheet(
       semCell.fill  = { type: "pattern", pattern: "solid", fgColor: { argb: SEMAFORO_BG[t.semaforo] ?? "FFFFFFFF" } }
       semCell.font  = { bold: true, size: 9, color: { argb: SEMAFORO_COLOR[t.semaforo] ?? "FF000000" } }
       semCell.alignment = { horizontal: "center", vertical: "middle" }
+
+      if (prioridad) {
+        const prioIdx  = COLS_PERSONALES.length + 3
+        const prioCell = dataRow.getCell(prioIdx)
+        prioCell.fill  = { type: "pattern", pattern: "solid", fgColor: { argb: PRIORIDAD_BG[prioridad.nivel] } }
+        prioCell.font  = { bold: true, size: 9, color: { argb: PRIORIDAD_COLOR[prioridad.nivel] } }
+        prioCell.alignment = { horizontal: "center", vertical: "middle" }
+      }
     }
   }
 

@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { getEstudiantes } from "@/lib/data/mock"
 import { prisma } from "@/lib/db"
 import { Semaforo } from "@/lib/enums"
+import { calcularPrioridad, extraerItemsCriticos } from "@/lib/sena/scoring"
 import FiltrosEstudiantes from "@/components/estudiantes/FiltrosEstudiantes"
 import ImportarEstudiantes from "@/components/estudiantes/ImportarEstudiantes"
 import ExportarParaSena from "@/components/estudiantes/ExportarParaSena"
@@ -231,6 +232,10 @@ export default async function EstudiantesPage({ searchParams }: Props) {
           const sem         = ultimo ? SEMAFORO_STYLE[ultimo.semaforo] : null
           const avatarColor = AVATAR_COLORS[i % AVATAR_COLORS.length]
           const esUrgente   = ultimo?.semaforo === "ROJO_URGENTE"
+          const enRiesgo    = ultimo?.semaforo === "ROJO_URGENTE" || ultimo?.semaforo === "ROJO"
+          const prioridad   = enRiesgo
+            ? calcularPrioridad(extraerItemsCriticos(ultimo?.itemsCriticos))
+            : null
 
           return (
             <div
@@ -283,19 +288,29 @@ export default async function EstudiantesPage({ searchParams }: Props) {
               {/* Semáforo */}
               <div>
                 {sem ? (
-                  <span style={{
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    background: sem.bg, color: sem.color,
-                    border: `1px solid ${sem.borde}`,
-                    borderRadius: 20, padding: "3px 10px",
-                    fontSize: 11, fontWeight: 700,
-                  }}>
+                  <>
                     <span style={{
-                      width: 6, height: 6, borderRadius: "50%",
-                      background: sem.dot, flexShrink: 0,
-                    }} />
-                    {sem.label}
-                  </span>
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      background: sem.bg, color: sem.color,
+                      border: `1px solid ${sem.borde}`,
+                      borderRadius: 20, padding: "3px 10px",
+                      fontSize: 11, fontWeight: 700,
+                    }}>
+                      <span style={{
+                        width: 6, height: 6, borderRadius: "50%",
+                        background: sem.dot, flexShrink: 0,
+                      }} />
+                      {sem.label}
+                    </span>
+                    {prioridad && (
+                      <p
+                        title={prioridad.motivo}
+                        style={{ fontSize: 10, color: "#7b2222", margin: "4px 0 0", fontWeight: 600, cursor: "help" }}
+                      >
+                        {prioridad.etiqueta}
+                      </p>
+                    )}
+                  </>
                 ) : (
                   <span style={{ color: "#cbd5e1", fontSize: 12 }}>—</span>
                 )}

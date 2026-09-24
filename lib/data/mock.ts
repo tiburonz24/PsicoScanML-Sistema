@@ -5,6 +5,7 @@
 
 import { Semaforo, TipoCaso, Sexo, EstadoCita } from "@/lib/enums"
 import { prisma } from "@/lib/db"
+import { calcularPrioridad, extraerItemsCriticos } from "@/lib/sena/scoring"
 
 // =============================================
 // TIPOS LOCALES (espejo de los modelos Prisma)
@@ -102,16 +103,19 @@ export async function getEstudiantes(): Promise<MockEstudiante[]> {
     },
   })
 
-  // Ordenar: ROJO_URGENTE → ROJO → AMARILLO → VERDE,
-  // dentro de cada nivel por fecha de tamizaje más reciente
+  // Ordenar: ROJO_URGENTE → ROJO → AMARILLO → VERDE, dentro de cada nivel por
+  // prioridad clínica (ver calcularPrioridad) y luego por fecha más reciente
   rows.sort((a, b) => {
-    const semA = (a.tamizajes[0] as { semaforo?: string } | undefined)?.semaforo ?? "VERDE"
-    const semB = (b.tamizajes[0] as { semaforo?: string } | undefined)?.semaforo ?? "VERDE"
-    const ua = URGENCIA[semA] ?? 4
-    const ub = URGENCIA[semB] ?? 4
+    const tA = a.tamizajes[0] as { semaforo?: string; fecha?: Date; itemsCriticos?: unknown } | undefined
+    const tB = b.tamizajes[0] as { semaforo?: string; fecha?: Date; itemsCriticos?: unknown } | undefined
+    const ua = URGENCIA[tA?.semaforo ?? "VERDE"] ?? 4
+    const ub = URGENCIA[tB?.semaforo ?? "VERDE"] ?? 4
     if (ua !== ub) return ua - ub
-    const fa = (a.tamizajes[0] as { fecha?: Date } | undefined)?.fecha?.getTime() ?? 0
-    const fb = (b.tamizajes[0] as { fecha?: Date } | undefined)?.fecha?.getTime() ?? 0
+    const pa = calcularPrioridad(extraerItemsCriticos(tA?.itemsCriticos)).score
+    const pb = calcularPrioridad(extraerItemsCriticos(tB?.itemsCriticos)).score
+    if (pa !== pb) return pb - pa  // mayor prioridad primero
+    const fa = tA?.fecha?.getTime() ?? 0
+    const fb = tB?.fecha?.getTime() ?? 0
     return fb - fa  // más reciente primero
   })
 
